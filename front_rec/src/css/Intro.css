@@ -1,0 +1,69 @@
+/*CSS applicato su tutti gli elementi cntenuti in intro*/
+.intro {
+    background-color: #3498db; /* Colore di sfondo */
+    color: white; /* Colore del testo */
+    padding: 40px; /*crea una divisione sotto e sopra di 40px agli elementi contenuti in intro. divide intro da header e intro da features */
+    text-align: center; /* centra i testi nei riquadri */
+}
+
+/*css applicato a h2 di intro.js*/
+.intro h2 {
+    padding: 15px 30px; /* crea una divisione di 15px sotto e sopra e di 30px a sinistra e destra tra i riquadri del bottone */
+    margin: 0; /* rimuove i margini facendo posizionare correttamente il titolo */
+    font-size: 36px; /* imposta la grandezza del font di h2 */
+}
+
+/*css per allineamento a colonna delle etichette e in line per i form */
+
+form {
+    display: flex;
+    flex-direction: column; /* Imposta il layout in colonna */
+    align-items: center; /* Centra orizzontalmente gli elementi del form */
+}
+
+.form-group {
+    display: flex;
+    align-items: center; /* Allinea l'input e l'etichetta al centro verticalmente */
+    margin-bottom: 5px; /* Spazio tra i gruppi */
+}
+
+/* Stile per le etichette (label) */
+.form-group label {
+    font-size: 16px; /* Dimensione del testo */
+    width: 100px; /* Larghezza fissa per allineare le etichette */
+    margin-right: 10px; /* Spazio tra l'etichetta e l'input */
+    text-align: right; /* Allinea il testo a destra per un aspetto migliore */
+}
+
+/* Stile per gli input */
+.form-group input {
+    width: 200px; /* Imposta una larghezza fissa per gli input*/
+    padding: 5px;
+    font-size: 14px; /* Dimensione del testo negli input */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/*css applicato a a di intro.js*/
+.cta-button {
+    /*posizione del bottone*/
+    display: inline-block; /* Imposta il layout flessibile, consentendo ai figli di essere disposti in una riga o in una colonna. */
+   
+    /*gestione colore del bottone*/
+    background-color: #2980b9; /* Colore di sfondo */
+    color: white; /* Colore del testo */
+
+    /*gestione link*/
+    text-decoration: none; /*rimuove sottolineatura al testo*/
+    border-radius: 5px; /* Crea un bordo arrotondato */
+
+    /*gestione dimensione del bottone*/
+    padding: 10px 20px; /* crea una divisione di 15px sotto er sopra e di 30px a sinistra e destra tra i riquadri del bottone */
+    font-size: 14px; /* imposta la grandezza del font contenuto nel bottone ( font di a) */
+    margin-top: 10px; /* crea una divisione sopra di 20px agli elementi contenuti in intro */
+}
+
+/*css applicato a a di intro.js*/
+.cta-button:hover {
+    background-color: #1f6391; /* Colore di sfondo al passaggio del mouse sul bottone */
+}

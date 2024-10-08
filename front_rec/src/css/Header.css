@@ -1,0 +1,36 @@
+/*css applicato a contenuto di header */
+header {
+    background-color: #2c3e50;  /*colore di sfondo*/
+    color: rgb(255, 255, 255); /*colore del testo*/
+    padding: 15px 0; /*spazio tra l'intestazione e il contenuto*/
+}
+
+/*css applicato a h1 di header.js*/
+header h1 {
+    display: inline; /*Fa sì che il titolo (h1) venga visualizzato inline, permette inserimento di altri elementi uno dietro l'altro senza andare a capo*/
+    font-size: 24px; /*dimensione del font*/
+}
+
+/*css applicato a nav di header.js*/
+nav ul {
+    /*list-style: none; /*rimuove i punti*/
+    padding: 0; /*rimuove i margini*/
+    /*display: inline; /*Fa sì che gli elementi della lista vengano visualizzati sulla stessa riga */
+    float: right; /*Fa sì che gli elementi della lista vengano visualizzati a destra */
+}
+
+/*css applicato a li di nav.js*/
+nav ul li {
+    display: inline; /* dispone gli elementi su una riga */
+    margin-left: 20px; /* imposta un margine a sinistra di 20px */
+}
+
+nav ul li a {
+    color: rgb(0, 0, 0); /*colore del testo*/
+    text-decoration: none; /*rimuove sottolineatura al testo*/
+    font-size: 16px; /*dimensione del font*/
+}
+
+nav ul li a:hover {
+    text-decoration: underline; /*Quando il cursore passa sopra il testo il testo viene sottolineato indicando che puoi interagirci */
+}
