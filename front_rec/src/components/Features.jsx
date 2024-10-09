@@ -2,15 +2,24 @@
 import { useState } from 'react';
 import ClassSelector from './ClassSelector';
 import Registro from './Registro.jsx';
+import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo componente per inserire i voti
 import '../css/Features.css';
 
 function Features() {
   const [selectedClass, setSelectedClass] = useState(null);
   const [showClassSelector, setShowClassSelector] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState(null); // Aggiunta di una variabile di stato per distinguere le feature
 
   const handleRegistroClick = () => {
-    setShowClassSelector(!showClassSelector);
-    setSelectedClass(null);
+    setSelectedFeature('registro'); // Quando clicchi su "Registro", imposti la feature selezionata
+    setShowClassSelector(true); // Mostra il selettore di classi
+    setSelectedClass(null); // Resetta la classe selezionata
+  };
+
+  const handleVotiClick = () => {
+    setSelectedFeature('voti'); // Quando clicchi su "Inserimento Voti", imposti la feature selezionata
+    setShowClassSelector(true); // Mostra il selettore di classi
+    setSelectedClass(null); // Resetta la classe selezionata
   };
 
   const handleClick = (feature) => {
@@ -28,7 +37,7 @@ function Features() {
           <h3>Agenda</h3>
           <p>Inserisci le annotazioni riguardanti la classe.</p>
         </div>
-        <div className="feature" onClick={() => handleClick('Inserimento Voti')}>
+        <div className="feature" onClick={handleVotiClick}>
           <h3>Inserimento Voti</h3>
           <p>Inserisci e visualizza i voti degli studenti.</p>
         </div>
@@ -36,12 +45,26 @@ function Features() {
           <h3>Argomenti Trattati</h3>
           <p>Annota gli argomenti affrontati durante la lezione.</p>
         </div>
+        <div className="feature" onClick={() => handleClick('Orario Lezioni')}>
+          <h3>Orario Lezioni</h3>
+          <p>Visualizza l'orario delle lezioni.</p>
+        </div>
       </div>
+
       <div className="features-content">
         {showClassSelector && !selectedClass && (
-          <ClassSelector onClassSelect={setSelectedClass} />
+          <ClassSelector onClassSelect={setSelectedClass} /> // Mostra il selettore di classi
         )}
-        {selectedClass && <Registro selectedClass={selectedClass} />}
+
+        {/* Mostra il componente Registro se "Registro" è stato selezionato */}
+        {selectedClass && selectedFeature === 'registro' && (
+          <Registro selectedClass={selectedClass} />
+        )}
+
+        {/* Mostra il componente InserimentoVoti se "Inserimento Voti" è stato selezionato */}
+        {selectedClass && selectedFeature === 'voti' && (
+          <InserimentoVoti selectedClass={selectedClass} />
+        )}
       </div>
     </section>
   );
