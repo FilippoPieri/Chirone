@@ -3,6 +3,7 @@ import { useState } from 'react';
 import ClassSelector from './ClassSelector';
 import Registro from './Registro.jsx';
 import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo componente per inserire i voti
+import OrarioLezioni from './OrarioLezioni.jsx';
 import '../css/Features.css';
 
 function Features() {
@@ -22,6 +23,11 @@ function Features() {
     setSelectedClass(null); // Resetta la classe selezionata
   };
 
+  const handleOrarioClick = () => {
+    setSelectedFeature('orario'); // Quando clicchi su "OrarioLezioni", imposti la feature selezionata
+    setShowClassSelector(true); // Mostra il selettore di classi
+    setSelectedClass(null); // Resetta la classe selezionata
+  };
   const handleClick = (feature) => {
     alert(`Hai cliccato su: ${feature}`);
   };
@@ -33,22 +39,23 @@ function Features() {
           <h3>Registro</h3>
           <p>Gestisci rapidamente il registro scolastico.</p>
         </div>
-        <div className="feature" onClick={() => handleClick('Agenda')}>
-          <h3>Agenda</h3>
-          <p>Inserisci le annotazioni riguardanti la classe.</p>
-        </div>
         <div className="feature" onClick={handleVotiClick}>
           <h3>Inserimento Voti</h3>
           <p>Inserisci e visualizza i voti degli studenti.</p>
+        </div>
+        <div className="feature" onClick={handleOrarioClick}>
+          <h3>Orario Lezioni</h3>
+          <p>Visualizza l'orario delle lezioni.</p>
+        </div>
+        <div className="feature" onClick={() => handleClick('Agenda')}>
+          <h3>Agenda</h3>
+          <p>Inserisci le annotazioni riguardanti la classe.</p>
         </div>
         <div className="feature" onClick={() => handleClick('Argomenti Trattati')}>
           <h3>Argomenti Trattati</h3>
           <p>Annota gli argomenti affrontati durante la lezione.</p>
         </div>
-        <div className="feature" onClick={() => handleClick('Orario Lezioni')}>
-          <h3>Orario Lezioni</h3>
-          <p>Visualizza l'orario delle lezioni.</p>
-        </div>
+        
       </div>
 
       <div className="features-content">
@@ -64,6 +71,11 @@ function Features() {
         {/* Mostra il componente InserimentoVoti se "Inserimento Voti" è stato selezionato */}
         {selectedClass && selectedFeature === 'voti' && (
           <InserimentoVoti selectedClass={selectedClass} />
+        )}
+
+        {/* Mostra il componente OrarioLezioni se "Orario Lezioni" è stato selezionato */}
+        {selectedClass && selectedFeature === 'orario' && (
+          <OrarioLezioni selectedClass={selectedClass} />
         )}
       </div>
     </section>
