@@ -14,11 +14,6 @@ function OrarioLezioni({ selectedClass }) {
       13: ''
     });
   
-    // Trova gli insegnanti della classe selezionata
-    const insegnantiClasse = insegnanti.filter(insegnante => {
-      return materie.some(materia => materia.id === insegnante.materiaId);
-    });
-
     const handleOrarioChange = (ora, materia) => {
       setOrario(prevOrario => ({
         ...prevOrario,
@@ -51,14 +46,17 @@ function OrarioLezioni({ selectedClass }) {
                     onChange={(e) => handleOrarioChange(ora, e.target.value)}
                   >
                     <option value="">Seleziona materia</option>
-                    {/* Mappiamo le materie per gli insegnanti associati alla classe */}
+                    {/* Filtriamo le materie associate alla classe selezionata */}
                     {materie.filter(materia => 
-                      insegnantiClasse.some(insegnante => insegnante.materiaId === materia.id)
-                    ).map(materia => (
-                      <option key={materia.id} value={materia.nomeMateria}>
-                        {materia.nomeMateria} - {insegnanti.find(insegnante => insegnante.materiaId === materia.id).nome}
-                      </option>
-                    ))}
+                      materia.classiIds.includes(selectedClass.id) // Assicuriamoci che la materia sia per la classe selezionata
+                    ).map(materia => {
+                      const insegnante = insegnanti.find(insegnante => insegnante.id === materia.insegnanteId);
+                      return (
+                        <option key={materia.id} value={materia.nomeMateria}>
+                          {materia.nomeMateria} - {insegnante ? `${insegnante.nome} ${insegnante.cognome}` : 'N/A'}
+                        </option>
+                      );
+                    })}
                   </select>
                 </td>
               </tr>
