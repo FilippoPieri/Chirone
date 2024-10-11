@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { materie, insegnanti } from './mockdb'; 
 import '../css/OrarioLezioni.css'; // Importa il file CSS qui
@@ -27,7 +28,7 @@ function OrarioLezioni({ selectedClass }) {
   
     return (
       <div className="orario-details">
-        <h3>Inserisci l'orario per la classe {selectedClass.anno}{selectedClass.sezione}</h3>
+        <h3>Inserisci l&#39;orario per la classe {selectedClass.anno}{selectedClass.sezione}</h3>
         
         <table className="orario-table">
           <thead>
@@ -69,4 +70,13 @@ function OrarioLezioni({ selectedClass }) {
     );
 }
   
+// Definizione delle PropTypes
+OrarioLezioni.propTypes = {
+  selectedClass: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    anno: PropTypes.string.isRequired,
+    sezione: PropTypes.string.isRequired
+  }).isRequired
+};
+
 export default OrarioLezioni;

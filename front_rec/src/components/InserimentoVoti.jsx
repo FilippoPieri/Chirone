@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { studenti, voti as votiMockDb } from './mockdb'; // Importiamo i dati degli studenti e voti
 import VisualizzaVoti from './VisualizzaVoti'; // Importiamo il nuovo componente VisualizzaVoti
@@ -103,6 +104,15 @@ function InserimentoVoti({ selectedClass }) {
     </div>
   );
 }
+
+// Definizione delle PropTypes
+InserimentoVoti.propTypes = {
+  selectedClass: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    anno: PropTypes.string.isRequired,
+    sezione: PropTypes.string.isRequired
+  }).isRequired
+};
 
 export default InserimentoVoti;
 

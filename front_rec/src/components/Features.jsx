@@ -45,7 +45,7 @@ function Features() {
         </div>
         <div className="feature" onClick={handleOrarioClick}>
           <h3>Orario Lezioni</h3>
-          <p>Visualizza l'orario delle lezioni.</p>
+          <p>Visualizza l&#39;orario delle lezioni.</p>
         </div>
         <div className="feature" onClick={() => handleClick('Agenda')}>
           <h3>Agenda</h3>
