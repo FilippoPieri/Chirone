@@ -1,32 +1,49 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { voti as votiMockDb } from './mockdb'; // Importiamo i voti e studenti dal mockdb
+import { voti as votiMockDb, materie } from './mockdb'; // Importiamo i voti e le materie
 
 function VisualizzaVoti({ studentiClasse }) {
   const [voti] = useState(votiMockDb); // State per i voti
 
   return (
     <div className="voti-salvati">
-      <h4>Voti Salvati</h4>
+      <h4>Voti per ogni studente</h4>
       <table className="registro-table">
         <thead>
           <tr>
             <th>Studente</th>
-            <th>Voti Scritti</th>
-            <th>Voti Orali</th>
+            {materie.map((materia) => (
+              <th key={materia.id}>{materia.nomeMateria}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {studentiClasse.map(studente => {
             const votiStudente = voti.filter(voto => voto.studenteId === studente.id);
-            const votoScritto = votiStudente.find(voto => voto.materiaId === 1);
-            const votoOrale = votiStudente.find(voto => voto.materiaId === 2);
-            
+
             return (
               <tr key={studente.id}>
                 <td>{studente.nome} {studente.cognome}</td>
-                <td>{votoScritto ? votoScritto.scritto : 'N/D'}</td>
-                <td>{votoOrale ? votoOrale.orale : 'N/D'}</td>
+                {materie.map(materia => {
+                  const votiMateria = votiStudente.filter(voto => voto.materiaId === materia.id);
+
+                  return (
+                    <td key={materia.id}>
+                      {votiMateria.length > 0 ? (
+                        votiMateria.map((voto, index) => (
+                          <div key={index}>
+                            <p>Data: {voto.data}</p>
+                            <p>Scritto: {voto.scritto}</p>
+                            <p>Orale: {voto.orale}</p>
+                            <hr />
+                          </div>
+                        ))
+                      ) : (
+                        <p>N/D</p>
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
