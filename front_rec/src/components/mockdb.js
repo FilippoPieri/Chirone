@@ -1,7 +1,19 @@
+// mockdb.js
+
 // Scuole
 export const scuole = [
     { id: 1, nome: 'Scuola Elementare A', indirizzo: 'Via Roma 1', comprensivoId: 1 },
     { id: 2, nome: 'Scuola Media B', indirizzo: 'Via Milano 10', comprensivoId: 2 },
+];
+
+// Classi
+export const classi = [
+    { id: 1, sezione: 'A', anno: 1, scuolaId: 1 },
+    { id: 2, sezione: 'B', anno: 2, scuolaId: 2 },
+    { id: 3, sezione: 'C', anno: 3, scuolaId: 1 },
+    { id: 4, sezione: 'D', anno: 1, scuolaId: 2 },
+    { id: 5, sezione: 'E', anno: 3, scuolaId: 1 },
+    { id: 6, sezione: 'F', anno: 2, scuolaId: 2 },
 ];
 
 // Studenti
@@ -17,14 +29,25 @@ export const studenti = [
     { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1 },
 ];
 
-// Classi
-export const classi = [
-    { id: 1, sezione: 'A', anno: 1, scuolaId: 1 },
-    { id: 2, sezione: 'B', anno: 2, scuolaId: 2 },
-    { id: 3, sezione: 'C', anno: 3, scuolaId: 1 },
-    { id: 4, sezione: 'D', anno: 1, scuolaId: 2 },
-    { id: 5, sezione: 'E', anno: 3, scuolaId: 1 },
-    { id: 6, sezione: 'F', anno: 2, scuolaId: 2 },
+// Voti
+export const voti = [
+    { id: 1, studenteId: 1, materiaId: 1, scritto: 8.5, scritto: 8.0, orale: 9.0, data: '2023-03-12' },
+    { id: 2, studenteId: 2, materiaId: 2, scritto: 9.0, orale: 8.5, data: '2023-03-13' },
+    { id: 3, studenteId: 3, materiaId: 1, scritto: 7.0, orale: 7.5, data: '2023-05-14' },
+    { id: 4, studenteId: 4, materiaId: 2, scritto: 6.5, orale: 6.0, data: '2023-05-15' },
+    { id: 5, studenteId: 5, materiaId: 1, scritto: 9.0, orale: 9.5, data: '2023-06-16' },
+    { id: 6, studenteId: 6, materiaId: 3, scritto: 8.0, orale: 7.5, data: '2023-06-17' },
+    { id: 7, studenteId: 7, materiaId: 1, scritto: 7.5, orale: 8.0, data: '2023-06-18' },
+    { id: 8, studenteId: 8, materiaId: 3, scritto: 9.0, orale: 9.5, data: '2023-06-19' },
+    { id: 9, studenteId: 9, materiaId: 1, scritto: 8.5, orale: 8.0, data: '2023-06-20' },
+];
+
+// Materie
+export const materie = [
+    { id: 1, nomeMateria: 'Matematica', insegnanteId: 1, classiIds: [1, 3] },
+    { id: 2, nomeMateria: 'Italiano', insegnanteId: 2, classiIds: [2, 4] },
+    { id: 3, nomeMateria: 'Scienze', insegnanteId: 5, classiIds: [1, 3] },
+    { id: 4, nomeMateria: 'Educazione Fisica', insegnanteId: 8, classiIds: [1] },
 ];
 
 // Insegnanti
@@ -37,26 +60,6 @@ export const insegnanti = [
     { id: 6, nome: 'Marco', cognome: 'Bianchi', materia: 'Matematica', scuolaId: 1, email: 'marco@bianchi', password: 'marco123' },
     { id: 7, nome: 'Marco', cognome: 'Gialli', materia: 'Ed.Fisica', scuolaId: 1, email: 'marco@gialli', password: 'marco123' },
     { id: 8, nome: 'Stefania', cognome: 'Verdi', materia: 'Educazione Fisica', scuolaId: 1, email: 'stefania@verdi', password: 'stefania123' },
-];
-
-// Materie
-export const materie = [
-    { id: 1, nomeMateria: 'Matematica', insegnanteId: 1, classiIds: [1, 3] }, // Lucia insegna matematica in 1A e 3C
-    { id: 2, nomeMateria: 'Italiano', insegnanteId: 2, classiIds: [2, 4] }, // Giovanni insegna italiano in 2B e 1D
-    { id: 3, nomeMateria: 'Scienze', insegnanteId: 5, classiIds: [1, 3] }, // Chiara insegna scienze in 1A e 3C
-    { id: 4, nomeMateria: 'Educazione Fisica', insegnanteId: 8, classiIds: [1] }, // Stefania insegna educazione fisica in 1A
-];
-
-// Voti
-export const voti = [
-    { id: 1, studenteId: 1, materiaId: 1, voto: 8.5, data: '2023-03-12' },
-    { id: 2, studenteId: 2, materiaId: 2, voto: 9.0, data: '2023-03-13' },
-    { id: 3, studenteId: 3, materiaId: 1, voto: 7.0, data: '2023-05-14' },
-    { id: 4, studenteId: 4, materiaId: 2, voto: 6.5, data: '2023-05-15' },
-    { id: 5, studenteId: 5, materiaId: 1, voto: 9.0, data: '2023-06-16' },
-    { id: 6, studenteId: 6, materiaId: 3, voto: 8.0, data: '2023-06-17' },
-    { id: 7, studenteId: 7, materiaId: 1, voto: 7.5, data: '2023-06-18' },
-    { id: 8, studenteId: 8, materiaId: 3, voto: 9.0, data: '2023-06-19' },
 ];
 
 // Presenze
