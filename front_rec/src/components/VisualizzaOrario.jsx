@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { orariLezione, materie, insegnanti } from './mockdb'; // Assicurati di importare i dati corretti
+import { orariLezione, materie} from './mockdb'; // Assicurati di importare i dati corretti
 import '../css/VisualizzaOrario.css'; // Aggiungi un file CSS se necessario
 
 function VisualizzaOrario({ selectedClass }) {
