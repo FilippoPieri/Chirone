@@ -5,7 +5,7 @@ import '../css/OrarioLezioni.css'; // Importa il file CSS
 import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo componente
 
 const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-const oreGiornaliere = [8, 9, 10, 11, 12, 13];
+const oreGiornaliere = [8, 9, 10, 11, 12, 13, 14 , 15, 16, 17, 18];
 
 function OrarioLezioni({ selectedClass }) {
     console.log("OrarioLezioni renderizzato per la classe:", selectedClass); // Debug
