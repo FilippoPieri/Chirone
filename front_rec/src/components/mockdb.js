@@ -132,7 +132,7 @@ export const orariLezione = [
     { id: 18, materiaId: 3, insegnanteId: 5, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 19, materiaId: 4, insegnanteId: 8, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 20, materiaId: 1, insegnanteId: 3, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '12:00', oraFine: '13:00' },
-
+   
     // Ripeti per il resto dei giorni (Martedì, Mercoledì, Giovedì, Venerdì) per ciascuna classe e materia
     // ...
     
