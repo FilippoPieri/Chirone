@@ -44,8 +44,8 @@ function VisualizzaVoti({ studentiClasse }) {
               if (!votiPerMateria[voto.materiaId]) {
                 votiPerMateria[voto.materiaId] = { materiaId: voto.materiaId, votiScritti: [], votiOrali: [] };
               }
-              votiPerMateria[voto.materiaId].votiScritti.push(voto.scritto);
-              votiPerMateria[voto.materiaId].votiOrali.push(voto.orale);
+              votiPerMateria[voto.materiaId].votiScritti.push(voto);
+              votiPerMateria[voto.materiaId].votiOrali.push(voto);
             });
 
             // Mappa per ogni materia e mostra i voti
@@ -58,12 +58,22 @@ function VisualizzaVoti({ studentiClasse }) {
                   <td>{studente.nome} {studente.cognome}</td>
                   <td>{materia.nomeMateria}</td>
                   <td>
-                    {votiScritti.join(', ')} {/* Unisci i voti scritti con una virgola */}
-                    <span onClick={(event) => openPopup({ materiaId, votiScritti, votiOrali }, event)} className="voto-link"> (info)</span>
+                    {votiScritti.map((voto, index) => (
+                      <span key={index}>
+                        {voto.scritto}
+                        <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        {index < votiScritti.length - 1 && ', '}
+                      </span>
+                    ))}
                   </td>
                   <td>
-                    {votiOrali.join(', ')} {/* Unisci i voti orali con una virgola */}
-                    <span onClick={(event) => openPopup({ materiaId, votiScritti, votiOrali }, event)} className="voto-link"> (info)</span>
+                    {votiOrali.map((voto, index) => (
+                      <span key={index}>
+                        {voto.orale}
+                        <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        {index < votiOrali.length - 1 && ', '}
+                      </span>
+                    ))}
                   </td>
                 </tr>
               );
@@ -77,9 +87,10 @@ function VisualizzaVoti({ studentiClasse }) {
         <div className="popup" style={{ top: popupPosition.top, left: popupPosition.left }}>
           <div className="popup-content">
             <h4>Dettagli Voto</h4>
-            <p><strong>Materia ID:</strong> {popup.materiaId}</p>
-            <p><strong>Voti Scritti:</strong> {popup.votiScritti.join(', ')}</p>
-            <p><strong>Voti Orali:</strong> {popup.votiOrali.join(', ')}</p>
+            <p><strong>Data:</strong> {popup.data}</p>
+            <p><strong>Voto Scritto:</strong> {popup.scritto}</p>
+            <p><strong>Voto Orale:</strong> {popup.orale}</p>
+            <p><strong>Appunti:</strong> {popup.appunti || 'Nessun appunto'}</p>
             <button onClick={closePopup}>Chiudi</button>
           </div>
         </div>
@@ -93,3 +104,4 @@ VisualizzaVoti.propTypes = {
 };
 
 export default VisualizzaVoti;
+
