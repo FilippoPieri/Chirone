@@ -62,52 +62,15 @@ export const insegnanti = [
     { id: 8, nome: 'Stefania', cognome: 'Verdi', materia: 'Educazione Fisica', scuolaId: 1, email: 'stefania@verdi', password: 'stefania123' },
 ];
 
-//registrp
-export const registro = [
-    {
-        id: 1,
-        classeId: 1,
-        studenteId: 1,
-        data: '2023-09-14',
-        stato: 'Presente',
-        orarioEntrata: '08:00',
-        orarioUscita: '13:00',
-        giustificazione: null, // Nessuna giustificazione
-        genitoreId: null      // Nessun genitore associato
-    },
-    {
-        id: 2,
-        classeId: 2,
-        studenteId: 2,
-        data: '2023-09-14',
-        stato: 'Assente',
-        orarioEntrata: null,
-        orarioUscita: null,
-        giustificazione: 'Malattia', // Giustificazione fornita
-        genitoreId: 1               // Riferimento al genitore (Maria Rossi)
-    },
-    {
-        id: 3,
-        classeId: 1,
-        studenteId: 3,
-        data: '2023-09-15',
-        stato: 'Presente',
-        orarioEntrata: '08:15',
-        orarioUscita: '12:45',
-        giustificazione: null, // Nessuna giustificazione
-        genitoreId: null      // Nessun genitore associato
-    },
-    // Aggiungi ulteriori record di registro se necessario
+// Presenze
+export const presenze = [
+    { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '13:00' },
+    { id: 2, studenteId: 2, data: '2023-09-14', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00' },
+    { id: 3, studenteId: 3, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '12:30' },
+    { id: 4, studenteId: 4, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:30', orarioUscita: '12:00' },
+    { id: 5, studenteId: 5, data: '2023-09-16', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00' },
+    { id: 6, studenteId: 6, data: '2023-09-16', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '13:00' },
 ];
-
-// Genitori
-export const genitori = [
-    { id: 1, nome: 'Maria', cognome: 'Rossi', email: 'maria.rossi@example.com', telefono: '1234567890', studenteId: 1 },
-    { id: 2, nome: 'Luca', cognome: 'Bianchi', email: 'luca.bianchi@example.com', telefono: '0987654321', studenteId: 2 },
-    { id: 3, nome: 'Anna', cognome: 'Verdi', email: 'anna.verdi@example.com', telefono: '1122334455', studenteId: 3 },
-    // Aggiungi ulteriori genitori se necessario
-];
-
 
 export const orariLezione = [
     // Scuola Elementare A (ID: 1)
