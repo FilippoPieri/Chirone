@@ -1,0 +1,56 @@
+.voti-salvati {
+    margin: 20px;
+  }
+  
+  .registro-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .registro-table th,
+  .registro-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .registro-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  /* Stile per il link che apre il popup */
+  .voto-link {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  /* Stile per il popup a forma di balloon */
+  .popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 300px; /* Limita la larghezza del popup */
+  }
+  
+  .popup-content {
+    position: relative;
+  }
+  
+  .popup::after {
+    content: '';
+    position: absolute;
+    top: 100%; /* Posiziona la punta del balloon sotto il pop-up */
+    left: 50%;
+    margin-left: -5px; /* Centrato */
+    border-width: 5px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent; /* Punta bianca */
+  }
