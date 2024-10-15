@@ -2,9 +2,14 @@ import PropTypes from "prop-types";
 import { useState } from 'react';
 import '../css/Registro.css';
 import { studenti, presenze } from './mockdb';
+import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
 
-function Registro({ selectedClass }) {
-  const [statoPresenze, setStatoPresenze] = useState({}); // Stato per memorizzare le presenze degli studenti
+function Registro({ selectedClass, onSubmit }) {
+  const [statoPresenze, setStatoPresenze] = useState({});
+  const [entrataRitardo, setEntrataRitardo] = useState({});
+  const [uscitaAnticipata, setUscitaAnticipata] = useState({});
+  const [mostraVisualizzaRegistro, setMostraVisualizzaRegistro] = useState(false);
+  const [datiPresenze, setDatiPresenze] = useState([]); // Nuovo stato per i dati delle presenze
 
   const getStudentsWithDetails = (classeId) => {
     return studenti
@@ -17,7 +22,6 @@ function Registro({ selectedClass }) {
 
   const studentiConDettagli = getStudentsWithDetails(selectedClass.id);
 
-  // Funzione per aggiornare lo stato di presenza di uno studente
   const handlePresenzaChange = (studenteId, presenza) => {
     setStatoPresenze({
       ...statoPresenze,
@@ -25,10 +29,51 @@ function Registro({ selectedClass }) {
     });
   };
 
+  const handleEntrataChange = (studenteId, time) => {
+    setEntrataRitardo({
+      ...entrataRitardo,
+      [studenteId]: time
+    });
+  };
+
+  const handleUscitaChange = (studenteId, time) => {
+    setUscitaAnticipata({
+      ...uscitaAnticipata,
+      [studenteId]: time
+    });
+  };
+
+  const handleSubmit = () => {
+    const presenzeDaInviare = studentiConDettagli.map(studente => ({
+      nome: studente.nome,
+      cognome: studente.cognome,
+      dataNascita: studente.dataNascita,
+      presenza: statoPresenze[studente.id] || "Presente",
+      entrataRitardo: entrataRitardo[studente.id] || "",
+      uscitaAnticipata: uscitaAnticipata[studente.id] || ""
+    }));
+
+    // Salva i dati delle presenze nello stato
+    setDatiPresenze(presenzeDaInviare);
+    // Chiama la funzione onSubmit per inviare i dati
+    onSubmit(presenzeDaInviare);
+  };
+
+  // Condizione per mostrare VisualizzaRegistro
+  if (mostraVisualizzaRegistro) {
+    return (
+      <VisualizzaRegistro
+        presenze={datiPresenze} // Passa i dati delle presenze inviati
+        onBack={() => setMostraVisualizzaRegistro(false)} // Torna a Registro
+      />
+    );
+  }
+
   return (
     <div className="class-details">
       <h3>Registro della classe {selectedClass.anno}{selectedClass.sezione}</h3>
-      
+      <button onClick={() => setMostraVisualizzaRegistro(true)}>Mostra Visualizza Registro</button>
+
       <table className="registro-table">
         <thead>
           <tr>
@@ -36,7 +81,7 @@ function Registro({ selectedClass }) {
             <th>Data di nascita</th>
             <th>Presenza</th>
             <th>Entrata in Ritardo</th>
-            <th>Uscita anticipata</th> 
+            <th>Uscita anticipata</th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +94,6 @@ function Registro({ selectedClass }) {
                 <td>{studente.nome} {studente.cognome}</td>
                 <td>{studente.dataNascita}</td>
                 <td>
-                  {/* Select per la presenza */}
                   <select 
                     value={statoPresenze[studente.id] || 'Presente'}
                     onChange={(e) => handlePresenzaChange(studente.id, e.target.value)}
@@ -59,29 +103,35 @@ function Registro({ selectedClass }) {
                   </select>
                 </td>
                 <td>
-                  {/* Input per l'ora di entrata */}
-                  <input type="time" />
+                  <input 
+                    type="time" 
+                    onChange={(e) => handleEntrataChange(studente.id, e.target.value)} 
+                  />
                 </td>
                 <td>
-                  {/* Input per l'ora di uscita */}
-                  <input type="time" />
+                  <input 
+                    type="time" 
+                    onChange={(e) => handleUscitaChange(studente.id, e.target.value)} 
+                  />
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      <button onClick={handleSubmit}>Firma</button>
     </div>
   );
 }
 
-// Aggiungi la validazione delle proprietà qui
+// Validazione dei PropTypes
 Registro.propTypes = {
   selectedClass: PropTypes.shape({
-      id: PropTypes.string.isRequired, // O il tipo appropriato
-      anno: PropTypes.string.isRequired, // O il tipo appropriato
-      sezione: PropTypes.string.isRequired, // O il tipo appropriato
-  }).isRequired, // Indica che selectedClass è obbligatorio
+    id: PropTypes.string.isRequired,
+    anno: PropTypes.string.isRequired,
+    sezione: PropTypes.string.isRequired,
+  }).isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default Registro;
