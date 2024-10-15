@@ -36,20 +36,33 @@ function InserimentoVoti({ selectedClass }) {
     const votoScritto = votiStudente.scritto || '';
     const votoOrale = votiStudente.orale || '';
     const appunti = votiStudente.appunti || '';
-    
-     // Aggiungi i voti nel mock database
-     if (votoScritto || votoOrale || appunti) {
+  
+    // Creiamo un oggetto per raccogliere i voti da inviare
+    const votiDaInviare = {};
+  
+    // Aggiungiamo solo i campi riempiti all'oggetto da inviare
+    if (votoScritto) {
+      votiDaInviare.scritto = votoScritto;
+    }
+  
+    if (votoOrale) {
+      votiDaInviare.orale = votoOrale;  // Aggiungiamo il voto orale solo se non è vuoto
+    }
+  
+    // Gestiamo gli appunti
+    votiDaInviare.appunti = appunti || "Nessun appunto"; // Se appunti è vuoto, inviamo il messaggio "Nessun appunto"
+  
+    // Aggiungi i voti nel mock database solo se ci sono valori da salvare
+    if (Object.keys(votiDaInviare).length > 0) {
       votiMockDb.push({
         id: votiMockDb.length + 1,
         studenteId: studenteId,
         materiaId: 1, // Supponiamo che la materia ID sia 1 per "Matematica"
-        scritto: votoScritto,
-        orale: votoOrale,
-        appunti: appunti,
+        ...votiDaInviare, // Includiamo solo i campi riempiti
         data: new Date().toISOString().split('T')[0] // Data odierna
       });
-
-      console.log(`Voti salvati per studente ID ${studenteId}: Scritto = ${votoScritto}, Orale = ${votoOrale}, Appunti = ${appunti}`);
+  
+      console.log(`Voti salvati per studente ID ${studenteId}:`, votiDaInviare);
       
       // Svuotiamo i campi dopo il salvataggio
       setVoti(prevVoti => ({
@@ -62,7 +75,7 @@ function InserimentoVoti({ selectedClass }) {
       }));
     }
   };
-
+  
   const mostraVisualizzaVoti = () => {
     setVisualizzazione('visualizza');
   };
