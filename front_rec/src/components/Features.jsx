@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import PropTypes from 'prop-types'; // Importa PropTypes
 import ClassSelector from './ClassSelector';
@@ -7,7 +6,7 @@ import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo comp
 import OrarioLezioni from './OrarioLezioni.jsx';
 import '../css/Features.css';
 
-function Features({ loggedIn }) {
+function Features({ loggedIn, utenteLoggato }) {
   const [selectedClass, setSelectedClass] = useState(null);
   const [showClassSelector, setShowClassSelector] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null); // Aggiunta di una variabile di stato per distinguere le feature
@@ -15,11 +14,11 @@ function Features({ loggedIn }) {
   if (!loggedIn) {
     return <p>Devi effettuare il login per accedere alle funzionalità.</p>;
   }
-  
+
   const handleRegistroClick = () => {
-    setSelectedFeature('registro'); // Quando clicchi su "Registro", imposti la feature selezionata
-    setShowClassSelector(true); // Mostra il selettore di classi
-    setSelectedClass(null); // Resetta la classe selezionata
+    setSelectedFeature('registro');
+    setShowClassSelector(true);
+    setSelectedClass(null);
   };
 
   const handleVotiClick = () => {
@@ -33,6 +32,7 @@ function Features({ loggedIn }) {
     setShowClassSelector(true); // Mostra il selettore di classi
     setSelectedClass(null); // Resetta la classe selezionata
   };
+
   const handleClick = (feature) => {
     alert(`Hai cliccato su: ${feature}`);
   };
@@ -60,25 +60,30 @@ function Features({ loggedIn }) {
           <h3>Argomenti Trattati</h3>
           <p>Annota gli argomenti affrontati durante la lezione.</p>
         </div>
-        
       </div>
 
       <div className="features-content">
-        {showClassSelector && !selectedClass && (
-          <ClassSelector onClassSelect={setSelectedClass} /> // Mostra il selettore di classi
+        {/* Selezione della classe per insegnanti */}
+        {showClassSelector && !selectedClass && utenteLoggato.ruolo === 'insegnante' && (
+          <ClassSelector onClassSelect={setSelectedClass} />
         )}
 
-        {/* Mostra il componente Registro se "Registro" è stato selezionato */}
-        {selectedClass && selectedFeature === 'registro' && (
+        {/* Registro per lo studente loggato */}
+        {utenteLoggato?.ruolo === 'studente' && selectedFeature === 'registro' && (
+          <Registro selectedClass={utenteLoggato.classeId} />
+        )}
+
+        {/* Registro per l'insegnante con la selezione di classe */}
+        {selectedClass && utenteLoggato?.ruolo === 'insegnante' && selectedFeature === 'registro' && (
           <Registro selectedClass={selectedClass} />
         )}
 
-        {/* Mostra il componente InserimentoVoti se "Inserimento Voti" è stato selezionato */}
+        {/* Inserimento voti per l'insegnante */}
         {selectedClass && selectedFeature === 'voti' && (
           <InserimentoVoti selectedClass={selectedClass} />
         )}
 
-        {/* Mostra il componente OrarioLezioni se "Orario Lezioni" è stato selezionato */}
+        {/* Visualizzazione orario lezioni */}
         {selectedClass && selectedFeature === 'orario' && (
           <OrarioLezioni selectedClass={selectedClass} />
         )}
@@ -87,9 +92,15 @@ function Features({ loggedIn }) {
   );
 }
 
-// Definiamo i PropTypes per validare le props
+// Definizione delle PropTypes con `utenteLoggato` richiesto
 Features.propTypes = {
-  loggedIn: PropTypes.bool.isRequired // `loggedIn` deve essere un booleano ed è obbligatorio
+  loggedIn: PropTypes.bool.isRequired,  // Obbligatorio che `loggedIn` sia booleano
+  utenteLoggato: PropTypes.shape({      // Definizione di `utenteLoggato`
+    ruolo: PropTypes.string.isRequired, // Il ruolo dell'utente (studente o insegnante) è obbligatorio
+    nome: PropTypes.string.isRequired,  // Nome dell'utente obbligatorio
+    cognome: PropTypes.string.isRequired, // Cognome dell'utente obbligatorio
+    classeId: PropTypes.number,         // ID della classe dello studente (opzionale per insegnanti)
+  }).isRequired, // L'intero oggetto `utenteLoggato` è richiesto
 };
 
 export default Features;

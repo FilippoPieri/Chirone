@@ -3,11 +3,10 @@ import '../css/Intro.css';
 import { insegnanti, studenti } from './mockdb';
 import PropTypes from 'prop-types';
 
-function Intro({ setLoggedIn, loggedIn }) {
+function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   const [email, setEmail] = useState(''); // Stato per memorizzare l'email
   const [password, setPassword] = useState(''); // Stato per memorizzare la password
   const [error, setError] = useState(''); // Stato per memorizzare l'errore
-  const [insegnanteLoggato, setInsegnanteLoggato] = useState(null); // Stato per memorizzare l'utente loggato
 
   // Funzione per gestire il login
   const handleSubmit = (e) => {
@@ -15,12 +14,12 @@ function Intro({ setLoggedIn, loggedIn }) {
 
     // Cerca l'utente sia tra insegnanti che studenti
     const utente = insegnanti.find(user => user.email === email && user.password === password) 
-                 || studenti.find(user => user.email === email && user.password === password);
+                || studenti.find(user => user.email === email && user.password === password);
 
     if (utente) {
       // Login riuscito
-      setLoggedIn(true); // Aggiorna lo stato di login nel genitore (App)
-      setInsegnanteLoggato(utente); // Memorizza l'insegnante loggato
+      setLoggedIn(true); // Aggiorna lo stato di login nel componente genitore (App)
+      setUtenteLoggato(utente); // Memorizza l'utente loggato (insegnante o studente)
       setError(''); // Reset dell'errore
     } else {
       // Login fallito
@@ -30,20 +29,19 @@ function Intro({ setLoggedIn, loggedIn }) {
 
   // Funzione per gestire il logout
   const handleLogout = () => {
-    setLoggedIn(false); // Reimposta lo stato di login nel genitore
-    setInsegnanteLoggato(null); // Svuota l'insegnante loggato
+    setLoggedIn(false); // Reimposta lo stato di login nel componente genitore
+    setUtenteLoggato(null); // Svuota l'utente loggato
     setEmail(''); // Reimposta il campo email
     setPassword(''); // Reimposta il campo password
   };
 
-
   return (
     <section className="intro">
       <h2>Accedi al Registro Scolastico Online</h2>
-      {loggedIn && insegnanteLoggato ? (
+      {loggedIn ? (
         // Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire
         <div>
-          <p>Benvenuto, {insegnanteLoggato.nome} {insegnanteLoggato.cognome}!</p>
+          <p>Benvenuto, {utenteLoggato?.nome} {utenteLoggato?.cognome}!</p>
           <button onClick={handleLogout} className="cta-button">Esci</button> {/* Bottone per il logout */}
         </div>
       ) : (
@@ -79,10 +77,15 @@ function Intro({ setLoggedIn, loggedIn }) {
   );
 }
 
-// Definiamo i PropTypes per validare le props
+// Definizione delle PropTypes
 Intro.propTypes = {
   setLoggedIn: PropTypes.func.isRequired,  // `setLoggedIn` deve essere una funzione ed è obbligatorio
-  loggedIn: PropTypes.bool.isRequired      // `loggedIn` deve essere un booleano ed è obbligatorio
+  loggedIn: PropTypes.bool.isRequired,      // `loggedIn` deve essere un booleano ed è obbligatorio
+  setUtenteLoggato: PropTypes.func.isRequired,  // `setUtenteLoggato` è una funzione obbligatoria per aggiornare l'utente loggato
+  utenteLoggato: PropTypes.shape({
+    nome: PropTypes.string,
+    cognome: PropTypes.string
+  }),
 };
 
 export default Intro;
