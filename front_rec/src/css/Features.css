@@ -1,53 +1,53 @@
 .features-container {
-    display: flex;
-    justify-content: flex-start;
-    margin: 10px 0;
-  }
-  
-  .features-list {
-    width: 25%;
-    padding-right: 20px;
-  }
-  
-  .feature {
-    background-color: white;
-    padding: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .feature:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    background-color: #f9f9f9;
-  }
-  
-  .feature h3 {
-    font-size: 15px;
-    margin-bottom: 10px;
-  }
-  
-  .feature p {
-    font-size: 10px;
-  }
-  
-  .features-content {
-    width: 75%;
-    padding: 20px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  /* Aggiorna anche ClassSelector.css */
-  .class-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-  
-  .class-block {
-    width: calc(33.33% - 20px);
-    margin: 10px;
-  }
+  display: flex;
+  justify-content: flex-start;
+  margin: 10px 0;
+}
+
+.features-list {
+  width: 25%;
+  padding-right: 20px;
+}
+
+.feature {
+  background-color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.feature:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-color: #f9f9f9;
+}
+
+.feature h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  font-size: 10px;
+}
+
+.features-content {
+  width: 75%;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Aggiorna anche ClassSelector.css */
+.class-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.class-block {
+  width: calc(33.33% - 20px);
+  margin: 10px;
+}

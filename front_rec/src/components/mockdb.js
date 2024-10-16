@@ -18,15 +18,15 @@ export const classi = [
 
 // Studenti
 export const studenti = [
-    { id: 1, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-06-15', classeId: 1 },
-    { id: 2, nome: 'Giulia', cognome: 'Bianchi', dataNascita: '2009-09-21', classeId: 2 },
-    { id: 3, nome: 'Luca', cognome: 'Verdi', dataNascita: '2011-01-12', classeId: 1 },
-    { id: 4, nome: 'Sofia', cognome: 'Neri', dataNascita: '2010-03-05', classeId: 2 },
-    { id: 5, nome: 'Marco', cognome: 'Gialli', dataNascita: '2012-08-22', classeId: 3 },
-    { id: 6, nome: 'Alice', cognome: 'Blu', dataNascita: '2011-11-14', classeId: 4 },
-    { id: 7, nome: 'Davide', cognome: 'Marroni', dataNascita: '2010-09-11', classeId: 5 },
-    { id: 8, nome: 'Sara', cognome: 'Viola', dataNascita: '2009-02-13', classeId: 6 },
-    { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1 },
+    { id: 1, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-06-15', classeId: 1, email: 'mario@rossi.com', password: 'mario123', ruolo: 'studente' },
+    { id: 2, nome: 'Giulia', cognome: 'Bianchi', dataNascita: '2009-09-21', classeId: 2, email: 'giulia@bianchi.com', password: 'giulia123', ruolo: 'studente' },
+    { id: 3, nome: 'Luca', cognome: 'Verdi', dataNascita: '2011-01-12', classeId: 1, email: 'luca@verdi.com', password: 'luca123', ruolo: 'studente' },
+    { id: 4, nome: 'Sofia', cognome: 'Neri', dataNascita: '2010-03-05', classeId: 2, email: 'sofia@neri.com', password: 'sofia123', ruolo: 'studente' },
+    { id: 5, nome: 'Marco', cognome: 'Gialli', dataNascita: '2012-08-22', classeId: 3, email: 'marco@gialli.com', password: 'marco123', ruolo: 'studente' },
+    { id: 6, nome: 'Alice', cognome: 'Blu', dataNascita: '2011-11-14', classeId: 4, email: 'alice@blu.com', password: 'alice123', ruolo: 'studente' },
+    { id: 7, nome: 'Davide', cognome: 'Marroni', dataNascita: '2010-09-11', classeId: 5, email: 'davide@marroni.com', password: 'davide123', ruolo: 'studente' },
+    { id: 8, nome: 'Sara', cognome: 'Viola', dataNascita: '2009-02-13', classeId: 6, email: 'sara@viola.com', password: 'sara123', ruolo: 'studente' },
+    { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1, email: 'alessandro@verde.com', password: 'alessandro123', ruolo: 'studente' }
 ];
 
 // Voti
@@ -52,14 +52,14 @@ export const materie = [
 
 // Insegnanti
 export const insegnanti = [
-    { id: 1, nome: 'Lucia', cognome: 'Verdi', materia: 'Matematica', scuolaId: 1, email: 'lucia@verdi', password: 'lucia123' },
-    { id: 2, nome: 'Giovanni', cognome: 'Neri', materia: 'Italiano', scuolaId: 2, email: 'giovanni@neri', password: 'giovanni123' },
-    { id: 3, nome: 'Paolo', cognome: 'Bianchi', materia: 'Matematica', scuolaId: 1, email: 'paolo@bianchi', password: 'paolo123' },
-    { id: 4, nome: 'Anna', cognome: 'Rossi', materia: 'Italiano', scuolaId: 2, email: 'anna@rossi', password: 'anna123' },
-    { id: 5, nome: 'Chiara', cognome: 'Gallo', materia: 'Scienze', scuolaId: 1, email: 'chiara@gallo', password: 'chiara123' },
-    { id: 6, nome: 'Marco', cognome: 'Bianchi', materia: 'Matematica', scuolaId: 1, email: 'marco@bianchi', password: 'marco123' },
-    { id: 7, nome: 'Marco', cognome: 'Gialli', materia: 'Ed.Fisica', scuolaId: 1, email: 'marco@gialli', password: 'marco123' },
-    { id: 8, nome: 'Stefania', cognome: 'Verdi', materia: 'Educazione Fisica', scuolaId: 1, email: 'stefania@verdi', password: 'stefania123' },
+    { id: 1, nome: 'Lucia', cognome: 'Verdi', materia: 'Matematica', scuolaId: 1, email: 'lucia@verdi', password: 'lucia123', ruolo: 'insegnante'  },
+    { id: 2, nome: 'Giovanni', cognome: 'Neri', materia: 'Italiano', scuolaId: 2, email: 'giovanni@neri', password: 'giovanni123', ruolo: 'insegnante'  },
+    { id: 3, nome: 'Paolo', cognome: 'Bianchi', materia: 'Matematica', scuolaId: 1, email: 'paolo@bianchi', password: 'paolo123', ruolo: 'insegnante'  },
+    { id: 4, nome: 'Anna', cognome: 'Rossi', materia: 'Italiano', scuolaId: 2, email: 'anna@rossi', password: 'anna123', ruolo: 'insegnante'  },
+    { id: 5, nome: 'Chiara', cognome: 'Gallo', materia: 'Scienze', scuolaId: 1, email: 'chiara@gallo', password: 'chiara123', ruolo: 'insegnante'  },
+    { id: 6, nome: 'Marco', cognome: 'Bianchi', materia: 'Matematica', scuolaId: 1, email: 'marco@bianchi', password: 'marco123', ruolo: 'insegnante'  },
+    { id: 7, nome: 'Marco', cognome: 'Gialli', materia: 'Ed.Fisica', scuolaId: 1, email: 'marco@gialli', password: 'marco123', ruolo: 'insegnante'  },
+    { id: 8, nome: 'Stefania', cognome: 'Verdi', materia: 'Educazione Fisica', scuolaId: 1, email: 'stefania@verdi', password: 'stefania123', ruolo: 'insegnante'  },
 ];
 
 // Presenze

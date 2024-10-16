@@ -1,16 +1,21 @@
 
 import { useState } from 'react';
+import PropTypes from 'prop-types'; // Importa PropTypes
 import ClassSelector from './ClassSelector';
 import Registro from './Registro.jsx';
 import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo componente per inserire i voti
 import OrarioLezioni from './OrarioLezioni.jsx';
 import '../css/Features.css';
 
-function Features() {
+function Features({ loggedIn }) {
   const [selectedClass, setSelectedClass] = useState(null);
   const [showClassSelector, setShowClassSelector] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null); // Aggiunta di una variabile di stato per distinguere le feature
 
+  if (!loggedIn) {
+    return <p>Devi effettuare il login per accedere alle funzionalità.</p>;
+  }
+  
   const handleRegistroClick = () => {
     setSelectedFeature('registro'); // Quando clicchi su "Registro", imposti la feature selezionata
     setShowClassSelector(true); // Mostra il selettore di classi
@@ -81,5 +86,10 @@ function Features() {
     </section>
   );
 }
+
+// Definiamo i PropTypes per validare le props
+Features.propTypes = {
+  loggedIn: PropTypes.bool.isRequired // `loggedIn` deve essere un booleano ed è obbligatorio
+};
 
 export default Features;
