@@ -79,9 +79,9 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
 
 // Definizione delle PropTypes
 Intro.propTypes = {
-  setLoggedIn: PropTypes.func.isRequired,  // `setLoggedIn` deve essere una funzione ed è obbligatorio
-  loggedIn: PropTypes.bool.isRequired,      // `loggedIn` deve essere un booleano ed è obbligatorio
-  setUtenteLoggato: PropTypes.func.isRequired,  // `setUtenteLoggato` è una funzione obbligatoria per aggiornare l'utente loggato
+  setLoggedIn: PropTypes.func.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  setUtenteLoggato: PropTypes.func.isRequired,
   utenteLoggato: PropTypes.shape({
     nome: PropTypes.string,
     cognome: PropTypes.string
