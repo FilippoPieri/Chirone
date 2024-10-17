@@ -1,0 +1,29 @@
+.registro-studente {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .registro-studente h3 {
+    margin-bottom: 20px;
+  }
+  
+  .registro-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .registro-table th, .registro-table td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  
+  .registro-table th {
+    background-color: #f0f0f0;
+  }
+  
+  .registro-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }

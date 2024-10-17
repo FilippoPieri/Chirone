@@ -26,7 +26,9 @@ export const studenti = [
     { id: 6, nome: 'Alice', cognome: 'Blu', dataNascita: '2011-11-14', classeId: 4, email: 'alice@blu.com', password: 'alice123', ruolo: 'studente' },
     { id: 7, nome: 'Davide', cognome: 'Marroni', dataNascita: '2010-09-11', classeId: 5, email: 'davide@marroni.com', password: 'davide123', ruolo: 'studente' },
     { id: 8, nome: 'Sara', cognome: 'Viola', dataNascita: '2009-02-13', classeId: 6, email: 'sara@viola.com', password: 'sara123', ruolo: 'studente' },
-    { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1, email: 'alessandro@verde.com', password: 'alessandro123', ruolo: 'studente' }
+    { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1, email: 'alessandro@verde.com', password: 'alessandro123', ruolo: 'studente' },
+    { id: 10, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-07-15', classeId: 1, email: 'mario.@rossi.com', password: 'mario.123', ruolo: 'studente' },
+    { id: 11, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-07-15', classeId: 1, email: 'mario.@rossi.com', password: 'mario.123', ruolo: 'studente' }
 ];
 
 // Voti
@@ -64,7 +66,7 @@ export const insegnanti = [
 
 // Presenze
 export const presenze = [
-    { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '13:00' },
+    { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '10:00', orarioUscita: '13:00' },
     { id: 2, studenteId: 2, data: '2023-09-14', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00' },
     { id: 3, studenteId: 3, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '12:30' },
     { id: 4, studenteId: 4, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:30', orarioUscita: '12:00' },
