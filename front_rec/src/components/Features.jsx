@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types'; // Importa PropTypes
 import ClassSelector from './ClassSelector';
 import Registro from './Registro.jsx';
+import RegistroStudente from './RegistroStudente'; // Importa il nuovo componente
 import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo componente per inserire i voti
 import OrarioLezioni from './OrarioLezioni.jsx';
 import '../css/Features.css';
@@ -11,15 +12,24 @@ function Features({ loggedIn, utenteLoggato }) {
   const [showClassSelector, setShowClassSelector] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null); // Aggiunta di una variabile di stato per distinguere le feature
 
+  console.log(utenteLoggato); // Controlla se utenteLoggato ha il ruolo corretto
+
   if (!loggedIn) {
     return <p>Devi effettuare il login per accedere alle funzionalità.</p>;
   }
 
   const handleRegistroClick = () => {
     setSelectedFeature('registro');
-    setShowClassSelector(true);
-    setSelectedClass(null);
+    // Se l'utente è uno studente, non mostrare il selettore di classi
+    if (utenteLoggato?.ruolo === 'studente') {
+      setShowClassSelector(false);
+    } else {
+      // Se è un insegnante, mostra il selettore di classi
+      setShowClassSelector(true);
+      setSelectedClass(null); // Resetta la classe selezionata
+    }
   };
+
 
   const handleVotiClick = () => {
     setSelectedFeature('voti'); // Quando clicchi su "Inserimento Voti", imposti la feature selezionata
@@ -63,27 +73,27 @@ function Features({ loggedIn, utenteLoggato }) {
       </div>
 
       <div className="features-content">
-        {/* Selezione della classe per insegnanti */}
+        {/* Studente: Visualizza direttamente il RegistroStudente */}
+        {utenteLoggato?.ruolo === 'studente' && selectedFeature === 'registro' && (
+          <RegistroStudente utenteLoggato={utenteLoggato} />
+        )}
+
+        {/* Insegnante: Mostra il selettore di classi prima del registro */}
         {showClassSelector && !selectedClass && utenteLoggato.ruolo === 'insegnante' && (
           <ClassSelector onClassSelect={setSelectedClass} />
         )}
 
-        {/* Registro per lo studente loggato */}
-        {utenteLoggato?.ruolo === 'studente' && selectedFeature === 'registro' && (
-          <Registro selectedClass={utenteLoggato.classeId} />
-        )}
-
-        {/* Registro per l'insegnante con la selezione di classe */}
+        {/* Insegnante: Mostra il registro della classe selezionata */}
         {selectedClass && utenteLoggato?.ruolo === 'insegnante' && selectedFeature === 'registro' && (
           <Registro selectedClass={selectedClass} />
         )}
 
-        {/* Inserimento voti per l'insegnante */}
+        {/* Inserimento voti per insegnanti */}
         {selectedClass && selectedFeature === 'voti' && (
           <InserimentoVoti selectedClass={selectedClass} />
         )}
 
-        {/* Visualizzazione orario lezioni */}
+        {/* Orario delle lezioni per insegnanti */}
         {selectedClass && selectedFeature === 'orario' && (
           <OrarioLezioni selectedClass={selectedClass} />
         )}
