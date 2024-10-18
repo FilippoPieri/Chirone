@@ -18,7 +18,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
 
     if (utente) {
       // Login riuscito
-      setLoggedIn(true); // Aggiorna lo stato di login nel componente genitore (App)
+      setLoggedIn(true); // Aggiorna lo stato di login
       setUtenteLoggato(utente); // Memorizza l'utente loggato (insegnante o studente)
       setError(''); // Reset dell'errore
     } else {
@@ -38,11 +38,12 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   return (
     <section className="intro">
       <h2>Accedi al Registro Scolastico Online</h2>
+
+      {/* Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire */}
       {loggedIn ? (
-        // Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire
         <div>
-          <p>Benvenuto, {utenteLoggato?.nome} {utenteLoggato?.cognome}!</p>
-          <button onClick={handleLogout} className="cta-button">Esci</button> {/* Bottone per il logout */}
+          <p>Benvenuto {utenteLoggato?.nome} {utenteLoggato?.cognome}!</p>
+          <button onClick={handleLogout} className="cta-button">Esci</button>
         </div>
       ) : (
         // Altrimenti, mostra il form di login
@@ -69,7 +70,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               placeholder="Inserisci la tua password"
             />
           </div>
-          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Mostra errore se email o password sono errati */}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <button type="submit" className="cta-button">Accedi</button>
         </form>
       )}
@@ -77,7 +78,6 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   );
 }
 
-// Definizione delle PropTypes
 Intro.propTypes = {
   setLoggedIn: PropTypes.func.isRequired,
   loggedIn: PropTypes.bool.isRequired,

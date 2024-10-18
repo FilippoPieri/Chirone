@@ -1,50 +1,46 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types'; // Importa PropTypes
+import PropTypes from 'prop-types';
 import ClassSelector from './ClassSelector';
-import Registro from './Registro.jsx';
-import RegistroStudente from './RegistroStudente'; // Importa il nuovo componente
-import InserimentoVoti from './InserimentoVoti.jsx'; // Importiamo il nuovo componente per inserire i voti
-import OrarioLezioni from './OrarioLezioni.jsx';
+import Registro from './Registro';
+import InserimentoVoti from './InserimentoVoti';
+import OrarioLezioni from './OrarioLezioni';
+import { presenze } from './mockdb'; // Importiamo il mockdb dove salviamo i dati delle presenze
 import '../css/Features.css';
 
-function Features({ loggedIn, utenteLoggato }) {
+function Features() { 
   const [selectedClass, setSelectedClass] = useState(null);
-  const [showClassSelector, setShowClassSelector] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState(null); // Aggiunta di una variabile di stato per distinguere le feature
-
-  console.log(utenteLoggato); // Controlla se utenteLoggato ha il ruolo corretto
-
-  if (!loggedIn) {
-    return <p>Devi effettuare il login per accedere alle funzionalità.</p>;
-  }
+  const [selectedFeature, setSelectedFeature] = useState(null);
 
   const handleRegistroClick = () => {
     setSelectedFeature('registro');
-    // Se l'utente è uno studente, non mostrare il selettore di classi
-    if (utenteLoggato?.ruolo === 'studente') {
-      setShowClassSelector(false);
-    } else {
-      // Se è un insegnante, mostra il selettore di classi
-      setShowClassSelector(true);
-      setSelectedClass(null); // Resetta la classe selezionata
-    }
+    setSelectedClass(null); // Resetta la classe selezionata
   };
 
-
   const handleVotiClick = () => {
-    setSelectedFeature('voti'); // Quando clicchi su "Inserimento Voti", imposti la feature selezionata
-    setShowClassSelector(true); // Mostra il selettore di classi
-    setSelectedClass(null); // Resetta la classe selezionata
+    setSelectedFeature('voti');
+    setSelectedClass(null);
   };
 
   const handleOrarioClick = () => {
-    setSelectedFeature('orario'); // Quando clicchi su "OrarioLezioni", imposti la feature selezionata
-    setShowClassSelector(true); // Mostra il selettore di classi
-    setSelectedClass(null); // Resetta la classe selezionata
+    setSelectedFeature('orario');
+    setSelectedClass(null);
   };
 
-  const handleClick = (feature) => {
-    alert(`Hai cliccato su: ${feature}`);
+   // Definizione della funzione handleSubmit
+   const handleSubmit = (data) => {
+    // Aggiorna il mock database delle presenze
+    data.forEach((presenza) => {
+      presenze.push({
+        id: presenze.length + 1, // Genera un nuovo ID per ogni presenza
+        studenteId: presenza.studenteId,
+        data: new Date().toISOString().split('T')[0], // Data odierna
+        stato: presenza.presenza,
+        orarioEntrata: presenza.entrataRitardo || 'N/A',
+        orarioUscita: presenza.uscitaAnticipata || 'N/A'
+      });
+    });
+
+    console.log("Dati inviati e salvati nel mock database:", presenze);
   };
 
   return (
@@ -52,65 +48,57 @@ function Features({ loggedIn, utenteLoggato }) {
       <div className="features-list">
         <div className="feature" onClick={handleRegistroClick}>
           <h3>Registro</h3>
-          <p>Gestisci rapidamente il registro scolastico.</p>
+          <p>Gestisci il registro della classe.</p>
         </div>
         <div className="feature" onClick={handleVotiClick}>
           <h3>Inserimento Voti</h3>
-          <p>Inserisci e visualizza i voti degli studenti.</p>
+          <p>Inserisci i voti degli studenti.</p>
         </div>
         <div className="feature" onClick={handleOrarioClick}>
           <h3>Orario Lezioni</h3>
-          <p>Visualizza l&#39;orario delle lezioni.</p>
+          <p>Gestisci l&#39;orario delle lezioni.</p>
         </div>
-        <div className="feature" onClick={() => handleClick('Agenda')}>
+        <div className="feature" onClick={handleOrarioClick}>
           <h3>Agenda</h3>
-          <p>Inserisci le annotazioni riguardanti la classe.</p>
+          <p>Note,Compiti,Ecc...</p>
         </div>
-        <div className="feature" onClick={() => handleClick('Argomenti Trattati')}>
-          <h3>Argomenti Trattati</h3>
-          <p>Annota gli argomenti affrontati durante la lezione.</p>
+        <div className="feature" onClick={handleOrarioClick}>
+          <h3>Argomenti trattati</h3>
+          <p>Argomenti trattati dall&#39;insegnante</p>
         </div>
       </div>
 
       <div className="features-content">
-        {/* Studente: Visualizza direttamente il RegistroStudente */}
-        {utenteLoggato?.ruolo === 'studente' && selectedFeature === 'registro' && (
-          <RegistroStudente utenteLoggato={utenteLoggato} />
-        )}
-
-        {/* Insegnante: Mostra il selettore di classi prima del registro */}
-        {showClassSelector && !selectedClass && utenteLoggato.ruolo === 'insegnante' && (
+        {/* Se l'insegnante ha selezionato una feature, mostra il componente relativo */}
+        {selectedFeature === 'registro' && !selectedClass && (
           <ClassSelector onClassSelect={setSelectedClass} />
         )}
-
-        {/* Insegnante: Mostra il registro della classe selezionata */}
-        {selectedClass && utenteLoggato?.ruolo === 'insegnante' && selectedFeature === 'registro' && (
-          <Registro selectedClass={selectedClass} />
+        {selectedClass && selectedFeature === 'registro' && (
+          // Converte 'anno' in stringa
+          <Registro selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} onSubmit={handleSubmit} />
         )}
 
-        {/* Inserimento voti per insegnanti */}
+        {selectedFeature === 'voti' && !selectedClass && (
+          <ClassSelector onClassSelect={setSelectedClass} />
+        )}
         {selectedClass && selectedFeature === 'voti' && (
-          <InserimentoVoti selectedClass={selectedClass} />
+          // Converte 'anno' in stringa prima di passare a InserimentoVoti
+          <InserimentoVoti selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} />
         )}
 
-        {/* Orario delle lezioni per insegnanti */}
-        {selectedClass && selectedFeature === 'orario' && (
-          <OrarioLezioni selectedClass={selectedClass} />
-        )}
+        {selectedFeature === 'orario' && !selectedClass  && <ClassSelector onClassSelect={setSelectedClass} />}
+        {selectedClass && selectedFeature === 'orario' && <OrarioLezioni selectedClass={selectedClass} />}
       </div>
     </section>
   );
 }
 
-// Definizione delle PropTypes con `utenteLoggato` richiesto
 Features.propTypes = {
-  loggedIn: PropTypes.bool.isRequired,  // Obbligatorio che `loggedIn` sia booleano
-  utenteLoggato: PropTypes.shape({      // Definizione di `utenteLoggato`
-    ruolo: PropTypes.string.isRequired, // Il ruolo dell'utente (studente o insegnante) è obbligatorio
-    nome: PropTypes.string.isRequired,  // Nome dell'utente obbligatorio
-    cognome: PropTypes.string.isRequired, // Cognome dell'utente obbligatorio
-    classeId: PropTypes.number,         // ID della classe dello studente (opzionale per insegnanti)
-  }).isRequired, // L'intero oggetto `utenteLoggato` è richiesto
-};
+    utenteLoggato: PropTypes.shape({
+      ruolo: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+      cognome: PropTypes.string.isRequired,
+    }).isRequired,
+  };
 
 export default Features;
