@@ -90,25 +90,31 @@ function Registro({ selectedClass, onSubmit }) {
                 <td>{studente.nome} {studente.cognome}</td>
                 <td>{studente.dataNascita}</td>
                 <td>
-                  <select 
-                    value={stato}
-                    onChange={(e) => handlePresenzaChange(studente.id, e.target.value)}
-                  >
+                <select 
+                  id={`presenza-${studente.id}`}  // Aggiungi id univoco
+                  name={`presenza-${studente.id}`}  // Aggiungi name univoco
+                  value={stato}
+                  onChange={(e) => handlePresenzaChange(studente.id, e.target.value)}
+                >
                     <option value="Presente">Presente</option>
                     <option value="Assente">Assente</option>
                   </select>
                 </td>
                 <td>
-                  <input 
-                    type="time" 
-                    onChange={(e) => handleEntrataChange(studente.id, e.target.value)} 
-                  />
+                <input 
+                  type="time" 
+                  id={`entrata-${studente.id}`}  // Aggiungi id univoco
+                  name={`entrata-${studente.id}`}  // Aggiungi name univoco
+                  onChange={(e) => handleEntrataChange(studente.id, e.target.value)} 
+                />
                 </td>
                 <td>
-                  <input 
-                    type="time" 
-                    onChange={(e) => handleUscitaChange(studente.id, e.target.value)} 
-                  />
+                <input 
+                  type="time" 
+                  id={`uscita-${studente.id}`}  // Aggiungi id univoco
+                  name={`uscita-${studente.id}`}  // Aggiungi name univoco
+                  onChange={(e) => handleUscitaChange(studente.id, e.target.value)} 
+                />
                 </td>
               </tr>
             );

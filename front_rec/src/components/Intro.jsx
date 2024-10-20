@@ -57,6 +57,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="Inserisci la tua email"
+              autoComplete="email"
             />
           </div>
           <div className="form-group">
@@ -68,6 +69,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="Inserisci la tua password"
+              autoComplete="current-password"
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}

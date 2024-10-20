@@ -87,6 +87,8 @@ function OrarioLezioni({ selectedClass }) {
                   {giorniSettimana.map(giorno => (
                     <td key={giorno}>
                       <select
+                        id={`orario-${giorno}-${ora}`} // Aggiungi id univoco
+                        name={`orario-${giorno}-${ora}`} // Aggiungi name univoco
                         value={orario[giorno][ora]}
                         onChange={(e) => handleOrarioChange(giorno, ora, e.target.value)}
                       >

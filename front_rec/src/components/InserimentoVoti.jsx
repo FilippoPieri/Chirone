@@ -116,6 +116,8 @@ function InserimentoVoti({ selectedClass }) {
                       type="number" 
                       min="0" 
                       max="10" 
+                      id={`scritto-${studente.id}`} // Aggiungi id univoco
+                      name={`scritto-${studente.id}`} // Aggiungi name univoco
                       placeholder="Inserisci voto" 
                       value={voti[studente.id]?.scritto || ''}
                       onChange={(e) => handleVotoChange(studente.id, 'scritto', e.target.value)}
@@ -126,6 +128,8 @@ function InserimentoVoti({ selectedClass }) {
                       type="number" 
                       min="0" 
                       max="10" 
+                      id={`orale-${studente.id}`} // Aggiungi id univoco
+                      name={`orale-${studente.id}`} // Aggiungi name univoco
                       placeholder="Inserisci voto" 
                       value={voti[studente.id]?.orale || ''}
                       onChange={(e) => handleVotoChange(studente.id, 'orale', e.target.value)}
@@ -138,6 +142,8 @@ function InserimentoVoti({ selectedClass }) {
                     </button>
                     {mostraAppunti[studente.id] && (
                       <textarea 
+                        id={`appunti-${studente.id}`} // Aggiungi id univoco
+                        name={`appunti-${studente.id}`} // Aggiungi name univoco
                         placeholder="Scrivi appunti"
                         value={voti[studente.id]?.appunti || ''}
                         onChange={(e) => handleAppuntiChange(studente.id, e.target.value)}
