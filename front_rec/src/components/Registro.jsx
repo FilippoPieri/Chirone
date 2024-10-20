@@ -83,7 +83,7 @@ function Registro({ selectedClass, onSubmit }) {
         <tbody>
           {studentiClasse.map(studente => {
             const stato = statoPresenze[studente.id] || "Presente"; // Stato predefinito "Presente"
-            const rigaClasse = stato === "Presente" ? 'riga-verde' : stato === "Assente" ? 'riga-rossa' : ''; // Assegna la classe in base allo stato
+            const rigaClasse = stato === "Presente" ? 'riga-verde' : 'riga-rossa'; // Assegna la classe in base allo stato
 
             return (
               <tr key={studente.id} className={rigaClasse}>
