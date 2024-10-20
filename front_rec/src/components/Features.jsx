@@ -26,6 +26,11 @@ function Features() {
     setSelectedClass(null);
   };
 
+  const handleBackClick = () => {
+    setSelectedFeature(null); // Torna alla schermata principale
+    setSelectedClass(null); // Resetta la classe selezionata
+  };
+
    // Definizione della funzione handleSubmit
    const handleSubmit = (data) => {
     // Aggiorna il mock database delle presenze
@@ -69,36 +74,39 @@ function Features() {
       </div>
 
       <div className="features-content">
-        {/* Se l'insegnante ha selezionato una feature, mostra il componente relativo */}
-        {selectedFeature === 'registro' && !selectedClass && (
-          <ClassSelector onClassSelect={setSelectedClass} />
+        {/* Mostra il pulsante "Torna indietro" solo se una feature è stata selezionata */}
+        {selectedFeature && !selectedClass && (
+          <>
+            <button onClick={handleBackClick} className="back-button">← Torna indietro</button>
+            <ClassSelector onClassSelect={setSelectedClass} />
+          </>
         )}
+
+        {/* Mostra il componente Registro solo dopo aver selezionato una classe */}
         {selectedClass && selectedFeature === 'registro' && (
-          // Converte 'anno' in stringa
           <Registro selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} onSubmit={handleSubmit} />
         )}
 
-        {selectedFeature === 'voti' && !selectedClass && (
-          <ClassSelector onClassSelect={setSelectedClass} />
-        )}
+        {/* Mostra il componente Inserimento Voti solo dopo aver selezionato una classe */}
         {selectedClass && selectedFeature === 'voti' && (
-          // Converte 'anno' in stringa prima di passare a InserimentoVoti
           <InserimentoVoti selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} />
         )}
 
-        {selectedFeature === 'orario' && !selectedClass  && <ClassSelector onClassSelect={setSelectedClass} />}
-        {selectedClass && selectedFeature === 'orario' && <OrarioLezioni selectedClass={selectedClass} />}
+        {/* Mostra il componente Orario Lezioni solo dopo aver selezionato una classe */}
+        {selectedClass && selectedFeature === 'orario' && (
+          <OrarioLezioni selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} />
+        )}
       </div>
     </section>
   );
 }
 
 Features.propTypes = {
-    utenteLoggato: PropTypes.shape({
-      ruolo: PropTypes.string.isRequired,
-      nome: PropTypes.string.isRequired,
-      cognome: PropTypes.string.isRequired,
-    }).isRequired,
-  };
+  utenteLoggato: PropTypes.shape({
+    ruolo: PropTypes.string.isRequired,
+    nome: PropTypes.string.isRequired,
+    cognome: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default Features;
