@@ -44,6 +44,7 @@ function Registro({ selectedClass, onSubmit }) {
     const presenzeDaInviare = studentiClasse.map(studente => ({
       nome: studente.nome,
       cognome: studente.cognome,
+      dataNascita: studente.dataNascita,
       presenza: statoPresenze[studente.id] || "Presente", // Predefinito a "Presente"
       entrataRitardo: entrataRitardo[studente.id] || "",
       uscitaAnticipata: uscitaAnticipata[studente.id] || ""
