@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <Header />
       <main>
-        {/* Se l'utente non è loggato, mostra il componente di login */}
+        {/* Mantieni sempre visibile il componente Intro */}
         <Intro 
           setLoggedIn={setLoggedIn} 
           loggedIn={loggedIn} 
@@ -27,13 +27,16 @@ function App() {
         />
 
         {/* Se l'utente è loggato, mostra il componente corretto */}
-        {loggedIn && utenteLoggato ? (
+        {loggedIn && utenteLoggato && (
           utenteLoggato.ruolo === 'insegnante' ? (
             <Features utenteLoggato={utenteLoggato} />
           ) : (
             <FeaturesStudenti utenteLoggato={utenteLoggato} />
           )
-        ) : (
+        )}
+
+        {/* Se nessun utente è loggato, mostra un messaggio */}
+        {!loggedIn && !utenteLoggato && (
           <p>Effettua il login per accedere alle funzionalità.</p>
         )}
       </main>

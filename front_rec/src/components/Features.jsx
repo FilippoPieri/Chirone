@@ -7,7 +7,7 @@ import OrarioLezioni from './OrarioLezioni';
 import { presenze } from './mockdb'; // Importiamo il mockdb dove salviamo i dati delle presenze
 import '../css/Features.css';
 
-function Features() { 
+function Features({ utenteLoggato }) { 
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
 
@@ -30,6 +30,11 @@ function Features() {
     setSelectedFeature(null); // Torna alla schermata principale
     setSelectedClass(null); // Resetta la classe selezionata
   };
+
+   // Aggiungiamo un controllo per assicurarci che `utenteLoggato` esista
+   if (!utenteLoggato) {
+    return <p>Errore: Nessun utente loggato.</p>;
+  }
 
    // Definizione della funzione handleSubmit
    const handleSubmit = (data) => {
@@ -74,27 +79,28 @@ function Features() {
       </div>
 
       <div className="features-content">
-        {/* Mostra il pulsante "Torna indietro" solo se una feature è stata selezionata */}
+        {/* Mostra il pulsante "Torna indietro" se è stata selezionata una funzionalità */}
         {selectedFeature && !selectedClass && (
           <>
             <button onClick={handleBackClick} className="back-button">← Torna indietro</button>
-            <ClassSelector onClassSelect={setSelectedClass} />
+            {/* Passiamo `utenteLoggato` a `ClassSelector` */}
+            <ClassSelector onClassSelect={setSelectedClass} insegnanteLoggato={utenteLoggato} />
           </>
         )}
 
-        {/* Mostra il componente Registro solo dopo aver selezionato una classe */}
+        {/* Mostra il componente Registro se è selezionata la classe e la funzionalità "registro" */}
         {selectedClass && selectedFeature === 'registro' && (
-          <Registro selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} onSubmit={handleSubmit} />
+          <Registro selectedClass={selectedClass} />
         )}
 
-        {/* Mostra il componente Inserimento Voti solo dopo aver selezionato una classe */}
+        {/* Mostra il componente Inserimento Voti se è selezionata la classe e la funzionalità "voti" */}
         {selectedClass && selectedFeature === 'voti' && (
-          <InserimentoVoti selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} />
+          <InserimentoVoti selectedClass={selectedClass} />
         )}
 
-        {/* Mostra il componente Orario Lezioni solo dopo aver selezionato una classe */}
+        {/* Mostra il componente Orario Lezioni se è selezionata la classe e la funzionalità "orario" */}
         {selectedClass && selectedFeature === 'orario' && (
-          <OrarioLezioni selectedClass={{ ...selectedClass, anno: String(selectedClass.anno) }} />
+          <OrarioLezioni selectedClass={selectedClass} />
         )}
       </div>
     </section>
@@ -103,9 +109,10 @@ function Features() {
 
 Features.propTypes = {
   utenteLoggato: PropTypes.shape({
-    ruolo: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired, // L'insegnante loggato deve avere un ID
     nome: PropTypes.string.isRequired,
     cognome: PropTypes.string.isRequired,
+    ruolo: PropTypes.string.isRequired,
   }).isRequired,
 };
 
