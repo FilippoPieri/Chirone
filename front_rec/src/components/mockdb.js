@@ -66,12 +66,12 @@ export const insegnanti = [
 
 // Presenze
 export const presenze = [
-    { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '10:00', orarioUscita: '13:00' },
-    { id: 2, studenteId: 2, data: '2023-09-14', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00' },
-    { id: 3, studenteId: 3, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '12:30' },
-    { id: 4, studenteId: 4, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:30', orarioUscita: '12:00' },
-    { id: 5, studenteId: 5, data: '2023-09-16', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00' },
-    { id: 6, studenteId: 6, data: '2023-09-16', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '13:00' },
+    { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '10:00', orarioUscita: '13:00', giustificazioneConfermata: false },
+    { id: 2, studenteId: 2, data: '2023-09-14', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00', giustificazioneConfermata: true  },
+    { id: 3, studenteId: 3, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '12:30', giustificazioneConfermata: false },
+    { id: 4, studenteId: 4, data: '2023-09-15', stato: 'Presente', orarioEntrata: '08:30', orarioUscita: '12:00', giustificazioneConfermata: true  },
+    { id: 5, studenteId: 5, data: '2023-09-16', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00', giustificazioneConfermata: false },
+    { id: 6, studenteId: 6, data: '2023-09-16', stato: 'Presente', orarioEntrata: '08:00', orarioUscita: '13:00', giustificazioneConfermata: true  },
 ];
 
 export const orariLezione = [

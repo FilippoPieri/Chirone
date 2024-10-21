@@ -15,6 +15,7 @@ function RegistroStudente({ utenteLoggato }) {
             <th>Presenza</th>
             <th>Entrata in Ritardo</th>
             <th>Uscita Anticipata</th>
+            <th>Giustificazione</th> {/* Aggiungiamo la colonna per la giustificazione */}
           </tr>
         </thead>
         <tbody>
@@ -25,11 +26,15 @@ function RegistroStudente({ utenteLoggato }) {
                 <td>{presenza.stato}</td>
                 <td>{presenza.orarioEntrata || 'Nessuna'}</td>
                 <td>{presenza.orarioUscita || 'Nessuna'}</td>
+                <td>
+                  {/* Verifica se lo studente è giustificato */}
+                  {presenza.giustificazioneConfermata ? 'Giustificato' : 'Non giustificato'}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4">Nessuna presenza registrata</td>
+              <td colSpan="5">Nessuna presenza registrata</td>
             </tr>
           )}
         </tbody>

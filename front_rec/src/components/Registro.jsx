@@ -8,7 +8,7 @@ function Registro({ selectedClass, onSubmit }) {
   const [statoPresenze, setStatoPresenze] = useState({});
   const [entrataRitardo, setEntrataRitardo] = useState({});
   const [uscitaAnticipata, setUscitaAnticipata] = useState({});
-  //const [giustificazione, setGiustificazione] = useState({});
+  const [confermaGiustificazione, setConfermaGiustificazione] = useState({});
   const [mostraVisualizzaRegistro, setMostraVisualizzaRegistro] = useState(false); // Stato per mostrare/nascondere VisualizzaRegistro
   const [datiPresenze, setDatiPresenze] = useState([]); // Nuovo stato per i dati delle presenze
 
@@ -39,6 +39,13 @@ function Registro({ selectedClass, onSubmit }) {
     }));
   };
 
+  const handleConfermaGiustificazioneChange = (studenteId, confermato) => {
+    setConfermaGiustificazione(prev => ({
+      ...prev,
+      [studenteId]: confermato
+    }));
+  };
+
   // Funzione per salvare le presenze
   const handleSubmit = () => {
     const presenzeDaInviare = studentiClasse.map(studente => ({
@@ -47,7 +54,8 @@ function Registro({ selectedClass, onSubmit }) {
       dataNascita: studente.dataNascita,
       presenza: statoPresenze[studente.id] || "Presente", // Predefinito a "Presente"
       entrataRitardo: entrataRitardo[studente.id] || "",
-      uscitaAnticipata: uscitaAnticipata[studente.id] || ""
+      uscitaAnticipata: uscitaAnticipata[studente.id] || "",
+      giustificazioneConfermata: confermaGiustificazione[studente.id] || false, // Aggiunge la conferma della giustificazione
     }));
 
     // Salva i dati delle presenze nello stato
@@ -79,6 +87,7 @@ function Registro({ selectedClass, onSubmit }) {
             <th>Presenza</th>
             <th>Entrata in Ritardo</th>
             <th>Uscita anticipata</th>
+            <th>Giustificazione</th>
           </tr>
         </thead>
         <tbody>
@@ -116,6 +125,14 @@ function Registro({ selectedClass, onSubmit }) {
                   name={`uscita-${studente.id}`}  // Aggiungi name univoco
                   onChange={(e) => handleUscitaChange(studente.id, e.target.value)} 
                 />
+                </td>
+                <td>
+                  <input 
+                    type="checkbox"
+                    id={`giustifica-${studente.id}`}  // Aggiungi id univoco
+                    name={`giustifica-${studente.id}`}  // Aggiungi name univoco
+                    onChange={(e) => handleConfermaGiustificazioneChange(studente.id, e.target.checked)}
+                  />
                 </td>
               </tr>
             );

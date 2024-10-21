@@ -13,6 +13,7 @@ function VisualizzaRegistro({ presenze, onBack }) {
             <th>Presenza</th>
             <th>Entrata in Ritardo</th>
             <th>Uscita Anticipata</th>
+            <th>Giustificazione</th>
           </tr>
         </thead>
         <tbody>
@@ -24,11 +25,19 @@ function VisualizzaRegistro({ presenze, onBack }) {
                 <td>{presenza.presenza}</td>
                 <td>{presenza.entrataRitardo}</td>
                 <td>{presenza.uscitaAnticipata}</td>
+                <td>
+                  {/* Mostra la giustificazione solo se confermata */}
+                  {presenza.giustificazioneConfermata ? (
+                    <span>Giustificato</span>
+                  ) : (
+                    <span>Non giustificato</span>
+                  )}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5">Nessun dato disponibile</td>
+              <td colSpan="6">Nessun dato disponibile</td>
             </tr>
           )}
         </tbody>
@@ -47,6 +56,7 @@ VisualizzaRegistro.propTypes = {
       presenza: PropTypes.string.isRequired,
       entrataRitardo: PropTypes.string,
       uscitaAnticipata: PropTypes.string,
+      giustificazioneConfermata: PropTypes.bool.isRequired, // Conferma giustificazione
     })
   ).isRequired,
   onBack: PropTypes.func.isRequired,
