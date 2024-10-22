@@ -33,15 +33,15 @@ export const studenti = [
 
 // Voti
 export const voti = [
-    { id: 1, studenteId: 1, materiaId: 1, scritto: 8.5, orale: 9.0, data: '2023-03-12' },
-    { id: 2, studenteId: 2, materiaId: 2, scritto: 9.0, orale: 8.5, data: '2023-03-13' },
-    { id: 3, studenteId: 3, materiaId: 1, scritto: 7.0, orale: 7.5, data: '2023-05-14' },
-    { id: 4, studenteId: 4, materiaId: 2, scritto: 6.5, orale: 6.0, data: '2023-05-15' },
-    { id: 5, studenteId: 5, materiaId: 1, scritto: 9.0, orale: 9.5, data: '2023-06-16' },
-    { id: 6, studenteId: 6, materiaId: 3, scritto: 8.0, orale: 7.5, data: '2023-06-17' },
-    { id: 7, studenteId: 7, materiaId: 1, scritto: 7.5, orale: 8.0, data: '2023-06-18' },
-    { id: 8, studenteId: 8, materiaId: 3, scritto: 9.0, orale: 9.5, data: '2023-06-19' },
-    { id: 9, studenteId: 9, materiaId: 1, scritto: 8.5, orale: 8.0, data: '2023-06-20' },
+    { id: 1, studenteId: 1, materiaId: 1, scritto: 8.5, data: '2023-03-12' },
+    { id: 2, studenteId: 2, materiaId: 2, orale: 8.5, data: '2023-03-13' },
+    { id: 3, studenteId: 3, materiaId: 1, orale: 7.5, data: '2023-05-14' },
+    { id: 4, studenteId: 4, materiaId: 2, scritto: 6.5, data: '2023-05-15' },
+    { id: 5, studenteId: 5, materiaId: 1, scritto: 9.0, data: '2023-06-16' },
+    { id: 6, studenteId: 6, materiaId: 3, scritto: 8.0, data: '2023-06-17' },
+    { id: 7, studenteId: 7, materiaId: 1, orale: 8.0, data: '2023-06-18' },
+    { id: 8, studenteId: 8, materiaId: 3, orale: 9.5, data: '2023-06-19' },
+    { id: 9, studenteId: 9, materiaId: 1, scritto: 8.5, data: '2023-06-20' },
 ];
 
 // Materie

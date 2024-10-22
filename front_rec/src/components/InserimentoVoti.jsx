@@ -31,11 +31,12 @@ function InserimentoVoti({ selectedClass }) {
     }));
   };
 
-  const handleSalvaVoti = (studenteId) => {
-    const votiStudente = voti[studenteId] || {};
-    const votoScritto = votiStudente.scritto || '';
-    const votoOrale = votiStudente.orale || '';
-    const appunti = votiStudente.appunti || '';
+  const handleSalvaTuttiVoti = () => {
+    studentiClasse.forEach(studente => {
+      const votiStudente = voti[studente.id] || {};
+      const votoScritto = votiStudente.scritto || '';
+      const votoOrale = votiStudente.orale || '';
+      const appunti = votiStudente.appunti || 'Nessun appunto';
   
     // Creiamo un oggetto per raccogliere i voti da inviare
     const votiDaInviare = {};
@@ -56,25 +57,17 @@ function InserimentoVoti({ selectedClass }) {
     if (Object.keys(votiDaInviare).length > 0) {
       votiMockDb.push({
         id: votiMockDb.length + 1,
-        studenteId: studenteId,
+        studenteId: studente.id,
         materiaId: 1, // Supponiamo che la materia ID sia 1 per "Matematica"
         ...votiDaInviare, // Includiamo solo i campi riempiti
         data: new Date().toISOString().split('T')[0] // Data odierna
       });
-  
-      console.log(`Voti salvati per studente ID ${studenteId}:`, votiDaInviare);
-      
-      // Svuotiamo i campi dopo il salvataggio
-      setVoti(prevVoti => ({
-        ...prevVoti,
-        [studenteId]: {
-          scritto: '',
-          orale: '',
-          appunti: ''
-        }
-      }));
     }
+  });
+  
+  console.log('Tutti i voti sono stati salvati:', voti);
   };
+    
   
   const mostraVisualizzaVoti = () => {
     setVisualizzazione('visualizza');
@@ -104,7 +97,6 @@ function InserimentoVoti({ selectedClass }) {
                 <th>Voto scritto</th>
                 <th>Voto orale</th>
                 <th>Appunti</th>
-                <th>Azioni</th>
               </tr>
             </thead>
             <tbody>
@@ -150,13 +142,11 @@ function InserimentoVoti({ selectedClass }) {
                       />
                     )}
                   </td>
-                  <td>
-                    <button onClick={() => handleSalvaVoti(studente.id)}>Salva</button>
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <button onClick={handleSalvaTuttiVoti}>Salva Tutti i Voti</button>
         </>
       ) : (
         <>

@@ -1,5 +1,5 @@
 .orario-settimanale {
-    padding: 20px;
+    padding: 30px;
   }
   
   .orario-settimanale h4 {
@@ -24,31 +24,5 @@
     background-color: #f5f5f5;
     font-weight: bold;
   }
- /* 
-  .riga-pari {
-    background-color: #f9f9f9;
-  }
-  
-  .riga-dispari {
-    background-color: #ffffff;
-  }
-*/
-  .voto-span,
-  .presenza-span {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 2px 5px;
-    border-radius: 3px;
-    font-size: 0.9em;
-  }
-  
-  .voto-span {
-    background-color: #e3f2fd;
-    color: #1565c0;
-  }
-  
-  .presenza-span {
-    background-color: #e8f5e9;
-  }
-  
+ 
  

@@ -44,8 +44,12 @@ function VisualizzaVoti({ studentiClasse }) {
               if (!votiPerMateria[voto.materiaId]) {
                 votiPerMateria[voto.materiaId] = { materiaId: voto.materiaId, votiScritti: [], votiOrali: [] };
               }
-              votiPerMateria[voto.materiaId].votiScritti.push(voto);
-              votiPerMateria[voto.materiaId].votiOrali.push(voto);
+              if (voto.scritto) {
+                votiPerMateria[voto.materiaId].votiScritti.push(voto);
+              }
+              if (voto.orale) {
+                votiPerMateria[voto.materiaId].votiOrali.push(voto);
+              }
             });
 
             // Mappa per ogni materia e mostra i voti
@@ -58,19 +62,25 @@ function VisualizzaVoti({ studentiClasse }) {
                   <td>{studente.nome} {studente.cognome}</td>
                   <td>{materia.nomeMateria}</td>
                   <td>
-                    {votiScritti.map((voto, index) => (
+                    {votiScritti.length > 0 && votiScritti.map((voto, index) => (
                       <span key={index}>
                         {voto.scritto}
-                        <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        {/* Visualizza il link (info) solo se esiste un voto */}
+                        {voto.scritto && (
+                          <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        )}
                         {index < votiScritti.length - 1 && ', '}
                       </span>
                     ))}
                   </td>
                   <td>
-                    {votiOrali.map((voto, index) => (
+                    {votiOrali.length > 0 && votiOrali.map((voto, index) => (
                       <span key={index}>
                         {voto.orale}
-                        <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        {/* Visualizza il link (info) solo se esiste un voto */}
+                        {voto.orale && (
+                          <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                        )}
                         {index < votiOrali.length - 1 && ', '}
                       </span>
                     ))}
@@ -82,14 +92,15 @@ function VisualizzaVoti({ studentiClasse }) {
         </tbody>
       </table>
 
-      {/* Popup per visualizzare i dettagli del voto */}
-      {popup && (
+     {/* Popup per visualizzare i dettagli del voto */}
+     {popup && (
         <div className="popup" style={{ top: popupPosition.top, left: popupPosition.left }}>
           <div className="popup-content">
             <h4>Dettagli Voto</h4>
             <p><strong>Data:</strong> {popup.data}</p>
-            <p><strong>Voto Scritto:</strong> {popup.scritto}</p>
-            <p><strong>Voto Orale:</strong> {popup.orale}</p>
+            {/* Mostra il voto scritto o orale, a seconda di quale è presente */}
+            {popup.scritto && <p><strong>Voto Scritto:</strong> {popup.scritto}</p>}
+            {popup.orale && <p><strong>Voto Orale:</strong> {popup.orale}</p>}
             <p><strong>Appunti:</strong> {popup.appunti || 'Nessun appunto'}</p>
             <button onClick={closePopup}>Chiudi</button>
           </div>
@@ -98,6 +109,7 @@ function VisualizzaVoti({ studentiClasse }) {
     </div>
   );
 }
+
 
 VisualizzaVoti.propTypes = {
   studentiClasse: PropTypes.array.isRequired, // Lista degli studenti della classe selezionata
