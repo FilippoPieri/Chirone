@@ -172,7 +172,7 @@ function InserimentoVoti({ selectedClass }) {
 InserimentoVoti.propTypes = {
   selectedClass: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    anno: PropTypes.string.isRequired,
+    anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Accetta sia stringa che numero
     sezione: PropTypes.string.isRequired
   }).isRequired
 };
