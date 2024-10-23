@@ -100,7 +100,7 @@ function Features({ utenteLoggato }) {
 
         {/* Mostra il componente Orario Lezioni se è selezionata la classe e la funzionalità "orario" */}
         {selectedClass && selectedFeature === 'orario' && (
-          <OrarioLezioni selectedClass={selectedClass} onSubmit={handleSubmit}/>
+          <OrarioLezioni selectedClass={selectedClass} onSubmit={handleSubmit} utenteLoggato={utenteLoggato}/>
         )}
       </div>
     </section>

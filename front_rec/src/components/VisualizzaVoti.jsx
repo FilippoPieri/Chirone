@@ -39,27 +39,6 @@ function VisualizzaVoti({ studentiClasse, materiaInsegnante }) {
             const votiScritti = votiStudente.filter(voto => voto.scritto);  // Filtra solo i voti scritti
             const votiOrali = votiStudente.filter(voto => voto.orale);  // Filtra solo i voti orali
 
-
-            // Crea un oggetto per raggruppare i voti per materia
-            //const votiPerMateria = {};
-
-            /*votiStudente.forEach(voto => {
-              if (!votiPerMateria[voto.materiaId]) {
-                votiPerMateria[voto.materiaId] = { materiaId: voto.materiaId, votiScritti: [], votiOrali: [] };
-              }
-              if (voto.scritto) {
-                votiPerMateria[voto.materiaId].votiScritti.push(voto);
-              }
-              if (voto.orale) {
-                votiPerMateria[voto.materiaId].votiOrali.push(voto);
-              }
-            });*/
-
-            // Mappa per ogni materia e mostra i voti
-            /*return Object.keys(votiPerMateria).map(materiaId => {
-              const materia = materie.find(m => m.id === parseInt(materiaId));
-              const { votiScritti, votiOrali } = votiPerMateria[materiaId];*/
-
               return (
                 <tr key={`${studente.id}`}>
                   <td>{studente.nome} {studente.cognome}</td>

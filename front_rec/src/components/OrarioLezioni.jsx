@@ -7,7 +7,7 @@ import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo component
 const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 const oreGiornaliere = [8, 9, 10, 11, 12, 13, 14 , 15, 16, 17, 18];
 
-function OrarioLezioni({ selectedClass }) {
+function OrarioLezioni({ selectedClass, utenteLoggato }) {
     console.log("OrarioLezioni renderizzato per la classe:", selectedClass); // Debug
 
     // Inizializza lo stato per memorizzare l'orario settimanale per ogni giorno e ora
@@ -34,6 +34,11 @@ function OrarioLezioni({ selectedClass }) {
         }
       }));
     };
+
+    // Filtra le materie dell'insegnante loggato
+    const materieInsegnante = utenteLoggato && utenteLoggato.id
+    ? materie.filter(materia => materia.insegnanteId === utenteLoggato.id)
+    : [];
 
     const handleSalvaOrario = () => {
       console.log("Orario salvato per la classe:", selectedClass, "Orario:", orario);
@@ -67,7 +72,7 @@ function OrarioLezioni({ selectedClass }) {
           </button>
         )}
 
-        {/* Visualizzazione dell'orario settimanale tramite il nuovo componente */}
+        {/* Visualizzazione dell'orario settimanale tramite il componente Visualizzaorario */}
         {mostraOrarioSettimanale && <VisualizzaOrario selectedClass={selectedClass} orario={orario} />}
     
         {inserisciOrarioVisible && (
@@ -92,18 +97,13 @@ function OrarioLezioni({ selectedClass }) {
                         value={orario[giorno][ora]}
                         onChange={(e) => handleOrarioChange(giorno, ora, e.target.value)}
                       >
-                        <option value="">Seleziona materia</option>
-                        {/* Filtriamo le materie associate alla classe selezionata */}
-                        {materie.filter(materia => 
-                          materia.classiIds.includes(selectedClass.id) // Assicuriamoci che la materia sia per la classe selezionata
-                        ).map(materia => {
-                          const insegnante = insegnanti.find(insegnante => insegnante.id === materia.insegnanteId);
-                          return (
+                         <option value="">Seleziona materia</option>
+                          {/* Mostra solo le materie dell'insegnante loggato */}
+                          {materieInsegnante.map(materia => (
                             <option key={materia.id} value={materia.nomeMateria}>
-                              {materia.nomeMateria} - {insegnante ? `${insegnante.nome} ${insegnante.cognome}` : 'N/A'}
+                              {materia.nomeMateria}
                             </option>
-                          );
-                        })}
+                          ))}
                       </select>
                     </td>
                   ))}
@@ -126,7 +126,11 @@ OrarioLezioni.propTypes = {
     id: PropTypes.number.isRequired,
     anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Accetta sia stringa che numero
     sezione: PropTypes.string.isRequired
+  }).isRequired,
+    utenteLoggato: PropTypes.shape({
+    id: PropTypes.number.isRequired,
   }).isRequired
 };
+
 
 export default OrarioLezioni;
