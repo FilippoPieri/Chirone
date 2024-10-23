@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { studenti, voti as votiMockDb } from './mockdb'; // Importiamo i dati degli studenti e voti
+import { studenti, materie, voti as votiMockDb } from './mockdb'; // Importiamo i dati degli studenti e voti
 import VisualizzaVoti from './VisualizzaVoti'; // Importiamo il nuovo componente VisualizzaVoti
 import '../css/Registro.css'; // Puoi riutilizzare gli stili del Registro
 
-function InserimentoVoti({ selectedClass }) {
+function InserimentoVoti({ selectedClass, utenteLoggato }) {
   const [voti, setVoti] = useState({});
   const [visualizzazione, setVisualizzazione] = useState('inserimento');
   const [mostraAppunti, setMostraAppunti] = useState({}); // Stato per gestire la visualizzazione del campo appunti
-  
+
+  // Filtra gli studenti della classe selezionata
   const studentiClasse = studenti.filter(studente => studente.classeId === selectedClass.id); 
+  // Trova la materia che insegna l'insegnante loggato
+  const materiaInsegnante = materie.find(materia => materia.insegnanteId === utenteLoggato.id);
 
   const handleVotoChange = (studenteId, tipoVoto, valore) => {
     setVoti(prevVoti => ({
@@ -58,7 +61,7 @@ function InserimentoVoti({ selectedClass }) {
       votiMockDb.push({
         id: votiMockDb.length + 1,
         studenteId: studente.id,
-        materiaId: 1, // Supponiamo che la materia ID sia 1 per "Matematica"
+        materiaId: materiaInsegnante.id,  // Associa il voto alla materia dell'insegnante
         ...votiDaInviare, // Includiamo solo i campi riempiti
         data: new Date().toISOString().split('T')[0] // Data odierna
       });
@@ -151,7 +154,7 @@ function InserimentoVoti({ selectedClass }) {
       ) : (
         <>
           <button onClick={mostraInserimentoVoti}>Torna Indietro</button>
-          <VisualizzaVoti studentiClasse={studentiClasse} />
+          <VisualizzaVoti studentiClasse={studentiClasse} materiaInsegnante={materiaInsegnante}/>
         </>
       )}
     </div>
@@ -164,7 +167,10 @@ InserimentoVoti.propTypes = {
     id: PropTypes.number.isRequired,
     anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Accetta sia stringa che numero
     sezione: PropTypes.string.isRequired
-  }).isRequired
+  }).isRequired,
+  utenteLoggato: PropTypes.shape({
+    id: PropTypes.number.isRequired
+  }).isRequired  // Aggiungi anche qui per assicurarti che `utenteLoggato` sia richiesto
 };
 
 export default InserimentoVoti;

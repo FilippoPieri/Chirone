@@ -90,12 +90,12 @@ function Features({ utenteLoggato }) {
 
         {/* Mostra il componente Registro se è selezionata la classe e la funzionalità "registro" */}
         {selectedClass && selectedFeature === 'registro' && (
-          <Registro selectedClass={selectedClass}  onSubmit={handleSubmit}/>
+          <Registro selectedClass={selectedClass}  onSubmit={handleSubmit} />
         )}
 
         {/* Mostra il componente Inserimento Voti se è selezionata la classe e la funzionalità "voti" */}
         {selectedClass && selectedFeature === 'voti' && (
-          <InserimentoVoti selectedClass={selectedClass} onSubmit={handleSubmit}/>
+          <InserimentoVoti selectedClass={selectedClass} onSubmit={handleSubmit} utenteLoggato={utenteLoggato}/>
         )}
 
         {/* Mostra il componente Orario Lezioni se è selezionata la classe e la funzionalità "orario" */}

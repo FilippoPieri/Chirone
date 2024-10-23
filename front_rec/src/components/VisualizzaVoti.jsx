@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { voti as votiMockDb, materie } from './mockdb'; // Importiamo i voti e le materie
 import '../css/VisualizzaVoti.css'; // Importa il file CSS
 
-function VisualizzaVoti({ studentiClasse }) {
+function VisualizzaVoti({ studentiClasse, materiaInsegnante }) {
   const [voti] = useState(votiMockDb); // Stato per i voti
   const [popup, setPopup] = useState(null); // Stato per gestire il popup
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 }); // Posizione del popup
@@ -22,7 +22,7 @@ function VisualizzaVoti({ studentiClasse }) {
 
   return (
     <div className="voti-salvati">
-      <h4>Voti per ogni studente</h4>
+      <h4>Voti per ogni studente della materia {materiaInsegnante.nomeMateria}</h4>
       <table className="registro-table">
         <thead>
           <tr>
@@ -35,12 +35,15 @@ function VisualizzaVoti({ studentiClasse }) {
         <tbody>
           {studentiClasse.map(studente => {
             // Filtra i voti per lo studente corrente
-            const votiStudente = voti.filter(voto => voto.studenteId === studente.id);
+            const votiStudente = voti.filter(voto => voto.studenteId === studente.id && voto.materiaId === materiaInsegnante.id);
+            const votiScritti = votiStudente.filter(voto => voto.scritto);  // Filtra solo i voti scritti
+            const votiOrali = votiStudente.filter(voto => voto.orale);  // Filtra solo i voti orali
+
 
             // Crea un oggetto per raggruppare i voti per materia
-            const votiPerMateria = {};
+            //const votiPerMateria = {};
 
-            votiStudente.forEach(voto => {
+            /*votiStudente.forEach(voto => {
               if (!votiPerMateria[voto.materiaId]) {
                 votiPerMateria[voto.materiaId] = { materiaId: voto.materiaId, votiScritti: [], votiOrali: [] };
               }
@@ -50,47 +53,46 @@ function VisualizzaVoti({ studentiClasse }) {
               if (voto.orale) {
                 votiPerMateria[voto.materiaId].votiOrali.push(voto);
               }
-            });
+            });*/
 
             // Mappa per ogni materia e mostra i voti
-            return Object.keys(votiPerMateria).map(materiaId => {
+            /*return Object.keys(votiPerMateria).map(materiaId => {
               const materia = materie.find(m => m.id === parseInt(materiaId));
-              const { votiScritti, votiOrali } = votiPerMateria[materiaId];
+              const { votiScritti, votiOrali } = votiPerMateria[materiaId];*/
 
               return (
-                <tr key={`${studente.id}-${materiaId}`}>
+                <tr key={`${studente.id}`}>
                   <td>{studente.nome} {studente.cognome}</td>
-                  <td>{materia.nomeMateria}</td>
+                  {/*<td>{materia.nomeMateria}</td>*/}
+                  <td>{materiaInsegnante.nomeMateria}</td>
                   <td>
-                    {votiScritti.length > 0 && votiScritti.map((voto, index) => (
+                    {votiScritti.length > 0 ? votiScritti.map((voto, index) => (
                       <span key={index}>
                         {voto.scritto}
                         {/* Visualizza il link (info) solo se esiste un voto */}
                         {voto.scritto && (
-                          <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
+                          <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (i)</span>
                         )}
                         {index < votiScritti.length - 1 && ', '}
                       </span>
-                    ))}
-                  </td>
-                  <td>
-                    {votiOrali.length > 0 && votiOrali.map((voto, index) => (
-                      <span key={index}>
-                        {voto.orale}
-                        {/* Visualizza il link (info) solo se esiste un voto */}
-                        {voto.orale && (
-                          <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (info)</span>
-                        )}
-                        {index < votiOrali.length - 1 && ', '}
-                      </span>
-                    ))}
-                  </td>
-                </tr>
-              );
-            });
-          })}
-        </tbody>
-      </table>
+                    )) : 'Nessun voto'}
+                    </td>
+                    <td>
+                      {votiOrali.length > 0 ? votiOrali.map((voto, index) => (
+                        <span key={index}>
+                          {voto.orale}
+                          {voto.orale && (
+                            <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (i)</span>
+                          )}
+                          {index < votiOrali.length - 1 && ', '}
+                        </span>
+                      )) : 'Nessun voto'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
 
      {/* Popup per visualizzare i dettagli del voto */}
      {popup && (
