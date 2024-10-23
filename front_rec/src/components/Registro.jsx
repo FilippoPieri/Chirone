@@ -15,13 +15,13 @@ function Registro({ selectedClass, onSubmit }) {
   // Recupera gli studenti della classe selezionata
   const studentiClasse = studenti.filter(studente => studente.classeId === selectedClass.id);
 
-  // Funzione per gestire il cambio di presenza
-  const handlePresenzaChange = (studenteId, nuovaPresenza) => {
-    setStatoPresenze(prevStato => ({
-      ...prevStato,
-      [studenteId]: nuovaPresenza
-    }));
-  };
+ // Funzione per gestire il cambio di presenza
+const togglePresenza = (studenteId) => {
+  setStatoPresenze(prevStato => ({
+    ...prevStato,
+    [studenteId]: prevStato[studenteId] === "Presente" ? "Assente" : "Presente"
+  }));
+};
 
   // Funzione per gestire l'entrata in ritardo
   const handleEntrataChange = (studenteId, time) => {
@@ -100,15 +100,14 @@ function Registro({ selectedClass, onSubmit }) {
                 <td>{studente.nome} {studente.cognome}</td>
                 <td>{studente.dataNascita}</td>
                 <td>
-                <select 
+                <button 
                   id={`presenza-${studente.id}`}  // Aggiungi id univoco
                   name={`presenza-${studente.id}`}  // Aggiungi name univoco
-                  value={stato}
-                  onChange={(e) => handlePresenzaChange(studente.id, e.target.value)}
+                  onClick={() => togglePresenza(studente.id)}
+                  className={stato === "Presente" ? "presente-btn" : "assente-btn"}
                 >
-                    <option value="Presente">Presente</option>
-                    <option value="Assente">Assente</option>
-                  </select>
+                  {stato}
+                </button>
                 </td>
                 <td>
                 <input 

@@ -24,15 +24,7 @@ class-details {
   background-color: #f5f5f5;
   font-weight: bold;
 }
-/*
-.riga-pari {
-  background-color: #f9f9f9;
-}
 
-.riga-dispari {
-  background-color: #ffffff;
-}
-*/
 .voto-span,
 .presenza-span {
   display: inline-block;
@@ -59,3 +51,24 @@ class-details {
 .riga-rossa {
   background-color: #f3838d; /* Rosso chiaro */
 }  
+
+/* Stili per il pulsante di presenza/assenza di default */
+.presente-btn, .assente-btn {
+  background-color: #d3d3d3; /* Grigio chiaro di default */
+  color: rgb(0, 0, 0);
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Aggiunge una transizione fluida */
+}
+
+/* Hover: lo studente è presente, cambia colore a rosso */
+.presente-btn:hover {
+  background-color: #f3838d; /* Cambia a rosso quando ci si passa sopra */
+}
+
+/* Hover: lo studente è assente, cambia colore a verde */
+.assente-btn:hover {
+  background-color: #89f0a1; /* Cambia a verde quando ci si passa sopra */
+}
