@@ -5,7 +5,6 @@ from django.db import models
 class Scuola(models.Model):
     nome = models.CharField(max_length=255)
     indirizzo = models.CharField(max_length=255)
-    comprensivo_id = models.IntegerField()
 
     def __str__(self):
         return self.nome
@@ -49,8 +48,7 @@ class Insegnante(models.Model):
 class Materia(models.Model):
     nome_materia = models.CharField(max_length=100)
     insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='materie_insegnate')
-    classi = models.ManyToManyField(Classe)
-
+   
     def __str__(self):
         return self.nome_materia
 #_________________________________________________________________________________________________
