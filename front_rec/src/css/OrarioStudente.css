@@ -1,0 +1,26 @@
+.orario-studente-container {
+    padding: 20px;
+    overflow: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .orario-studente-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .orario-studente-table th,
+  .orario-studente-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .orario-studente-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  

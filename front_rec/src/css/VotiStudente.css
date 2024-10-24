@@ -1,0 +1,55 @@
+.voti-studente-container {
+    margin: 20px;
+  }
+  
+  .voti-studente-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .voti-studente-table th,
+  .voti-studente-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .voti-studente-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  .voti-link {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .voti-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 300px;
+  }
+  
+  .voti-popup-content {
+    position: relative;
+  }
+  
+  .voti-popup::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+  }
+  

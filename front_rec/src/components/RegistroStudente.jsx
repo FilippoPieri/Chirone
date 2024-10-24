@@ -11,11 +11,7 @@ function RegistroStudente({ utenteLoggato }) {
       <table className="registro-table">
         <thead>
           <tr>
-            <th>Data</th>
-            <th>Presenza</th>
-            <th>Entrata in Ritardo</th>
-            <th>Uscita Anticipata</th>
-            <th>Giustificazione</th> {/* Aggiungiamo la colonna per la giustificazione */}
+            <th>Data</th><th>Presenza</th><th>Entrata in Ritardo</th><th>Uscita Anticipata</th><th>Giustificazione</th>
           </tr>
         </thead>
         <tbody>

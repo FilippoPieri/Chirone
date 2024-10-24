@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import RegistroStudente from './RegistroStudente';
-import '../css/Features.css';
+import VotiStudente from './VotiStudente';
+import OrarioStudente from './OrarioStudente';
+import '../css/Features.css'; // CSS già presente
 
 function FeaturesStudenti({ utenteLoggato }) {
   const [selectedFeature, setSelectedFeature] = useState(null);
 
   const handleRegistroClick = () => {
     setSelectedFeature('registro');
+  };
+
+  const handleVotiClick = () => {
+    setSelectedFeature('voti');
+  };
+
+  const handleOrarioClick = () => {
+    setSelectedFeature('orario');
   };
 
   return (
@@ -17,13 +27,27 @@ function FeaturesStudenti({ utenteLoggato }) {
           <h3>Registro</h3>
           <p>Visualizza il tuo registro personale.</p>
         </div>
-        {/* Puoi aggiungere altre funzionalità qui */}
+        <div className="feature" onClick={handleVotiClick}>
+          <h3>Voti</h3>
+          <p>Visualizza i tuoi voti.</p>
+        </div>
+        <div className="feature" onClick={handleOrarioClick}>
+          <h3>Orario</h3>
+          <p>Visualizza il tuo orario settimanale.</p>
+        </div>
       </div>
 
       <div className="features-content">
-        {/* Se lo studente ha selezionato una feature, mostra il componente relativo */}
         {selectedFeature === 'registro' && (
           <RegistroStudente utenteLoggato={utenteLoggato} />
+        )}
+
+        {selectedFeature === 'voti' && (
+          <VotiStudente utenteLoggato={utenteLoggato} />
+        )}
+
+        {selectedFeature === 'orario' && (
+          <OrarioStudente utenteLoggato={utenteLoggato} />
         )}
       </div>
     </section>
