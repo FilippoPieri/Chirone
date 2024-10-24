@@ -1,109 +1,103 @@
 from django.db import models
 
-# modello comprensivo
-# Rappresenta un gruppo di scuole, con informazioni come nome, indirizzo e telefono.
-class Comprensivo(models.Model):
-    nome = models.CharField(max_length=100)
-    indirizzo = models.CharField(max_length=255)  # Indirizzo del comprensivo
-    telefono = models.CharField(max_length=20, null=True, blank=True)  # Telefono del comprensivo
+# modello scuola
+# Collega ogni scuola a un comprensivo e include informazioni sulla scuola stessa.
+class Scuola(models.Model):
+    nome = models.CharField(max_length=255)
+    indirizzo = models.CharField(max_length=255)
+    comprensivo_id = models.IntegerField()
 
     def __str__(self):
         return self.nome
 #_____________________________________________________________________________________________________
-    
-# modello scuola
-# Collega ogni scuola a un comprensivo e include informazioni sulla scuola stessa.
-class Scuola(models.Model):
-    nome = models.CharField(max_length=100)
-    indirizzo = models.CharField(max_length=255)
-    comprensivo = models.ForeignKey(Comprensivo, on_delete=models.CASCADE, related_name='scuole')
 
-    def __str__(self):
-        return f"{self.nome} ({self.comprensivo.nome})"
-#_____________________________________________________________________________________________________
-
-# modello classe
-# Rappresenta le classi all'interno di una scuola, con un riferimento alla scuola stessa.
 class Classe(models.Model):
-    sezione = models.CharField(max_length=2) #a, b, c, ...
-    anno = models.IntegerField() # 1, 2, 3, ...
-    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE, related_name='classi')
+    sezione = models.CharField(max_length=1)
+    anno = models.IntegerField()
+    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.sezione} {self.anno} - {self.scuola.nome}"
+        return f'{self.anno}{self.sezione}'
 #____________________________________________________________________________________________________
 
-# modello studente
-# Memorizza le informazioni degli studenti, collegandoli a una classe.
 class Studente(models.Model):
-    nome = models.CharField(max_length=20)
-    cognome = models.CharField(max_length=20)
+    nome = models.CharField(max_length=100)
+    cognome = models.CharField(max_length=100)
     data_nascita = models.DateField()
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='studenti')  # Relazionato con Classe, on_delete=models.CASCADE cancella tutti gli studenti associati se il corso viene cancellato
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=100)
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
+    ruolo = models.CharField(max_length=50, default='studente')
 
     def __str__(self):
-        return f"{self.nome} {self.cognome} - {self.classe}"
+        return f'{self.nome} {self.cognome}'
 #___________________________________________________________________________________________________ 
 
-# modello insegnante
-# Rappresenta gli insegnanti e le materie che insegnano, collegandoli a una scuola.
 class Insegnante(models.Model):
-    nome = models.CharField(max_length=20)
-    cognome = models.CharField(max_length=20)
-    materia = models.CharField(max_length=50)
-    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE, related_name='insegnanti')
+    nome = models.CharField(max_length=100)
+    cognome = models.CharField(max_length=100)
+    materia = models.CharField(max_length=100)
+    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=100)
+    ruolo = models.CharField(max_length=50, default='insegnante')
 
     def __str__(self):
-        return f"{self.nome} {self.cognome} - {self.materia} ({self.scuola.nome})"
+        return f'{self.nome} {self.cognome}'
 #__________________________________________________________________________________________________
 
-# modello Materia
-# Collega le materie agli insegnanti e alle classi.
 class Materia(models.Model):
     nome_materia = models.CharField(max_length=100)
-    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='materie')  # Relazionato con Insegnante, on_delete=models.CASCADE cancella tutti gli studenti associati se il corso viene cancellato 
-    classi = models.ManyToManyField(Classe, related_name='materie')  # Relazionato molti-a-molti con Classe
+    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='materie_insegnate')
+    classi = models.ManyToManyField(Classe)
 
     def __str__(self):
-        return f"{self.nome_materia} ({self.insegnante})"
+        return self.nome_materia
 #_________________________________________________________________________________________________
 
-# modello voto
-# Registra i voti degli studenti per le varie materie.
 class Voto(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name='voti')  # Relazionato con Studente, on_delete=models.CASCADE cancella tutti gli studenti associati se il corso viene cancellato
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)  # Relazionato con Materia on_delete=models.CASCADE cancella tutti gli studenti associati se il corso viene cancellato
-    voto = models.DecimalField(max_digits=3, decimal_places=1) 
+    studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    scritto = models.FloatField(null=True, blank=True)
+    orale = models.FloatField(null=True, blank=True)
     data = models.DateField()
+
+    def __str__(self):
+        return f'Voto {self.studente} - {self.materia}'
 #_________________________________________________________________________________________________
     
-# modello presenza
-# Tiene traccia delle presenze e assenze degli studenti.
 class Presenza(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name='presenze')  # Relazionato con Studente, on_delete=models.CASCADE cancella tutti gli studenti associati se il corso viene cancellato
+    studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
     data = models.DateField()
-    stato = models.CharField(max_length=10, choices=[('Presente', 'Presente'), ('Assente', 'Assente')])  # Stato del corso (Presente o Assente)
-    orario_entrata = models.TimeField()
-    orario_uscita = models.TimeField()
+    stato = models.CharField(max_length=20)  # Presente o Assente
+    orario_entrata = models.TimeField(null=True, blank=True)
+    orario_uscita = models.TimeField(null=True, blank=True)
+    giustificazione_confermata = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.studente.nome} {self.studente.cognome} - {self.data}'
 #_________________________________________________________________________________________________
     
-# modello orario
-# Gestisce l'orario delle lezioni.
-class OrarioLezione(models.Model):
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='orari')
-    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='orari')
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name='orari')
-    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE, related_name='orari')
-    giorno = models.CharField(max_length=10, choices=[
-        ('Lunedi', 'Lunedì'),
-        ('Martedi', 'Martedì'),
-        ('Mercoledi', 'Mercoledì'),
-        ('Giovedi', 'Giovedì'),
-        ('Venerdi', 'Venerdì'),
-        ('Sabato', 'Sabato')
-    ])
+class OrarioLezioni(models.Model):
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
+    giorno = models.CharField(max_length=20)  # Lunedi, Martedi, ecc.
     ora_inizio = models.TimeField()
     ora_fine = models.TimeField()
 
     def __str__(self):
-        return f"{self.materia} - {self.insegnante} ({self.classe}) - {self.scuola.nome} ({self.scuola.comprensivo.nome}) - {self.giorno} {self.ora_inizio} - {self.ora_fine}"
+        return f'{self.materia.nome_materia} - {self.giorno} {self.ora_inizio}-{self.ora_fine}'
+#_________________________________________________________________________________________________
+
+class Agenda(models.Model):
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
+    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
+    data = models.DateField()
+    argomenti_trattati = models.TextField(blank=True)
+    compiti = models.TextField(blank=True)
+
+    def __str__(self):
+        return f'Agenda per {self.classe} - {self.data}'
+#_________________________________________________________________________________________________
+
