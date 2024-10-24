@@ -37,6 +37,7 @@ class Insegnante(models.Model):
     cognome = models.CharField(max_length=100)
     materia = models.CharField(max_length=100)
     scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
+    classi = models.ManyToManyField('Classe', related_name='insegnanti')  # Relazione diretta con le classi
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     ruolo = models.CharField(max_length=50, default='insegnante')
