@@ -68,14 +68,14 @@ function Features({ utenteLoggato }) {
           <h3>Orario Lezioni</h3>
           <p>Gestisci l&#39;orario delle lezioni.</p>
         </div>
-        <div className="feature" onClick={handleOrarioClick}>
+       {/* <div className="feature" onClick={handleOrarioClick}>
           <h3>Agenda</h3>
           <p>Note,Compiti,Ecc...</p>
         </div>
         <div className="feature" onClick={handleOrarioClick}>
           <h3>Argomenti trattati</h3>
           <p>Argomenti trattati dall&#39;insegnante</p>
-        </div>
+        </div> */}
       </div>
 
       <div className="features-content">
