@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '../css/Intro.css';
-import { insegnanti, studenti } from './mockdb';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 
 function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
@@ -9,21 +9,28 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   const [error, setError] = useState(''); // Stato per memorizzare l'errore
 
   // Funzione per gestire il login
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();  // Previene il comportamento predefinito del form
 
-    // Cerca l'utente sia tra insegnanti che studenti
-    const utente = insegnanti.find(user => user.email === email && user.password === password) 
-                || studenti.find(user => user.email === email && user.password === password);
+    try {
+      // Effettua una chiamata POST all'API di login con axios
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        email,  // Passiamo l'email
+        password // Passiamo la password
+      });
 
-    if (utente) {
-      // Login riuscito
-      setLoggedIn(true); // Aggiorna lo stato di login
-      setUtenteLoggato(utente); // Memorizza l'utente loggato (insegnante o studente)
-      setError(''); // Reset dell'errore
-    } else {
-      // Login fallito
-      setError('Email o password errati');
+      // Se il login è andato a buon fine, imposta lo stato di login e salva i dati dell'utente
+      if (response.data.success) {
+        setLoggedIn(true);  // Imposta lo stato di login a true
+        setUtenteLoggato(response.data.user);  // Memorizza i dati dell'utente loggato
+        setError('');  // Reset dello stato di errore
+      } else {
+        // Mostra un messaggio di errore se le credenziali sono errate
+        setError('Email o password errati');
+      }
+    } catch (error) {
+      // Mostra un messaggio di errore in caso di problemi di connessione
+      setError('Errore nella connessione al server');
     }
   };
 
@@ -54,10 +61,10 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               type="email"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)} // Aggiorna lo stato dell'email
               required
               placeholder="Inserisci la tua email"
-              autoComplete="email"
+              //autoComplete="email"
             />
           </div>
           <div className="form-group">
@@ -66,13 +73,13 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)} // Aggiorna lo stato della password
               required
               placeholder="Inserisci la tua password"
-              autoComplete="current-password"
+              //autoComplete="current-password"
             />
           </div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Mostra il messaggio di errore */}
           <button type="submit" className="cta-button">Accedi</button>
         </form>
       )}
@@ -80,10 +87,11 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   );
 }
 
+// Definizione delle PropTypes per la validazione
 Intro.propTypes = {
-  setLoggedIn: PropTypes.func.isRequired,
-  loggedIn: PropTypes.bool.isRequired,
-  setUtenteLoggato: PropTypes.func.isRequired,
+  setLoggedIn: PropTypes.func.isRequired,  // Funzione per impostare lo stato di login
+  loggedIn: PropTypes.bool.isRequired,  // Stato del login
+  setUtenteLoggato: PropTypes.func.isRequired,  // Funzione per impostare l'utente loggato
   utenteLoggato: PropTypes.shape({
     nome: PropTypes.string,
     cognome: PropTypes.string

@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <Header />
       <main>
-        {/* Mantieni sempre visibile il componente Intro */}
+        {/* Mantieni sempre visibile il componente Intro (componente per login)*/}
         <Intro 
           setLoggedIn={setLoggedIn} 
           loggedIn={loggedIn} 

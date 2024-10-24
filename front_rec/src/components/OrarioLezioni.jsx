@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { materie, insegnanti } from './mockdb'; 
+import { useState, useEffect } from 'react';
+import axios from 'axios';  // Per fare le richieste API
 import '../css/OrarioLezioni.css'; // Importa il file CSS
 import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo componente
 
@@ -8,41 +8,23 @@ const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Vener
 const oreGiornaliere = [8, 9, 10, 11, 12, 13, 14 , 15, 16, 17, 18];
 
 function OrarioLezioni({ selectedClass, utenteLoggato }) {
-    console.log("OrarioLezioni renderizzato per la classe:", selectedClass); // Debug
+    const [orario, setOrario] = useState([]); // Stato per memorizzare l'orario
 
-    // Inizializza lo stato per memorizzare l'orario settimanale per ogni giorno e ora
-    const [orario, setOrario] = useState(
-      giorniSettimana.reduce((acc, giorno) => {
-        acc[giorno] = oreGiornaliere.reduce((oreAcc, ora) => {
-          oreAcc[ora] = '';
-          return oreAcc;
-        }, {});
-        return acc;
-      }, {})
-    );
+    useEffect(() => {
+        // Chiama l'API per ottenere i dati dell'orario della classe selezionata
+        axios.get('http://localhost:8000/api/orario/')
+            .then(response => {
+                // Filtra i dati dell'orario per la classe selezionata
+                const orariFiltrati = response.data.filter(orario => orario.classe === selectedClass.id);
+                setOrario(orariFiltrati); // Imposta lo stato dell'orario
+            })
+            .catch(error => {
+                console.error('Errore nel caricamento dell\'orario:', error);
+            });
+    }, [selectedClass]); // Effettua la chiamata API quando cambia la classe selezionata
   
     const [mostraOrarioSettimanale, setMostraOrarioSettimanale] = useState(false); // Stato per visualizzare l'orario settimanale
     const [inserisciOrarioVisible, setInserisciOrarioVisible] = useState(true); // Stato per mostrare/nascondere il form di inserimento orario
-
-    // Gestisce il cambiamento di una materia per un giorno e una certa ora
-    const handleOrarioChange = (giorno, ora, materia) => {
-      setOrario(prevOrario => ({
-        ...prevOrario,
-        [giorno]: {
-          ...prevOrario[giorno],
-          [ora]: materia
-        }
-      }));
-    };
-
-    // Filtra le materie dell'insegnante loggato
-    const materieInsegnante = utenteLoggato && utenteLoggato.id
-    ? materie.filter(materia => materia.insegnanteId === utenteLoggato.id)
-    : [];
-
-    const handleSalvaOrario = () => {
-      console.log("Orario salvato per la classe:", selectedClass, "Orario:", orario);
-    };
 
     const handleMostraOrarioSettimanale = () => {
       setMostraOrarioSettimanale(true);
@@ -75,6 +57,7 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
         {/* Visualizzazione dell'orario settimanale tramite il componente Visualizzaorario */}
         {mostraOrarioSettimanale && <VisualizzaOrario selectedClass={selectedClass} orario={orario} />}
     
+        {/* Condizione per mostrare il form di inserimento orario */}
         {inserisciOrarioVisible && (
           <table className="orario-table">
             <thead>
@@ -91,6 +74,7 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
                   <td>{ora}:00 - {ora + 1}:00</td>
                   {giorniSettimana.map(giorno => (
                     <td key={giorno}>
+                      {/* Seleziona la materia per l'insegnante loggato */}
                       <select
                         id={`orario-${giorno}-${ora}`} // Aggiungi id univoco
                         name={`orario-${giorno}-${ora}`} // Aggiungi name univoco
