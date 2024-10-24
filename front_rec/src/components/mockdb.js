@@ -2,8 +2,8 @@
 
 // Scuole
 export const scuole = [
-    { id: 1, nome: 'Scuola Elementare A', indirizzo: 'Via Roma 1', comprensivoId: 1 },
-    { id: 2, nome: 'Scuola Media B', indirizzo: 'Via Milano 10', comprensivoId: 2 },
+    { id: 1, nome: 'Scuola Elementare A', indirizzo: 'Via Roma 1'},
+    { id: 2, nome: 'Scuola Media B', indirizzo: 'Via Milano 10'},
 ];
 
 // Classi
@@ -27,8 +27,6 @@ export const studenti = [
     { id: 7, nome: 'Davide', cognome: 'Marroni', dataNascita: '2010-09-11', classeId: 5, email: 'davide@marroni.com', password: 'davide123', ruolo: 'studente' },
     { id: 8, nome: 'Sara', cognome: 'Viola', dataNascita: '2009-02-13', classeId: 6, email: 'sara@viola.com', password: 'sara123', ruolo: 'studente' },
     { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1, email: 'alessandro@verde.com', password: 'alessandro123', ruolo: 'studente' },
-    { id: 10, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-07-15', classeId: 1, email: 'mario.@rossi.com', password: 'mario.123', ruolo: 'studente' },
-    { id: 11, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-07-15', classeId: 1, email: 'mario.@rossi.com', password: 'mario.123', ruolo: 'studente' }
 ];
 
 // Voti
