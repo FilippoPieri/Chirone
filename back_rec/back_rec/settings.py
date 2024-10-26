@@ -126,3 +126,14 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'rec.CustomUser'
+
+#AGGIUTO MANUALMENTE
+
+# settings.py
+
+PASSWORD_HASHERS = [
+    'rec.hashers.SHA3512PasswordHasher',  # Usa il custom hasher SHA3-512
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # Backup hasher
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]

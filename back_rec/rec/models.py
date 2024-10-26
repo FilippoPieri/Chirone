@@ -1,107 +1,93 @@
-from django.db import models
+
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
+from django.db import models
 
-# Modello utente personalizzato
-class CustomUser(AbstractUser):
-    class Role(models.TextChoices):
-        STUDENTE = 'studente', _('Studente')
-        INSEGNANTE = 'insegnante', _('Insegnante')
+class User(AbstractUser):
+    ROLE_CHOICES = [
+        ('insegnante', 'Insegnante'),
+        ('studente', 'Studente'),
+    ]
+    
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    email = models.EmailField(unique=True)
 
-    ruolo = models.CharField(
-        max_length=50,
-        choices=Role.choices,
-        default=Role.STUDENTE,
-    )
+    REQUIRED_FIELDS = ['email', 'role']  # Campi obbligatori oltre a username e password
 
     def __str__(self):
-        return f'{self.username} ({self.ruolo})'
-    
-# Modello Scuola
+        return f"{self.username} ({self.role})"
+
 class Scuola(models.Model):
-    nome = models.CharField(max_length=255)
-    indirizzo = models.CharField(max_length=255)
+    nome = models.CharField(max_length=100)
+    indirizzo = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.nome
 
-# Modello Classe
 class Classe(models.Model):
-    sezione = models.CharField(max_length=1)
-    anno = models.IntegerField()
-    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
+    anno = models.IntegerField()  # E.g., 3, 4, 5
+    sezione = models.CharField(max_length=5)  # E.g., A, B
+    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE, related_name="classi")
 
     def __str__(self):
-        return f'{self.anno}{self.sezione}'
+        return f"{self.anno}{self.sezione}"
 
-# Modello Studente
 class Studente(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='studente_profile')
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="studente_profile")
+    classe = models.ForeignKey(Classe, on_delete=models.SET_NULL, null=True, related_name="studenti")
 
     def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
+        return f"{self.user.first_name} {self.user.last_name}"
 
-# Modello Insegnante
 class Insegnante(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='insegnante_profile')
-    materia = models.CharField(max_length=100)
-    scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
-    classi = models.ManyToManyField('Classe', related_name='insegnanti')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="insegnante_profile")
+    materie = models.ManyToManyField('Materia', related_name="insegnanti")
 
     def __str__(self):
-        return f'{self.user.first_name} {self.user.last_name}'
+        return f"{self.user.first_name} {self.user.last_name}"
 
-# Modello Materia
 class Materia(models.Model):
-    nome_materia = models.CharField(max_length=100)
-    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='materie_insegnate')
+    nome = models.CharField(max_length=100)
+    classi = models.ManyToManyField(Classe, related_name="materie")
 
     def __str__(self):
-        return self.nome_materia
+        return self.nome
 
-# Modello Voto
 class Voto(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-    scritto = models.FloatField(null=True, blank=True)
-    orale = models.FloatField(null=True, blank=True)
-    data = models.DateField()
+    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name="voti")
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name="voti")
+    scritto = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    orale = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    data = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f'Voto {self.studente} - {self.materia}'
+        return f"Voto di {self.studente} in {self.materia}"
 
-# Modello Presenza
 class Presenza(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
-    data = models.DateField()
-    stato = models.CharField(max_length=20)  # Presente o Assente
-    orario_entrata = models.TimeField(null=True, blank=True)
-    orario_uscita = models.TimeField(null=True, blank=True)
-    giustificazione_confermata = models.BooleanField(default=False)
+    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name="presenze")
+    data = models.DateField(auto_now_add=True)
+    stato = models.CharField(max_length=10, choices=[('presente', 'Presente'), ('assente', 'Assente')])
+    entrata_ritardo = models.TimeField(null=True, blank=True)
+    uscita_anticipata = models.TimeField(null=True, blank=True)
+    giustificazione = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.studente.user.first_name} {self.studente.user.last_name} - {self.data}'
+        return f"Presenza di {self.studente} il {self.data}"
 
-# Modello OrarioLezioni
-class OrarioLezioni(models.Model):
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
-    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
-    giorno = models.CharField(max_length=20)  # Lunedi, Martedi, ecc.
+class Orario(models.Model):
+    '''GIORNI_SETTIMANA = [
+        ('lunedì', 'Lunedì'),
+        ('martedì', 'Martedì'),
+        ('mercoledì', 'Mercoledì'),
+        ('giovedì', 'Giovedì'),
+        ('venerdì', 'Venerdì'),
+        ('sabato', 'Sabato'),
+    ]'''
+
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name="orari")
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name="orari")
+    giornoSettimana = models.CharField(max_length=10) #, choices=GIORNI_SETTIMANA
     ora_inizio = models.TimeField()
     ora_fine = models.TimeField()
 
     def __str__(self):
-        return f'{self.materia.nome_materia} - {self.giorno} {self.ora_inizio}-{self.ora_fine}'
-
-# Modello Agenda
-class Agenda(models.Model):
-    classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
-    insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
-    data = models.DateField()
-    argomenti_trattati = models.TextField(blank=True)
-    compiti = models.TextField(blank=True)
-
-    def __str__(self):
-        return f'Agenda per {self.classe} - {self.data}'
+        return f"{self.classe} - {self.materia} ({self.giorno} {self.ora_inizio} - {self.ora_fine})"
