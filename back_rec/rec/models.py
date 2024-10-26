@@ -1,15 +1,31 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
-# modello scuola
-# Collega ogni scuola a un comprensivo e include informazioni sulla scuola stessa.
+# Modello utente personalizzato
+class CustomUser(AbstractUser):
+    class Role(models.TextChoices):
+        STUDENTE = 'studente', _('Studente')
+        INSEGNANTE = 'insegnante', _('Insegnante')
+
+    ruolo = models.CharField(
+        max_length=50,
+        choices=Role.choices,
+        default=Role.STUDENTE,
+    )
+
+    def __str__(self):
+        return f'{self.username} ({self.ruolo})'
+    
+# Modello Scuola
 class Scuola(models.Model):
     nome = models.CharField(max_length=255)
     indirizzo = models.CharField(max_length=255)
 
     def __str__(self):
         return self.nome
-#_____________________________________________________________________________________________________
 
+# Modello Classe
 class Classe(models.Model):
     sezione = models.CharField(max_length=1)
     anno = models.IntegerField()
@@ -17,43 +33,34 @@ class Classe(models.Model):
 
     def __str__(self):
         return f'{self.anno}{self.sezione}'
-#____________________________________________________________________________________________________
 
+# Modello Studente
 class Studente(models.Model):
-    nome = models.CharField(max_length=100)
-    cognome = models.CharField(max_length=100)
-    data_nascita = models.DateField()
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=100)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='studente_profile')
     classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
-    ruolo = models.CharField(max_length=50, default='studente')
 
     def __str__(self):
-        return f'{self.nome} {self.cognome}'
-#___________________________________________________________________________________________________ 
+        return f'{self.user.first_name} {self.user.last_name}'
 
+# Modello Insegnante
 class Insegnante(models.Model):
-    nome = models.CharField(max_length=100)
-    cognome = models.CharField(max_length=100)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='insegnante_profile')
     materia = models.CharField(max_length=100)
     scuola = models.ForeignKey(Scuola, on_delete=models.CASCADE)
-    classi = models.ManyToManyField('Classe', related_name='insegnanti')  # Relazione diretta con le classi
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=100)
-    ruolo = models.CharField(max_length=50, default='insegnante')
+    classi = models.ManyToManyField('Classe', related_name='insegnanti')
 
     def __str__(self):
-        return f'{self.nome} {self.cognome}'
-#__________________________________________________________________________________________________
+        return f'{self.user.first_name} {self.user.last_name}'
 
+# Modello Materia
 class Materia(models.Model):
     nome_materia = models.CharField(max_length=100)
     insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE, related_name='materie_insegnate')
-   
+
     def __str__(self):
         return self.nome_materia
-#_________________________________________________________________________________________________
 
+# Modello Voto
 class Voto(models.Model):
     studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
@@ -63,8 +70,8 @@ class Voto(models.Model):
 
     def __str__(self):
         return f'Voto {self.studente} - {self.materia}'
-#_________________________________________________________________________________________________
-    
+
+# Modello Presenza
 class Presenza(models.Model):
     studente = models.ForeignKey(Studente, on_delete=models.CASCADE)
     data = models.DateField()
@@ -74,9 +81,9 @@ class Presenza(models.Model):
     giustificazione_confermata = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.studente.nome} {self.studente.cognome} - {self.data}'
-#_________________________________________________________________________________________________
-    
+        return f'{self.studente.user.first_name} {self.studente.user.last_name} - {self.data}'
+
+# Modello OrarioLezioni
 class OrarioLezioni(models.Model):
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
@@ -87,8 +94,8 @@ class OrarioLezioni(models.Model):
 
     def __str__(self):
         return f'{self.materia.nome_materia} - {self.giorno} {self.ora_inizio}-{self.ora_fine}'
-#_________________________________________________________________________________________________
 
+# Modello Agenda
 class Agenda(models.Model):
     classe = models.ForeignKey(Classe, on_delete=models.CASCADE)
     insegnante = models.ForeignKey(Insegnante, on_delete=models.CASCADE)
@@ -98,5 +105,3 @@ class Agenda(models.Model):
 
     def __str__(self):
         return f'Agenda per {self.classe} - {self.data}'
-#_________________________________________________________________________________________________
-
