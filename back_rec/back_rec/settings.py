@@ -29,11 +29,13 @@ INSTALLED_APPS = [
     'rec',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',  # Aggiungi questa linea
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Aggiungi questa linea come una delle prime
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -125,3 +127,7 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 
+# Configurazione per lo sviluppo, per la produzione sarà necessario essere più specifici
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+]

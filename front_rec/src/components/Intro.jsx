@@ -1,38 +1,44 @@
 import { useState } from 'react';
 import '../css/Intro.css';
-import { insegnanti, studenti } from './mockdb';
 import PropTypes from 'prop-types';
 
 function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
-  const [email, setEmail] = useState(''); // Stato per memorizzare l'email
+  const [username, setUsername] = useState(''); // Stato per lo username
   const [password, setPassword] = useState(''); // Stato per memorizzare la password
   const [error, setError] = useState(''); // Stato per memorizzare l'errore
 
-  // Funzione per gestire il login
-  const handleSubmit = (e) => {
+   // Funzione per gestire il login
+   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Cerca l'utente sia tra insegnanti che studenti
-    const utente = insegnanti.find(user => user.email === email && user.password === password) 
-                || studenti.find(user => user.email === email && user.password === password);
+    try {
+      const response = await fetch('http://localhost:8000/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password }) // Invia username e password
+      });
 
-    if (utente) {
-      // Login riuscito
-      setLoggedIn(true); // Aggiorna lo stato di login
-      setUtenteLoggato(utente); // Memorizza l'utente loggato (insegnante o studente)
-      setError(''); // Reset dell'errore
-    } else {
-      // Login fallito
-      setError('Email o password errati');
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token); // Salva il token nel localStorage
+        setLoggedIn(true); // Imposta lo stato di login
+        setUtenteLoggato({ username, ruolo: data.role }); // Imposta lo stato utente loggato, includendo il ruolo se fornito
+        setError(''); // Reset dell'errore
+      } else {
+        setError('Credenziali non valide');
+      }
+    } catch (error) {
+      setError('Errore di connessione');
     }
   };
 
   // Funzione per gestire il logout
   const handleLogout = () => {
-    setLoggedIn(false); // Reimposta lo stato di login nel componente genitore
-    setUtenteLoggato(null); // Svuota l'utente loggato
-    setEmail(''); // Reimposta il campo email
-    setPassword(''); // Reimposta il campo password
+    localStorage.removeItem('token'); // Rimuove il token dal localStorage
+    setLoggedIn(false); // Reset dello stato di login
+    setUtenteLoggato(null); // Reset dello stato utente loggato
+    setUsername(''); // Reset del campo username
+    setPassword(''); // Reset del campo password
   };
 
   return (
@@ -42,22 +48,22 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
       {/* Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire */}
       {loggedIn ? (
         <div>
-          <p>Benvenuto {utenteLoggato?.nome} {utenteLoggato?.cognome}!</p>
+          <p>Benvenut* {utenteLoggato?.username}!</p>
           <button onClick={handleLogout} className="cta-button">Esci</button>
         </div>
       ) : (
         // Altrimenti, mostra il form di login
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">Username:</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              placeholder="Inserisci la tua email"
-              autoComplete="email"
+              placeholder="Inserisci la tua username"
+              autoComplete="username"
             />
           </div>
           <div className="form-group">
@@ -85,8 +91,8 @@ Intro.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
   setUtenteLoggato: PropTypes.func.isRequired,
   utenteLoggato: PropTypes.shape({
-    nome: PropTypes.string,
-    cognome: PropTypes.string
+    username: PropTypes.string,
+    ruolo: PropTypes.string
   }),
 };
 
