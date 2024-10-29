@@ -25,10 +25,10 @@
   width: auto; /* Le colonne occupano la stessa larghezza */
 }
 
-.orario-table th {
+/*.orario-table th {
   background-color: #f5f5f5;
   font-weight: bold;
-}
+}*/
 
 .orario-table select {
   width: 100%;
@@ -36,6 +36,12 @@
   font-size: 12px; /* Riduci la dimensione del font */
   height: auto; /* Imposta l'altezza automatica */
   box-sizing: border-box;
+  background-color: transparent; /* Colore di sfondo iniziale */
+  transition: background-color 0.3s; /* Transizione per il cambio di colore */
+}
+
+.orario-table select.filled {
+  background-color: #ff7f50; /* Cambia il colore di sfondo quando un valore è inserito */
 }
 
 button {

@@ -2,9 +2,16 @@
 body {
   font-family: Arial, sans-serif; /*specifica il font del carattere da usare. in questo caso arial come principale e se non disponibuile usa sans-serif*/
   /*margin e padding impostati a 0 eliminiano gli sapzi predefiniti dal browser facendo iniziare la pagina dal bordo della finestra */
-  margin: 0; /* rimuove i margini */
+  margin: 2vh; /* rimuove i margini */
   padding: 0; /* rimuove i padding */
   background-color: #f0f0f0; /* imposta il colore di sfondo */
+}
+
+/* Layout principale dell'app */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Occupa l'intera altezza della finestra */
 }
 
 /*CSS applicato su tutti gli elementi cntenuti in main*/

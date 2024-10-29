@@ -1,20 +1,5 @@
-
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-class User(AbstractUser):
-    ROLE_CHOICES = [
-        ('insegnante', 'Insegnante'),
-        ('studente', 'Studente'),
-    ]
-    
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-    email = models.EmailField(unique=True)
-
-    REQUIRED_FIELDS = ['email', 'role']  # Campi obbligatori oltre a username e password
-
-    def __str__(self):
-        return f"{self.username} ({self.role})"
+from django.contrib.auth.models import User
 
 class Scuola(models.Model):
     nome = models.CharField(max_length=100)
@@ -47,7 +32,8 @@ class Insegnante(models.Model):
 
 class Materia(models.Model):
     nome = models.CharField(max_length=100)
-    classi = models.ManyToManyField(Classe, related_name="materie")
+    classi = models.ManyToManyField('Classe', related_name="materie")
+    utenti = models.ManyToManyField(User, related_name="materie")
 
     def __str__(self):
         return self.nome
@@ -90,4 +76,4 @@ class Orario(models.Model):
     ora_fine = models.TimeField()
 
     def __str__(self):
-        return f"{self.classe} - {self.materia} ({self.giorno} {self.ora_inizio} - {self.ora_fine})"
+        return f"{self.classe} - {self.materia} ({self.giornoSettimana} {self.ora_inizio} - {self.ora_fine})"

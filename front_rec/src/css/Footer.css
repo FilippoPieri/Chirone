@@ -2,6 +2,6 @@ footer {
     background-color: #2c3e50; /* Colore di sfondo */
     color: white; /* Colore del testo */
     text-align: center; /* centra i testi nei riquadri */
-    padding: 10px 0px; /* crea una divisione di 10px sotto e sopra  il contenuto di foother e 0px a sinistra e destra tra i riquadri */
-    margin-top: 20px; /* crea una divisione sopra di 20px agli elementi contenuti in footer. divide footer da features*/
+    padding: 1vh 0vh; /* crea una divisione di 10px sotto e sopra  il contenuto di foother e 0px a sinistra e destra tra i riquadri */
+    margin-top: auto; /* crea una divisione sopra di 20px agli elementi contenuti in footer. divide footer da features*/
 }

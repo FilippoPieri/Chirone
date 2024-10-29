@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../css/Registro.css';
 import { studenti } from './mockdb';
 import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
@@ -15,35 +15,41 @@ function Registro({ selectedClass, onSubmit }) {
   // Recupera gli studenti della classe selezionata
   const studentiClasse = studenti.filter(studente => studente.classeId === selectedClass.id);
 
+  // Inizializzazione dello stato di presenza per ogni studente
+  useEffect(() => {
+    if (Object.keys(statoPresenze).length === 0 && studentiClasse.length > 0) {
+      const statiIniziali = studentiClasse.reduce((acc, studente) => {
+        acc[studente.id] = "Presente";
+        return acc;
+      }, {});
+      setStatoPresenze(statiIniziali);
+    }
+  }, [studentiClasse]);
+
  // Funzione per gestire il cambio di presenza
 const togglePresenza = (studenteId) => {
-  setStatoPresenze(prevStato => ({
-    ...prevStato,
-    [studenteId]: prevStato[studenteId] === "Presente" ? "Assente" : "Presente"
-  }));
+  setStatoPresenze(prevStato => {
+    // Calcola il nuovo stato fuori dalla dichiarazione dell'oggetto
+    const nuovoStato = prevStato[studenteId] === "Presente" ? "Assente" : "Presente";
+    return {
+      ...prevStato,
+      [studenteId]: nuovoStato  // Assegna il nuovo stato calcolato
+    };
+  });
 };
 
   // Funzione per gestire l'entrata in ritardo
   const handleEntrataChange = (studenteId, time) => {
-    setEntrataRitardo(prev => ({
-      ...prev,
-      [studenteId]: time
-    }));
+    setEntrataRitardo(prev => ({...prev, [studenteId]: time }));
   };
 
   // Funzione per gestire l'uscita anticipata
   const handleUscitaChange = (studenteId, time) => {
-    setUscitaAnticipata(prev => ({
-      ...prev,
-      [studenteId]: time
-    }));
+    setUscitaAnticipata(prev => ({...prev, [studenteId]: time }));
   };
 
   const handleConfermaGiustificazioneChange = (studenteId, confermato) => {
-    setConfermaGiustificazione(prev => ({
-      ...prev,
-      [studenteId]: confermato
-    }));
+    setConfermaGiustificazione(prev => ({...prev, [studenteId]: confermato }));
   };
 
   // Funzione per salvare le presenze

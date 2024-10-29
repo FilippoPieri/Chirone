@@ -23,6 +23,10 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
   
     const [mostraOrarioSettimanale, setMostraOrarioSettimanale] = useState(false); // Stato per visualizzare l'orario settimanale
     const [inserisciOrarioVisible, setInserisciOrarioVisible] = useState(true); // Stato per mostrare/nascondere il form di inserimento orario
+    // Filtra le materie dell'insegnante loggato
+    const materieInsegnante = utenteLoggato && utenteLoggato.id
+    ? materie.filter(materia => materia.insegnanteId === utenteLoggato.id)
+    : [];
 
     // Gestisce il cambiamento di una materia per un giorno e una certa ora
     const handleOrarioChange = (giorno, ora, materia) => {
@@ -33,12 +37,15 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
           [ora]: materia
         }
       }));
-    };
 
-    // Filtra le materie dell'insegnante loggato
-    const materieInsegnante = utenteLoggato && utenteLoggato.id
-    ? materie.filter(materia => materia.insegnanteId === utenteLoggato.id)
-    : [];
+        // Aggiungi una classe per cambiare il colore
+      const selectElement = document.getElementById(`orario-${giorno}-${ora}`);
+      if (materia) {
+          selectElement.classList.add('filled');
+      } else {
+          selectElement.classList.remove('filled');
+      }
+    };
 
     const handleSalvaOrario = () => {
       console.log("Orario salvato per la classe:", selectedClass, "Orario:", orario);
@@ -60,16 +67,12 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
 
         {/* Pulsante per mostrare l'orario settimanale */}
         {!mostraOrarioSettimanale && (
-          <button onClick={handleMostraOrarioSettimanale}>
-            Mostra Orario Settimanale
-          </button>
+          <button onClick={handleMostraOrarioSettimanale}>Mostra Orario Settimanale</button>
         )}
         
         {/* Pulsante per tornare alla visualizzazione dell'inserimento orario */}
         {mostraOrarioSettimanale && (
-          <button onClick={handleInserisciOrario}>
-            Inserisci Orario
-          </button>
+          <button onClick={handleInserisciOrario}>Inserisci Orario</button>
         )}
 
         {/* Visualizzazione dell'orario settimanale tramite il componente Visualizzaorario */}
