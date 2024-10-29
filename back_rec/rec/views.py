@@ -1,15 +1,31 @@
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import authenticate, login
-from .serializers import UserSerializer
+from rest_framework.authtoken.models import Token
+from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 
-class LoginAPIView(APIView):
+class CustomLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        
+        # Recupera l'utente ignorando il case dell'username
+        user = User.objects.filter(username__iexact=username).first()
+        if user:
+            # Recupera l'hash della password dal database
+            db_password_hash = user.password
+            
+            # Usa il custom hasher per generare l'hash della password inviata
+            hasher = SHA3512PasswordHasher()
+            salt = db_password_hash.split('$')[1]  # Estrai il salt dall'hash salvato
+            generated_hash = hasher.encode(password, salt)
+            
+            # Confronto tra l'hash generato e quello nel database
+            if generated_hash == db_password_hash:
+                # Se l'autenticazione è riuscita, genera o recupera il token dell'utente
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+        # Risposta di errore per credenziali non valide
         return Response({"error": "Credenziali non valide"}, status=status.HTTP_400_BAD_REQUEST)

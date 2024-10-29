@@ -124,10 +124,26 @@ PASSWORD_HASHERS = [
     'rec.hashers.SHA3512PasswordHasher',  # Usa il custom hasher SHA3-512
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',  # Backup hasher
     'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',  
 ]
 
 # Configurazione per lo sviluppo, per la produzione sarà necessario essere più specifici
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+'''LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}'''

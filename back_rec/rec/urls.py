@@ -1,7 +1,6 @@
 from django.urls import path
-from rest_framework.authtoken.views import obtain_auth_token
+from .views import CustomLoginView  # Importa la tua vista personalizzata
 
 urlpatterns = [
-    path("api/login/", obtain_auth_token, name="api_login"),
-    # Puoi aggiungere altre rotte API per altre funzionalità se necessario
+    path("api/login/", CustomLoginView.as_view(), name="api_login"),
 ]

@@ -10,27 +10,33 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
    // Funzione per gestire il login
    const handleSubmit = async (e) => {
     e.preventDefault();
+    const loginUrl = 'http://localhost:8000/api/login/';
+  
+    console.log("Username:", username);
+    console.log("Password:", password);
 
     try {
-      const response = await fetch('http://localhost:8000/api/login/', {
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password }) // Invia username e password
+        body: JSON.stringify({ username: username, password: password })
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem('token', data.token); // Salva il token nel localStorage
-        setLoggedIn(true); // Imposta lo stato di login
-        setUtenteLoggato({ username, ruolo: data.role }); // Imposta lo stato utente loggato, includendo il ruolo se fornito
-        setError(''); // Reset dell'errore
+        setLoggedIn(true); // Aggiorna lo stato di loggedIn
+        setUtenteLoggato({ username, ruolo: data.role }); // Assumi che ricevi il ruolo insieme al token
+        setError('');
       } else {
-        setError('Credenziali non valide');
+        const errData = await response.json();  // Estrarre e mostrare il messaggio di errore specifico
+        setError(errData.non_field_errors || 'Credenziali non valide');
       }
     } catch (error) {
       setError('Errore di connessione');
     }
   };
+  
 
   // Funzione per gestire il logout
   const handleLogout = () => {

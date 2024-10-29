@@ -41,6 +41,13 @@ export const studenti = [
     { id: 9, nome: 'Alessandro', cognome: 'Verde', dataNascita: '2011-07-25', classeId: 1, email: 'alessandro@verde.com', password: 'alessandro123', ruolo: 'studente' },
 ];
 
+export const materie = [
+    { id: 1, nomeMateria: 'Matematica', insegnanteId: 1, classiIds: [1, 3] },
+    { id: 2, nomeMateria: 'Italiano', insegnanteId: 2, classiIds: [2, 4] },
+    { id: 3, nomeMateria: 'Scienze', insegnanteId: 5, classiIds: [1, 3] },
+    { id: 4, nomeMateria: 'Educazione Fisica', insegnanteId: 8, classiIds: [1] },
+];
+
 // Voti
 export const voti = [
     { id: 1, studenteId: 1, materiaId: 1, scritto: 8.5, data: '2023-03-12' },
@@ -53,15 +60,6 @@ export const voti = [
     { id: 8, studenteId: 8, materiaId: 3, orale: 9.5, data: '2023-06-19' },
     { id: 9, studenteId: 9, materiaId: 1, scritto: 8.5, data: '2023-06-20' },
 ];
-
-// Materie
-export const materie = [
-    { id: 1, nomeMateria: 'Matematica', insegnanteId: 1, classiIds: [1, 3] },
-    { id: 2, nomeMateria: 'Italiano', insegnanteId: 2, classiIds: [2, 4] },
-    { id: 3, nomeMateria: 'Scienze', insegnanteId: 5, classiIds: [1, 3] },
-    { id: 4, nomeMateria: 'Educazione Fisica', insegnanteId: 8, classiIds: [1] },
-];
-
 
 
 // Presenze
