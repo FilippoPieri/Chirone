@@ -10,5 +10,3 @@ admin.site.register(Materia)
 admin.site.register(Voto)
 admin.site.register(Presenza)
 admin.site.register(Orario)
-
-

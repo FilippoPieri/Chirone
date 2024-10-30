@@ -26,14 +26,20 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
         const data = await response.json();
         localStorage.setItem('token', data.token); // Salva il token nel localStorage
         setLoggedIn(true); // Aggiorna lo stato di loggedIn
-        setUtenteLoggato({ username, ruolo: data.role }); // Assumi che ricevi il ruolo insieme al token
+        setUtenteLoggato({ 
+          username: username, 
+          nome: data.nome,  // Assumi che 'nome' venga inviato dal backend
+          cognome: data.cognome, // Assumi che 'cognome' venga inviato dal backend
+          ruolo: data.role 
+        });
         setError('');
       } else {
         const errData = await response.json();  // Estrarre e mostrare il messaggio di errore specifico
         setError(errData.non_field_errors || 'Credenziali non valide');
       }
     } catch (error) {
-      setError('Errore di connessione');
+      console.error('Errore di connessione o nel server:', error); //debug
+    setError('Errore di connessione al server');
     }
   };
   
@@ -54,14 +60,14 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
       {/* Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire */}
       {loggedIn ? (
         <div>
-          <p>Benvenut* {utenteLoggato?.username}!</p>
+          <p>Benvenut* {utenteLoggato?.nome}{utenteLoggato?.cognome}!</p>
           <button onClick={handleLogout} className="cta-button">Esci</button>
         </div>
       ) : (
         // Altrimenti, mostra il form di login
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Username:</label>
+            <label htmlFor="username">Username:</label>
             <input
               type="text"
               id="username"
@@ -98,7 +104,9 @@ Intro.propTypes = {
   setUtenteLoggato: PropTypes.func.isRequired,
   utenteLoggato: PropTypes.shape({
     username: PropTypes.string,
-    ruolo: PropTypes.string
+    ruolo: PropTypes.string,
+    nome: PropTypes.string,
+    cognome: PropTypes.string
   }),
 };
 

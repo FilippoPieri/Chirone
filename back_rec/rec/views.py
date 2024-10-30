@@ -25,7 +25,22 @@ class CustomLoginView(APIView):
             if generated_hash == db_password_hash:
                 # Se l'autenticazione è riuscita, genera o recupera il token dell'utente
                 token, created = Token.objects.get_or_create(user=user)
-                return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+                # Determina il ruolo dell'utente
+                # Determina il ruolo dall'appartenenza ai gruppi
+                if user.groups.filter(name='Insegnante').exists():
+                    role = 'insegnante'
+                elif user.groups.filter(name='Studente').exists():
+                    role = 'studente'
+                else:
+                    role = 'nessun ruolo definito'  # o gestisci come preferisci
+                
+                return Response({
+                    "token": token.key, 
+                    "role": role, 
+                    "nome": user.first_name,  # Aggiungi il nome
+                    "cognome": user.last_name  # Aggiungi il cognome
+                }, status=status.HTTP_200_OK)
 
         # Risposta di errore per credenziali non valide
         return Response({"error": "Credenziali non valide"}, status=status.HTTP_400_BAD_REQUEST)

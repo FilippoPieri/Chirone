@@ -24,7 +24,7 @@ function FeaturesStudenti({ utenteLoggato }) {
     <section className="features-container">
       <div className="features-list">
         <div className="feature" onClick={handleRegistroClick}>
-          <h3>Registro</h3>
+          <h3>Registro studente</h3>
           <p>Visualizza il tuo registro personale.</p>
         </div>
         <div className="feature" onClick={handleVotiClick}>
