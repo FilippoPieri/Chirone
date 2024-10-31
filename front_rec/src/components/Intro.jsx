@@ -8,40 +8,50 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   const [error, setError] = useState(''); // Stato per memorizzare l'errore
 
    // Funzione per gestire il login
-   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const loginUrl = 'http://localhost:8000/api/login/';
-  
-    console.log("Username:", username);
-    console.log("Password:", password);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const loginUrl = 'http://localhost:8000/api/login/';
 
-    try {
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password })
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
+  //console.log("Username:", username);  // Debug: verifica username
+  //console.log("Password:", password);  // Debug: verifica password
+
+  try {
+    const response = await fetch(loginUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, password: password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      //console.log("Dati di login ricevuti:", data);  // Debug: visualizza i dati JSON di login
+      
+      // Controlla che i dati necessari siano presenti nella risposta
+      if (data.token && data.id && data.nome && data.cognome && data.role) {
         localStorage.setItem('token', data.token); // Salva il token nel localStorage
         setLoggedIn(true); // Aggiorna lo stato di loggedIn
         setUtenteLoggato({ 
           username: username, 
-          nome: data.nome,  // Assumi che 'nome' venga inviato dal backend
-          cognome: data.cognome, // Assumi che 'cognome' venga inviato dal backend
-          ruolo: data.role 
+          id: data.id,  
+          nome: data.nome,  // Nome dell'utente dal backend
+          cognome: data.cognome, // Cognome dell'utente dal backend
+          ruolo: data.role  // Ruolo dell'utente dal backend
         });
-        setError('');
+        setError('');  // Resetta eventuali errori
       } else {
-        const errData = await response.json();  // Estrarre e mostrare il messaggio di errore specifico
-        setError(errData.non_field_errors || 'Credenziali non valide');
+        console.error('Risposta incompleta dal server:', data);  // Debug: risposta mancante o incompleta
+        setError('Risposta incompleta dal server. Riprova più tardi.');
       }
-    } catch (error) {
-      console.error('Errore di connessione o nel server:', error); //debug
-    setError('Errore di connessione al server');
+    } else {
+      // Gestione di errori di credenziali o altri errori specifici
+      const errData = await response.json();  
+      setError(errData.error || 'Credenziali non valide'); // Mostra il messaggio di errore del backend o generico
     }
-  };
+  } catch (error) {
+    console.error('Errore di connessione o nel server:', error);  // Debug: problema di connessione
+    setError('Errore di connessione al server');  // Mostra errore di connessione
+  }
+};
   
 
   // Funzione per gestire il logout

@@ -25,12 +25,11 @@ function ClassSelector({ onClassSelect, insegnanteLoggato  }) {
   );
 }
 
-// Definisci i prop types
 ClassSelector.propTypes = {
   onClassSelect: PropTypes.func.isRequired,
   insegnanteLoggato: PropTypes.shape({
-    id: PropTypes.number.isRequired, // L'insegnante loggato deve avere un ID
-  }).isRequired,
+    id: PropTypes.number,
+  })
 };
 
 export default ClassSelector;

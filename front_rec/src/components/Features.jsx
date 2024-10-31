@@ -4,27 +4,55 @@ import ClassSelector from './ClassSelector';
 import Registro from './Registro';
 import InserimentoVoti from './InserimentoVoti';
 import OrarioLezioni from './OrarioLezioni';
-import { presenze } from './mockdb'; // Importiamo il mockdb dove salviamo i dati delle presenze
 import '../css/Features.css';
 
 function Features({ utenteLoggato }) { 
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [classes, setClasses] = useState([]);
 
-  const handleRegistroClick = () => {
-    setSelectedFeature('registro');
-    setSelectedClass(null); // Resetta la classe selezionata
-  };
+  const fetchClasses = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        //deb
+        console.log('Status:', response.status);
+        console.log('Content-Type:', response.headers.get('Content-Type'));
+        console.log('Token storage:', token); 
+        //fin
+        const response = await fetch('/api/insegnante/classes/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        //deb
+        console.log('Status:', response.status);
+        console.log('Content-Type:', response.headers.get('Content-Type'));
+        //fin
+        if (!response.ok) {
+          const errorText = await response.text(); // Ottieni la risposta come testo
+            console.error('Errore nella risposta del server:', errorText); // Mostra l'errore in console
+            throw new Error('Errore nella risposta del server');
+        }
+        const data = await response.json();
+        //deb
+        console.log("Classi ricevute dal backend:", data.classes);  // Debug: visualizza le classi
+        //fin
+        setClasses(data.classes);
+    } catch (error) {
+      console.error('Errore nel recupero delle classi:', error.message);
+    }
+};
 
-  const handleVotiClick = () => {
-    setSelectedFeature('voti');
-    setSelectedClass(null);
-  };
 
-  const handleOrarioClick = () => {
-    setSelectedFeature('orario');
-    setSelectedClass(null);
-  };
+const handleFeatureClick = async (feature) => {
+  if (classes.length === 0) {
+      await fetchClasses();
+  }
+  setSelectedFeature(feature);
+  setSelectedClass(null);
+};
 
   const handleBackClick = () => {
     setSelectedFeature(null); // Torna alla schermata principale
@@ -36,71 +64,54 @@ function Features({ utenteLoggato }) {
     return <p>Errore: Nessun utente loggato.</p>;
   }
 
-   // Definizione della funzione handleSubmit
-   const handleSubmit = (data) => {
-    // Aggiorna il mock database delle presenze
-    data.forEach((presenza) => {
-      presenze.push({
-        id: presenze.length + 1, // Genera un nuovo ID per ogni presenza
-        studenteId: presenza.studenteId,
-        data: new Date().toISOString().split('T')[0], // Data odierna
-        stato: presenza.presenza,
-        orarioEntrata: presenza.entrataRitardo || 'N/A',
-        orarioUscita: presenza.uscitaAnticipata || 'N/A'
-      });
-    });
-
-    console.log("Dati inviati e salvati nel mock database:", presenze);
-  };
-
   return (
     <section className="features-container">
       <div className="features-list">
-        <div className="feature" onClick={handleRegistroClick}>
-          <h3>Registro</h3>
-          <p>Gestisci il registro della classe.</p>
-        </div>
-        <div className="feature" onClick={handleVotiClick}>
-          <h3>Inserimento Voti</h3>
-          <p>Inserisci i voti degli studenti.</p>
-        </div>
-        <div className="feature" onClick={handleOrarioClick}>
-          <h3>Orario Lezioni</h3>
-          <p>Gestisci l&#39;orario delle lezioni.</p>
-        </div>
-       {/* <div className="feature" onClick={handleOrarioClick}>
-          <h3>Agenda</h3>
-          <p>Note,Compiti,Ecc...</p>
-        </div>
-        <div className="feature" onClick={handleOrarioClick}>
-          <h3>Argomenti trattati</h3>
-          <p>Argomenti trattati dall&#39;insegnante</p>
-        </div> */}
+          <div className="feature" onClick={() => handleFeatureClick('registro')}>
+            <h3>Registro</h3>
+            <p>Gestisci il registro della classe.</p>
+          </div>
+          <div className="feature" onClick={() => handleFeatureClick('voti')}>
+            <h3>Inserimento Voti</h3>
+            <p>Inserisci i voti degli studenti.</p>
+          </div>
+          <div className="feature" onClick={() => handleFeatureClick('voti')}>
+            <h3>Orario Lezioni</h3>
+            <p>Gestisci l&#39;orario delle lezioni.</p>
+          </div>
+        {/* <div className="feature" onClick={handleOrarioClick}>
+            <h3>Agenda</h3>
+            <p>Note,Compiti,Ecc...</p>
+          </div>
+          <div className="feature" onClick={handleOrarioClick}>
+            <h3>Argomenti trattati</h3>
+            <p>Argomenti trattati dall&#39;insegnante</p>
+          </div> */}
       </div>
 
       <div className="features-content">
         {/* Mostra il pulsante "Torna indietro" se è stata selezionata una funzionalità */}
-        {selectedFeature && !selectedClass && (
+        {selectedFeature && !selectedClass && utenteLoggato && (
           <>
             <button onClick={handleBackClick} className="back-button">← Torna indietro</button>
             {/* Passiamo `utenteLoggato` a `ClassSelector` */}
-            <ClassSelector onClassSelect={setSelectedClass} insegnanteLoggato={utenteLoggato} />
+            <ClassSelector onClassSelect={setSelectedClass} insegnanteLoggato={utenteLoggato} classes={classes} />
           </>
         )}
 
         {/* Mostra il componente Registro se è selezionata la classe e la funzionalità "registro" */}
         {selectedClass && selectedFeature === 'registro' && (
-          <Registro selectedClass={selectedClass}  onSubmit={handleSubmit} />
+          <Registro selectedClass={selectedClass} />
         )}
 
         {/* Mostra il componente Inserimento Voti se è selezionata la classe e la funzionalità "voti" */}
         {selectedClass && selectedFeature === 'voti' && (
-          <InserimentoVoti selectedClass={selectedClass} onSubmit={handleSubmit} utenteLoggato={utenteLoggato}/>
+          <InserimentoVoti selectedClass={selectedClass} utenteLoggato={utenteLoggato}/>
         )}
 
         {/* Mostra il componente Orario Lezioni se è selezionata la classe e la funzionalità "orario" */}
         {selectedClass && selectedFeature === 'orario' && (
-          <OrarioLezioni selectedClass={selectedClass} onSubmit={handleSubmit} utenteLoggato={utenteLoggato}/>
+          <OrarioLezioni selectedClass={selectedClass} utenteLoggato={utenteLoggato}/>
         )}
       </div>
     </section>
