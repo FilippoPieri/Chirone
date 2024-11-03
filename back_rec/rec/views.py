@@ -4,9 +4,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
-from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from .models import Insegnante
+import logging  # Importa logging
+
+# Configura il logger
+logger = logging.getLogger(__name__)
 
 class CustomLoginView(APIView):
     def post(self, request):
@@ -55,13 +60,47 @@ class CustomLoginView(APIView):
         # Risposta di errore per credenziali non valide
         return Response({"error": "Credenziali non valide"}, status=status.HTTP_400_BAD_REQUEST)
 
-@login_required
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_insegnante_classes(request):
     user = request.user
+    print("Utente autenticato:", user.username)  # Log dell'utente autenticato
+
+    # Controlla se l'utente fa parte del gruppo "Insegnante"
+    if not user.groups.filter(name='Insegnante').exists():
+        return Response({'error': 'Permesso negato'}, status=403)
+    
     try:
+        # Trova l'insegnante associato all'utente
         insegnante = Insegnante.objects.get(user=user)
-        classes = insegnante.materie.values_list('classi__anno', 'classi__sezione').distinct()
-        class_list = [{'anno': cls[0], 'sezione': cls[1]} for cls in classes]
-        return JsonResponse({'classes': class_list}, safe=False)
+        print("Insegnante trovato:", insegnante.user.username)
+        
+        # Ottieni tutte le classi e includi informazioni su scuola
+        classes = insegnante.materie.values(
+            'classi__anno', 'classi__sezione', 'classi__scuola__id', 'classi__scuola__nome'
+        ).distinct()
+        
+        # Crea la lista di classi con anno, sezione, id e nome della scuola
+        class_list = [
+            {
+                'anno': cls['classi__anno'],
+                'sezione': cls['classi__sezione'],
+                'scuola_id': cls['classi__scuola__id'],
+                'scuola_nome': cls['classi__scuola__nome']
+            }
+            for cls in classes
+        ]
+        
+        # Ritorna la risposta JSON con le classi
+        print("Classi trovate:", class_list)
+        return Response({'classes': class_list})
+    
     except Insegnante.DoesNotExist:
-        return JsonResponse({'error': 'Insegnante non trovato'}, status=404)
+        # Gestisci il caso in cui l'insegnante non è trovato
+        print("Insegnante non trovato per l'utente:", user.username)
+        return Response({'error': 'Insegnante non trovato'}, status=404)
+    
+    except Exception as e:
+        # Usa il logger per registrare l'errore e invia una risposta di errore 500
+        logger.error("Errore interno: %s", str(e))
+        return Response({'error': 'Errore interno del server'}, status=500)

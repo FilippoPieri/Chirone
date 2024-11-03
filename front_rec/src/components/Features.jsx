@@ -9,50 +9,11 @@ import '../css/Features.css';
 function Features({ utenteLoggato }) { 
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedFeature, setSelectedFeature] = useState(null);
-  const [classes, setClasses] = useState([]);
 
-  const fetchClasses = async () => {
-    try {
-        const token = localStorage.getItem('token');
-        //deb
-        console.log('Status:', response.status);
-        console.log('Content-Type:', response.headers.get('Content-Type'));
-        console.log('Token storage:', token); 
-        //fin
-        const response = await fetch('/api/insegnante/classes/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        //deb
-        console.log('Status:', response.status);
-        console.log('Content-Type:', response.headers.get('Content-Type'));
-        //fin
-        if (!response.ok) {
-          const errorText = await response.text(); // Ottieni la risposta come testo
-            console.error('Errore nella risposta del server:', errorText); // Mostra l'errore in console
-            throw new Error('Errore nella risposta del server');
-        }
-        const data = await response.json();
-        //deb
-        console.log("Classi ricevute dal backend:", data.classes);  // Debug: visualizza le classi
-        //fin
-        setClasses(data.classes);
-    } catch (error) {
-      console.error('Errore nel recupero delle classi:', error.message);
-    }
-};
-
-
-const handleFeatureClick = async (feature) => {
-  if (classes.length === 0) {
-      await fetchClasses();
-  }
-  setSelectedFeature(feature);
-  setSelectedClass(null);
-};
+  const handleFeatureClick = (feature) => {
+    setSelectedFeature(feature);
+    setSelectedClass(null);
+  };
 
   const handleBackClick = () => {
     setSelectedFeature(null); // Torna alla schermata principale
@@ -91,11 +52,11 @@ const handleFeatureClick = async (feature) => {
 
       <div className="features-content">
         {/* Mostra il pulsante "Torna indietro" se è stata selezionata una funzionalità */}
-        {selectedFeature && !selectedClass && utenteLoggato && (
+        {selectedFeature && !selectedClass && /*utenteLoggato && */(
           <>
             <button onClick={handleBackClick} className="back-button">← Torna indietro</button>
             {/* Passiamo `utenteLoggato` a `ClassSelector` */}
-            <ClassSelector onClassSelect={setSelectedClass} insegnanteLoggato={utenteLoggato} classes={classes} />
+            <ClassSelector onClassSelect={setSelectedClass} insegnanteLoggato={utenteLoggato} />
           </>
         )}
 
