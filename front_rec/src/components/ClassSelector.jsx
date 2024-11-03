@@ -39,9 +39,8 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
         setClassi(data.classes);
         setError('');
       } catch (err) {
-        const errorMessage = await err.text();
-        console.log("Errore di risposta:", errorMessage);  // Logga il corpo della risposta per più dettagli
-        setError(`Errore nel recupero delle classi: ${err.message}`);
+        console.log("Errore durante il fetch:", err);
+        setError(`Errore nel recupero delle classi: ${err.statusText || err.message}`);
         setClassi([]);
       } finally {
         setLoading(false);
@@ -58,6 +57,7 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
     <div className="class-list">
       {classi.length > 0 ? (
         classi.map(classe => (
+          // Utilizzare `classe.id` come chiave unica per ogni blocco di classe
           <div key={classe.id} className="class-block" onClick={() => onClassSelect(classe)}>
             <h4>{classe.anno} {classe.sezione}</h4>
             <p>Classe della scuola {classe.scuola_nome}</p>
