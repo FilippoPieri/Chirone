@@ -15,11 +15,12 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
       try {
         const token = localStorage.getItem('token');
         console.log('Token storage:', token);
-        const response = await fetch(`/api/insegnante/classes/`, {
+        const response = await fetch(`http://localhost:8000/api/insegnante/classes/`, {
           method: 'GET',
           headers: {
             'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'  // Forza la risposta in JSON
           }
         });
         //deb
@@ -38,6 +39,8 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
         setClassi(data.classes);
         setError('');
       } catch (err) {
+        const errorMessage = await err.text();
+        console.log("Errore di risposta:", errorMessage);  // Logga il corpo della risposta per più dettagli
         setError(`Errore nel recupero delle classi: ${err.message}`);
         setClassi([]);
       } finally {
@@ -57,7 +60,7 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
         classi.map(classe => (
           <div key={classe.id} className="class-block" onClick={() => onClassSelect(classe)}>
             <h4>{classe.anno} {classe.sezione}</h4>
-            <p>Classe della scuola {classe.scuolaId}</p>
+            <p>Classe della scuola {classe.scuola_nome}</p>
           </div>
         ))
       ) : (
@@ -74,4 +77,5 @@ ClassSelector.propTypes = {
   }).isRequired
 };
 
-export default ClassSelector;
+export default ClassSelector;    
+

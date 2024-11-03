@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from .models import Insegnante
 import logging  # Importa logging
+from rest_framework.views import exception_handler
+
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -64,23 +66,22 @@ class CustomLoginView(APIView):
 @permission_classes([IsAuthenticated])
 def get_insegnante_classes(request):
     user = request.user
-    print("Utente autenticato:", user.username)  # Log dell'utente autenticato
+    print("Utente autenticato:", user.username)
 
     # Controlla se l'utente fa parte del gruppo "Insegnante"
     if not user.groups.filter(name='Insegnante').exists():
         return Response({'error': 'Permesso negato'}, status=403)
-    
+
     try:
-        # Trova l'insegnante associato all'utente
         insegnante = Insegnante.objects.get(user=user)
         print("Insegnante trovato:", insegnante.user.username)
         
-        # Ottieni tutte le classi e includi informazioni su scuola
+        # Ottieni le classi
         classes = insegnante.materie.values(
             'classi__anno', 'classi__sezione', 'classi__scuola__id', 'classi__scuola__nome'
         ).distinct()
         
-        # Crea la lista di classi con anno, sezione, id e nome della scuola
+        # Crea la lista di classi
         class_list = [
             {
                 'anno': cls['classi__anno'],
@@ -91,16 +92,13 @@ def get_insegnante_classes(request):
             for cls in classes
         ]
         
-        # Ritorna la risposta JSON con le classi
-        print("Classi trovate:", class_list)
         return Response({'classes': class_list})
     
     except Insegnante.DoesNotExist:
-        # Gestisci il caso in cui l'insegnante non è trovato
         print("Insegnante non trovato per l'utente:", user.username)
         return Response({'error': 'Insegnante non trovato'}, status=404)
     
     except Exception as e:
-        # Usa il logger per registrare l'errore e invia una risposta di errore 500
-        logger.error("Errore interno: %s", str(e))
+        print("Errore interno:", str(e))
+        # Usa sempre JSON per errori
         return Response({'error': 'Errore interno del server'}, status=500)
