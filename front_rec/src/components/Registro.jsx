@@ -1,95 +1,86 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from 'react';
 import '../css/Registro.css';
-import { studenti } from './mockdb';
-import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
+//import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
 
-function Registro({ selectedClass, onSubmit }) {
-  const [statoPresenze, setStatoPresenze] = useState({});
-  const [entrataRitardo, setEntrataRitardo] = useState({});
-  const [uscitaAnticipata, setUscitaAnticipata] = useState({});
-  const [confermaGiustificazione, setConfermaGiustificazione] = useState({});
-  const [mostraVisualizzaRegistro, setMostraVisualizzaRegistro] = useState(false); // Stato per mostrare/nascondere VisualizzaRegistro
-  const [datiPresenze, setDatiPresenze] = useState([]); // Nuovo stato per i dati delle presenze
+function Registro({ selectedClass }) {
+  const [studentiClasse, setStudentiClasse] = useState([]);
+  const [presenze, setPresenze] = useState({});
 
-  // Recupera gli studenti della classe selezionata
-  const studentiClasse = studenti.filter(studente => studente.classeId === selectedClass.id);
-
-  // Inizializzazione dello stato di presenza per ogni studente
   useEffect(() => {
-    if (Object.keys(statoPresenze).length === 0 && studentiClasse.length > 0) {
-      const statiIniziali = studentiClasse.reduce((acc, studente) => {
-        acc[studente.id] = "Presente";
-        return acc;
-      }, {});
-      setStatoPresenze(statiIniziali);
+    async function fetchStudenti() {
+      try {
+        const response = await fetch(`http://localhost:8000/api/classi/${selectedClass.id}/studenti/`);
+        const data = await response.json();
+        setStudentiClasse(data.studenti);
+        const initialPresenze = data.studenti.reduce((acc, studente) => {
+          acc[studente.id] = { presente: true, entrata: '', uscita: '', giustificato: false };
+          return acc;
+        }, {});
+        setPresenze(initialPresenze);
+      } catch (error) {
+        console.error("Errore nel fetch degli studenti:", error);
+      }
     }
-  }, [studentiClasse]);
 
- // Funzione per gestire il cambio di presenza
-const togglePresenza = (studenteId) => {
-  setStatoPresenze(prevStato => {
-    // Calcola il nuovo stato fuori dalla dichiarazione dell'oggetto
-    const nuovoStato = prevStato[studenteId] === "Presente" ? "Assente" : "Presente";
-    return {
-      ...prevStato,
-      [studenteId]: nuovoStato  // Assegna il nuovo stato calcolato
-    };
-  });
-};
+    if (selectedClass) {
+      fetchStudenti();
+    }
+  }, [selectedClass]);
 
-  // Funzione per gestire l'entrata in ritardo
-  const handleEntrataChange = (studenteId, time) => {
-    setEntrataRitardo(prev => ({...prev, [studenteId]: time }));
-  };
-
-  // Funzione per gestire l'uscita anticipata
-  const handleUscitaChange = (studenteId, time) => {
-    setUscitaAnticipata(prev => ({...prev, [studenteId]: time }));
-  };
-
-  const handleConfermaGiustificazioneChange = (studenteId, confermato) => {
-    setConfermaGiustificazione(prev => ({...prev, [studenteId]: confermato }));
-  };
-
-  // Funzione per salvare le presenze
-  const handleSubmit = () => {
-    const presenzeDaInviare = studentiClasse.map(studente => ({
-      nome: studente.nome,
-      cognome: studente.cognome,
-      dataNascita: studente.dataNascita,
-      presenza: statoPresenze[studente.id] || "Presente", // Predefinito a "Presente"
-      entrataRitardo: entrataRitardo[studente.id] || "",
-      uscitaAnticipata: uscitaAnticipata[studente.id] || "",
-      giustificazioneConfermata: confermaGiustificazione[studente.id] || false, // Aggiunge la conferma della giustificazione
+  const handlePresenceChange = (id) => {
+    setPresenze(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        presente: !prev[id].presente
+      }
     }));
-
-    // Salva i dati delle presenze nello stato
-    setDatiPresenze(presenzeDaInviare);
-    onSubmit(presenzeDaInviare); // Invia i dati
   };
 
-  // Condizione per mostrare VisualizzaRegistro
-  if (mostraVisualizzaRegistro) {
-    return (
-      <VisualizzaRegistro
-        presenze={datiPresenze} // Passa i dati delle presenze
-        onBack={() => setMostraVisualizzaRegistro(false)} // Funzione per tornare a Registro
-      />
-    );
-  }
+  const handleTimeChange = (id, time, type) => {
+    setPresenze(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [type]: time
+      }
+    }));
+  };
+
+  const handleJustifiedChange = (id, checked) => {
+    setPresenze(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        giustificato: checked
+      }
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await fetch('http://localhost:8000/api/presenze/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ presenze })
+      });
+    } catch (error) {
+      console.error("Errore nell'invio delle presenze:", error);
+    }
+  };
+
 
   return (
     <div className="class-details">
       <h3>Registro della classe {selectedClass.anno}{selectedClass.sezione}</h3>
-
-      <button onClick={() => setMostraVisualizzaRegistro(true)}>Mostra Visualizza Registro</button>
-
       <table className="registro-table">
         <thead>
           <tr>
             <th>Studente</th>
-            <th>Data di nascita</th>
+            <th>ID</th>
             <th>Presenza</th>
             <th>Entrata in Ritardo</th>
             <th>Uscita anticipata</th>
@@ -97,54 +88,40 @@ const togglePresenza = (studenteId) => {
           </tr>
         </thead>
         <tbody>
-          {studentiClasse.map(studente => {
-            const stato = statoPresenze[studente.id] || "Presente"; // Stato predefinito "Presente"
-            const rigaClasse = stato === "Presente" ? 'riga-verde' : 'riga-rossa'; // Assegna la classe in base allo stato
-
-            return (
-              <tr key={studente.id} className={rigaClasse}>
-                <td>{studente.nome} {studente.cognome}</td>
-                <td>{studente.dataNascita}</td>
-                <td>
-                <button 
-                  id={`presenza-${studente.id}`}  // Aggiungi id univoco
-                  name={`presenza-${studente.id}`}  // Aggiungi name univoco
-                  onClick={() => togglePresenza(studente.id)}
-                  className={stato === "Presente" ? "presente-btn" : "assente-btn"}
-                >
-                  {stato}
+          {studentiClasse.map(studente => (
+            <tr key={studente.id}>
+              <td>{studente.nome} {studente.cognome}</td>
+              <td>
+                <button onClick={() => handlePresenceChange(studente.id)}>
+                  {presenze[studente.id].presente ? 'Presente' : 'Assente'}
                 </button>
-                </td>
-                <td>
-                <input 
-                  type="time" 
-                  id={`entrata-${studente.id}`}  // Aggiungi id univoco
-                  name={`entrata-${studente.id}`}  // Aggiungi name univoco
-                  onChange={(e) => handleEntrataChange(studente.id, e.target.value)} 
+              </td>
+              <td>
+                <input
+                  type="time"
+                  value={presenze[studente.id].entrata}
+                  onChange={(e) => handleTimeChange(studente.id, e.target.value, 'entrata')}
                 />
-                </td>
-                <td>
-                <input 
-                  type="time" 
-                  id={`uscita-${studente.id}`}  // Aggiungi id univoco
-                  name={`uscita-${studente.id}`}  // Aggiungi name univoco
-                  onChange={(e) => handleUscitaChange(studente.id, e.target.value)} 
+              </td>
+              <td>
+                <input
+                  type="time"
+                  value={presenze[studente.id].uscita}
+                  onChange={(e) => handleTimeChange(studente.id, e.target.value, 'uscita')}
                 />
-                </td>
-                <td>
-                  <input 
-                    type="checkbox"
-                    id={`giustifica-${studente.id}`}  // Aggiungi id univoco
-                    name={`giustifica-${studente.id}`}  // Aggiungi name univoco
-                    onChange={(e) => handleConfermaGiustificazioneChange(studente.id, e.target.checked)}
-                  />
-                </td>
-              </tr>
-            );
-          })}
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={presenze[studente.id].giustificato}
+                  onChange={(e) => handleJustifiedChange(studente.id, e.target.checked)}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
-      <button onClick={handleSubmit}>Firma</button>
+      <button onClick={handleSubmit}>Invia Presenze</button>
     </div>
   );
 }

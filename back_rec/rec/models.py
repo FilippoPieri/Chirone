@@ -26,6 +26,7 @@ class Studente(models.Model):
 class Insegnante(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="insegnante_profile")
     materie = models.ManyToManyField('Materia', related_name="insegnanti")
+    classi_insegnate = models.ManyToManyField('Classe', related_name="insegnanti_insegnano", blank=True)  # Opzionale con 'blank=True'
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -33,7 +34,7 @@ class Insegnante(models.Model):
 class Materia(models.Model):
     nome = models.CharField(max_length=100)
     classi = models.ManyToManyField('Classe', related_name="materie")
-    utenti = models.ManyToManyField(User, related_name="materie")
+    utenti = models.ManyToManyField(User, related_name="materie_utente")
 
     def __str__(self):
         return self.nome

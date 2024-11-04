@@ -1,15 +1,16 @@
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+from rest_framework.views import exception_handler
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.http import JsonResponse
-from .models import Insegnante
+from .models import Insegnante, Classe, Studente
 import logging  # Importa logging
-from rest_framework.views import exception_handler
+from django.shortcuts import get_object_or_404
+
 
 
 # Configura il logger
@@ -76,20 +77,19 @@ def get_insegnante_classes(request):
         insegnante = Insegnante.objects.get(user=user)
         print("Insegnante trovato:", insegnante.user.username)
         
-        # Ottieni le classi
-        classes = insegnante.materie.values(
-            'classi__anno', 'classi__sezione', 'classi__scuola__id', 'classi__scuola__nome'
-        ).distinct()
+        # Recupera le classi specifiche insegnate dall'insegnante
+        classi = insegnante.classi_insegnate.all()
         
         # Crea la lista di classi
         class_list = [
             {
-                'anno': cls['classi__anno'],
-                'sezione': cls['classi__sezione'],
-                'scuola_id': cls['classi__scuola__id'],
-                'scuola_nome': cls['classi__scuola__nome']
+                'id': cls.id,
+                'anno': cls.anno,  # Accesso diretto all'attributo
+                'sezione': cls.sezione,  # Accesso diretto all'attributo
+                'scuola_id': cls.scuola.id,  # Accesso diretto all'attributo tramite relazione ForeignKey
+                'scuola_nome': cls.scuola.nome  # Accesso diretto all'attributo tramite relazione ForeignKey
             }
-            for cls in classes
+            for cls in classi
         ]
         
         return Response({'classes': class_list})
@@ -102,3 +102,33 @@ def get_insegnante_classes(request):
         print("Errore interno:", str(e))
         # Usa sempre JSON per errori
         return Response({'error': 'Errore interno del server'}, status=500)
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_students_by_class(request, class_id):
+    user = request.user
+    print("Utente autenticato:", user.username)
+
+    # Controlla se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
+    if not user.groups.filter(name='Insegnante').exists():
+        return Response({'error': 'Permesso negato'}, status=403)
+
+    classe = get_object_or_404(Classe, id=class_id)
+
+    # Opzionale: Verifica se l'insegnante ha l'accesso a questa classe specifica
+    # Questo può richiedere un modello o una relazione aggiuntiva che collega insegnanti e classi
+    if not classe.insegnanti_insegnano.filter(id=user.id).exists():
+        return Response({'error': 'Accesso non autorizzato a questa classe'}, status=403)
+
+    studenti = classe.studenti.all()
+
+    student_list = [
+        {
+            'nome': studente.user.first_name,
+            'cognome': studente.user.last_name,
+            'username': studente.user.username
+        }
+        for studente in studenti
+    ]
+
+    return Response({'students': student_list})

@@ -1,12 +1,11 @@
 // mockdb.js
 
-// Scuole
+
 export const scuole = [
     { id: 1, nome: 'Scuola Elementare A', indirizzo: 'Via Roma 1'},
     { id: 2, nome: 'Scuola Media B', indirizzo: 'Via Milano 10'},
 ];
 
-// Classi
 export const classi = [
     { id: 1, sezione: 'A', anno: 1, scuolaId: 1 },
     { id: 2, sezione: 'B', anno: 2, scuolaId: 2 },
@@ -16,7 +15,7 @@ export const classi = [
     { id: 6, sezione: 'F', anno: 2, scuolaId: 2 },
 ];
 
-// Insegnanti
+
 export const insegnanti = [
     { id: 1, nome: 'Lucia', cognome: 'Verdi', materia: 'Matematica', scuolaId: 1, email: 'lucia@verdi', password: 'lucia123', ruolo: 'insegnante'  },
     { id: 2, nome: 'Giovanni', cognome: 'Neri', materia: 'Italiano', scuolaId: 2, email: 'giovanni@neri', password: 'giovanni123', ruolo: 'insegnante'  },
@@ -28,7 +27,7 @@ export const insegnanti = [
     { id: 8, nome: 'Stefania', cognome: 'Verdi', materia: 'Educazione Fisica', scuolaId: 1, email: 'stefania@verdi', password: 'stefania123', ruolo: 'insegnante'  },
 ];
 
-// Studenti
+
 export const studenti = [
     { id: 1, nome: 'Mario', cognome: 'Rossi', dataNascita: '2010-06-15', classeId: 1, email: 'mario@rossi.com', password: 'mario123', ruolo: 'studente' },
     { id: 2, nome: 'Giulia', cognome: 'Bianchi', dataNascita: '2009-09-21', classeId: 2, email: 'giulia@bianchi.com', password: 'giulia123', ruolo: 'studente' },
@@ -48,7 +47,7 @@ export const materie = [
     { id: 4, nomeMateria: 'Educazione Fisica', insegnanteId: 8, classiIds: [1] },
 ];
 
-// Voti
+
 export const voti = [
     { id: 1, studenteId: 1, materiaId: 1, scritto: 8.5, data: '2023-03-12' },
     { id: 2, studenteId: 2, materiaId: 2, orale: 8.5, data: '2023-03-13' },
@@ -62,7 +61,7 @@ export const voti = [
 ];
 
 
-// Presenze
+
 export const presenze = [
     { id: 1, studenteId: 1, data: '2023-09-14', stato: 'Presente', orarioEntrata: '10:00', orarioUscita: '13:00', giustificazioneConfermata: false },
     { id: 2, studenteId: 2, data: '2023-09-14', stato: 'Assente', orarioEntrata: '00:00', orarioUscita: '00:00', giustificazioneConfermata: true  },
@@ -73,8 +72,7 @@ export const presenze = [
 ];
 
 export const orariLezione = [
-    // Scuola Elementare A (ID: 1)
-    // Classe 1A
+    
     { id: 1, materiaId: 1, insegnanteId: 1, classeId: 1, scuolaId: 1, giorno: 'Lunedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 2, materiaId: 3, insegnanteId: 5, classeId: 1, scuolaId: 1, giorno: 'Lunedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 3, materiaId: 4, insegnanteId: 8, classeId: 1, scuolaId: 1, giorno: 'Lunedi', oraInizio: '10:00', oraFine: '11:00' },
@@ -111,54 +109,49 @@ export const orariLezione = [
     { id: 4, materiaId: 1, insegnanteId: 1, classeId: 1, scuolaId: 1, giorno: 'Sabato', oraInizio: '11:00', oraFine: '12:00' },
     { id: 5, materiaId: 2, insegnanteId: 2, classeId: 1, scuolaId: 1, giorno: 'Sabato', oraInizio: '12:00', oraFine: '13:00' },
     
-    // Classe 1C
+    
     { id: 6, materiaId: 1, insegnanteId: 1, classeId: 3, scuolaId: 1, giorno: 'Lunedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 7, materiaId: 3, insegnanteId: 5, classeId: 3, scuolaId: 1, giorno: 'Lunedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 8, materiaId: 4, insegnanteId: 8, classeId: 3, scuolaId: 1, giorno: 'Lunedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 9, materiaId: 1, insegnanteId: 3, classeId: 3, scuolaId: 1, giorno: 'Lunedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 10, materiaId: 2, insegnanteId: 4, classeId: 3, scuolaId: 1, giorno: 'Lunedi', oraInizio: '12:00', oraFine: '13:00' },
 
-    // Scuola Media B (ID: 2)
-    // Classe 2B
+ 
     { id: 11, materiaId: 2, insegnanteId: 2, classeId: 2, scuolaId: 2, giorno: 'Lunedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 12, materiaId: 1, insegnanteId: 1, classeId: 2, scuolaId: 2, giorno: 'Lunedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 13, materiaId: 3, insegnanteId: 5, classeId: 2, scuolaId: 2, giorno: 'Lunedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 14, materiaId: 4, insegnanteId: 8, classeId: 2, scuolaId: 2, giorno: 'Lunedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 15, materiaId: 1, insegnanteId: 3, classeId: 2, scuolaId: 2, giorno: 'Lunedi', oraInizio: '12:00', oraFine: '13:00' },
     
-    // Classe 2D
+    
     { id: 16, materiaId: 2, insegnanteId: 2, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 17, materiaId: 1, insegnanteId: 1, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 18, materiaId: 3, insegnanteId: 5, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 19, materiaId: 4, insegnanteId: 8, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 20, materiaId: 1, insegnanteId: 3, classeId: 4, scuolaId: 2, giorno: 'Lunedi', oraInizio: '12:00', oraFine: '13:00' },
    
-    // Ripeti per il resto dei giorni (Martedì, Mercoledì, Giovedì, Venerdì) per ciascuna classe e materia
-    // ...
     
-    // Esempio per Martedì (tutte le classi e le materie)
-    // Classe 1A
     { id: 21, materiaId: 1, insegnanteId: 1, classeId: 1, scuolaId: 1, giorno: 'Martedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 22, materiaId: 3, insegnanteId: 5, classeId: 1, scuolaId: 1, giorno: 'Martedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 23, materiaId: 4, insegnanteId: 8, classeId: 1, scuolaId: 1, giorno: 'Martedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 24, materiaId: 1, insegnanteId: 1, classeId: 1, scuolaId: 1, giorno: 'Martedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 25, materiaId: 2, insegnanteId: 2, classeId: 1, scuolaId: 1, giorno: 'Martedi', oraInizio: '12:00', oraFine: '13:00' },
     
-    // Classe 1C
+    
     { id: 26, materiaId: 1, insegnanteId: 1, classeId: 3, scuolaId: 1, giorno: 'Martedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 27, materiaId: 3, insegnanteId: 5, classeId: 3, scuolaId: 1, giorno: 'Martedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 28, materiaId: 4, insegnanteId: 8, classeId: 3, scuolaId: 1, giorno: 'Martedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 29, materiaId: 1, insegnanteId: 3, classeId: 3, scuolaId: 1, giorno: 'Martedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 30, materiaId: 2, insegnanteId: 4, classeId: 3, scuolaId: 1, giorno: 'Martedi', oraInizio: '12:00', oraFine: '13:00' },
     
-    // Classe 2B
+    
     { id: 31, materiaId: 2, insegnanteId: 2, classeId: 2, scuolaId: 2, giorno: 'Martedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 32, materiaId: 1, insegnanteId: 1, classeId: 2, scuolaId: 2, giorno: 'Martedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 33, materiaId: 3, insegnanteId: 5, classeId: 2, scuolaId: 2, giorno: 'Martedi', oraInizio: '10:00', oraFine: '11:00' },
     { id: 34, materiaId: 4, insegnanteId: 8, classeId: 2, scuolaId: 2, giorno: 'Martedi', oraInizio: '11:00', oraFine: '12:00' },
     { id: 35, materiaId: 1, insegnanteId: 3, classeId: 2, scuolaId: 2, giorno: 'Martedi', oraInizio: '12:00', oraFine: '13:00' },
     
-    // Classe 2D
+    
     { id: 36, materiaId: 2, insegnanteId: 2, classeId: 4, scuolaId: 2, giorno: 'Martedi', oraInizio: '08:00', oraFine: '09:00' },
     { id: 37, materiaId: 1, insegnanteId: 1, classeId: 4, scuolaId: 2, giorno: 'Martedi', oraInizio: '09:00', oraFine: '10:00' },
     { id: 38, materiaId: 3, insegnanteId: 5, classeId: 4, scuolaId: 2, giorno: 'Martedi', oraInizio: '10:00', oraFine: '11:00' },
