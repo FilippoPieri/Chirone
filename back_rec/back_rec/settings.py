@@ -140,30 +140,24 @@ REST_FRAMEWORK = {
     )
 }
 
-'''LOGGING = {
+LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
     },
     'handlers': {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': 'django_debug.log',
-            'formatter': 'verbose'
+            'formatter': 'standard',
         },
     },
     'loggers': {
@@ -172,16 +166,10 @@ REST_FRAMEWORK = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'django.db.backends': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'my_app': {  # Assicurati di sostituire 'my_app' con il nome della tua app Django
+        'rec': {  # Assicurati di sostituire 'rec' con il nome reale della tua app
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         },
-    }
+    },
 }
-'''

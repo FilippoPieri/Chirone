@@ -7,9 +7,10 @@ from rest_framework.authtoken.models import Token
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import Insegnante, Classe, Studente
+from .models import Insegnante, Classe
 import logging  # Importa logging
 from django.shortcuts import get_object_or_404
+
 
 
 
@@ -102,52 +103,33 @@ def get_insegnante_classes(request):
         print("Errore interno:", str(e))
         # Usa sempre JSON per errori
         return Response({'error': 'Errore interno del server'}, status=500)
-        
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_students_by_class(request, class_id):
+    logger.debug("Inizio elaborazione richiesta per la classe ID: %s", class_id)
+
+    # Recupera la classe usando il class_id e gestisce il caso in cui l'oggetto non esista
     classe = get_object_or_404(Classe, id=class_id)
-    print ("print riga 110 ","Classe:", classe)
-    print("print riga 111 ", "Class ID:", class_id)
+    logger.debug("Classe recuperata: %s, ID: %s", classe, class_id)
+
+    # Verifica se l'utente è autorizzato a insegnare in quella classe
     if not request.user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
-        print("sei a linea 113")
+        logger.error("Accesso negato: l'utente %s non insegna alla classe ID %s", request.user.username, class_id)
         return Response({'error': 'Non autorizzato'}, status=403)
-        
-    
-    user = request.user
-    print("print riga 118 ", "Utente:", user)
-    permissions = user.get_all_permissions()
-    print("print riga 120 ", "Permessi dell'utente:", permissions)
-    
-
-
-    # Log del token usato per la richiesta (solo per scopi di debugging, non usarlo in produzione)
-    token = request.auth  # `request.auth` contiene il token se l'autenticazione è riuscita
-    print("print riga 123 ","Token:", token)
-    
 
     # Controlla se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
-    if not user.groups.filter(name='Insegnante').exists():
-        print("sei a linea 131")
+    if not request.user.groups.filter(name='Insegnante').exists():
+        logger.error("Permesso negato: l'utente %s non appartiene al gruppo 'Insegnante'", request.user.username)
         return Response({'error': 'Permesso negato'}, status=403)
 
-    classe = get_object_or_404(Classe, id=class_id)
-    print("print riga 136 ","Classe:", classe)
-    if not classe.insegnanti_insegnano.filter(id=user.id).exists():
-        print("sei a linea 138")
-        return Response({'error': 'Accesso non autorizzato a questa classe'}, status=403)
-
+    # Supponendo che tu abbia una relazione ManyToMany tra classe e studenti
     studenti = classe.studenti.all()
-    student_list = [
-        {
-            'nome': studente.user.first_name,
-            'cognome': studente.user.last_name,
-            'username': studente.user.username
-        }
-        for studente in studenti
-    ]
-    print("print riga 148 ","Studenti:", student_list)
+    student_list = [{
+        'nome': studente.user.first_name,
+        'cognome': studente.user.last_name,
+        'username': studente.user.username
+    } for studente in studenti]
 
-    logger.debug(f"Elenco studenti recuperati: {student_list}")
-    print("print riga 151 ")
+    logger.info("Elenco studenti preparato per la classe ID %s: %s", class_id, student_list)
     return Response({'students': student_list})
