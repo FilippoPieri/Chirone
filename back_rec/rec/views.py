@@ -106,22 +106,38 @@ def get_insegnante_classes(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_students_by_class(request, class_id):
+    classe = get_object_or_404(Classe, id=class_id)
+    print ("print riga 110 ","Classe:", classe)
+    print("print riga 111 ", "Class ID:", class_id)
+    if not request.user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
+        print("sei a linea 113")
+        return Response({'error': 'Non autorizzato'}, status=403)
+        
+    
     user = request.user
-    print("Utente autenticato:", user.username)
+    print("print riga 118 ", "Utente:", user)
+    permissions = user.get_all_permissions()
+    print("print riga 120 ", "Permessi dell'utente:", permissions)
+    
+
+
+    # Log del token usato per la richiesta (solo per scopi di debugging, non usarlo in produzione)
+    token = request.auth  # `request.auth` contiene il token se l'autenticazione è riuscita
+    print("print riga 123 ","Token:", token)
+    
 
     # Controlla se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
     if not user.groups.filter(name='Insegnante').exists():
+        print("sei a linea 131")
         return Response({'error': 'Permesso negato'}, status=403)
 
     classe = get_object_or_404(Classe, id=class_id)
-
-    # Opzionale: Verifica se l'insegnante ha l'accesso a questa classe specifica
-    # Questo può richiedere un modello o una relazione aggiuntiva che collega insegnanti e classi
+    print("print riga 136 ","Classe:", classe)
     if not classe.insegnanti_insegnano.filter(id=user.id).exists():
+        print("sei a linea 138")
         return Response({'error': 'Accesso non autorizzato a questa classe'}, status=403)
 
     studenti = classe.studenti.all()
-
     student_list = [
         {
             'nome': studente.user.first_name,
@@ -130,5 +146,8 @@ def get_students_by_class(request, class_id):
         }
         for studente in studenti
     ]
+    print("print riga 148 ","Studenti:", student_list)
 
+    logger.debug(f"Elenco studenti recuperati: {student_list}")
+    print("print riga 151 ")
     return Response({'students': student_list})

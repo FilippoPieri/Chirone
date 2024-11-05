@@ -145,7 +145,7 @@ REST_FRAMEWORK = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
         'simple': {
@@ -157,7 +157,7 @@ REST_FRAMEWORK = {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'verbose',
         },
         'file': {
             'level': 'DEBUG',
@@ -177,15 +177,11 @@ REST_FRAMEWORK = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'django.security': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'rest_framework': {
+        'my_app': {  # Assicurati di sostituire 'my_app' con il nome della tua app Django
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
         },
     }
-}'''
+}
+'''

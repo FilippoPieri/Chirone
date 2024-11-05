@@ -6,134 +6,156 @@ import '../css/Registro.css';
 function Registro({ selectedClass }) {
   const [studentiClasse, setStudentiClasse] = useState([]);
   const [presenze, setPresenze] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchStudenti() {
-      try {
-        const response = await fetch(`http://localhost:8000/api/classi/${selectedClass.id}/studenti/`);
-        const data = await response.json();
-        setStudentiClasse(data.studenti);
-        const initialPresenze = data.studenti.reduce((acc, studente) => {
-          acc[studente.id] = { presente: true, entrata: '', uscita: '', giustificato: false };
-          return acc;
-        }, {});
-        setPresenze(initialPresenze);
-      } catch (error) {
-        console.error("Errore nel fetch degli studenti:", error);
-      }
-    }
-
-    if (selectedClass) {
-      fetchStudenti();
-    }
-  }, [selectedClass]);
-
-  const handlePresenceChange = (id) => {
-    setPresenze(prev => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        presente: !prev[id].presente
-      }
-    }));
-  };
-
-  const handleTimeChange = (id, time, type) => {
-    setPresenze(prev => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        [type]: time
-      }
-    }));
-  };
-
-  const handleJustifiedChange = (id, checked) => {
-    setPresenze(prev => ({
-      ...prev,
-      [id]: {
-        ...prev[id],
-        giustificato: checked
-      }
-    }));
-  };
-
-  const handleSubmit = async () => {
-    try {
-      await fetch('http://localhost:8000/api/presenze/', {
-        method: 'POST',
-        headers: {
+    const fetchStudenti = async () => {
+      setLoading(true);
+      setError(null);
+  
+      const token = localStorage.getItem('token');  // Assicurati che questo sia il nome corretto per la chiave del token
+      console.log('Token inviato con la richiesta:', localStorage.getItem('token'));
+  
+      const headers = new Headers({
+          'Authorization': `Token ${token}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ presenze })
       });
-    } catch (error) {
-      console.error("Errore nell'invio delle presenze:", error);
-    }
+  
+      try {
+          const response = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, { headers });
+          if (!response.ok) {
+              throw new Error(`HTTP status ${response.status}`);
+          }
+          const data = await response.json();
+          setStudentiClasse(data.studenti);
+          // Assumi che ogni studente debba essere inizializzato con valori di presenza
+          const initialPresenze = data.studenti.reduce((acc, studente) => {
+              acc[studente.id] = { presente: true, entrata: '', uscita: '', giustificato: false };
+              return acc;
+          }, {});
+          setPresenze(initialPresenze);
+      } catch (err) {
+          console.error("Failed to fetch students:", err);
+          setError(err.message || 'Errore nel caricamento dei dati');
+      } finally {
+          setLoading(false);
+      }
   };
 
+    if (selectedClass && selectedClass.id) {
+        fetchStudenti();
+    }
+}, [selectedClass]);
 
-  return (
-    <div className="class-details">
+const handlePresenceChange = (id) => {
+    setPresenze(prev => ({
+        ...prev,
+        [id]: {
+            ...prev[id],
+            presente: !prev[id].presente
+        }
+    }));
+};
+
+const handleTimeChange = (id, time, type) => {
+    setPresenze(prev => ({
+        ...prev,
+        [id]: {
+            ...prev[id],
+            [type]: time
+        }
+    }));
+};
+
+const handleJustifiedChange = (id, checked) => {
+    setPresenze(prev => ({
+        ...prev,
+        [id]: {
+            ...prev[id],
+            giustificato: checked
+        }
+    }));
+};
+
+const handleSubmit = async () => {
+    try {
+        await fetch('http://localhost:8000/api/presenze/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ presenze })
+        });
+    } catch (error) {
+        console.error("Errore nell'invio delle presenze:", error);
+    }
+};
+
+if (loading) return <p>Caricamento in corso...</p>;
+if (error) return <p>Errore: {error}</p>;
+
+
+
+return (
+  <div className="class-details">
       <h3>Registro della classe {selectedClass.anno}{selectedClass.sezione}</h3>
       <table className="registro-table">
-        <thead>
-          <tr>
-            <th>Studente</th>
-            <th>ID</th>
-            <th>Presenza</th>
-            <th>Entrata in Ritardo</th>
-            <th>Uscita anticipata</th>
-            <th>Giustificazione</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentiClasse.map(studente => (
-            <tr key={studente.id}>
-              <td>{studente.nome} {studente.cognome}</td>
-              <td>
-                <button onClick={() => handlePresenceChange(studente.id)}>
-                  {presenze[studente.id].presente ? 'Presente' : 'Assente'}
-                </button>
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={presenze[studente.id].entrata}
-                  onChange={(e) => handleTimeChange(studente.id, e.target.value, 'entrata')}
-                />
-              </td>
-              <td>
-                <input
-                  type="time"
-                  value={presenze[studente.id].uscita}
-                  onChange={(e) => handleTimeChange(studente.id, e.target.value, 'uscita')}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={presenze[studente.id].giustificato}
-                  onChange={(e) => handleJustifiedChange(studente.id, e.target.checked)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
+          <thead>
+              <tr>
+                  <th>Studente</th>
+                  <th>ID</th>
+                  <th>Presenza</th>
+                  <th>Entrata in Ritardo</th>
+                  <th>Uscita anticipata</th>
+                  <th>Giustificazione</th>
+              </tr>
+          </thead>
+          <tbody>
+              {studentiClasse.map(studente => (
+                  <tr key={studente.id}>
+                      <td>{studente.nome} {studente.cognome}</td>
+                      <td>
+                          <button onClick={() => handlePresenceChange(studente.id)}>
+                              {presenze[studente.id].presente ? 'Presente' : 'Assente'}
+                          </button>
+                      </td>
+                      <td>
+                          <input
+                              type="time"
+                              value={presenze[studente.id].entrata}
+                              onChange={(e) => handleTimeChange(studente.id, e.target.value, 'entrata')}
+                          />
+                      </td>
+                      <td>
+                          <input
+                              type="time"
+                              value={presenze[studente.id].uscita}
+                              onChange={(e) => handleTimeChange(studente.id, e.target.value, 'uscita')}
+                          />
+                      </td>
+                      <td>
+                          <input
+                              type="checkbox"
+                              checked={presenze[studente.id].giustificato}
+                              onChange={(e) => handleJustifiedChange(studente.id, e.target.checked)}
+                          />
+                      </td>
+                  </tr>
+              ))}
+          </tbody>
       </table>
       <button onClick={handleSubmit}>Invia Presenze</button>
-    </div>
-  );
+  </div>
+);
 }
 
-// Definizione delle PropTypes
 Registro.propTypes = {
-  selectedClass: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Accetta sia stringa che numero
-    sezione: PropTypes.string.isRequired
-  }).isRequired,
-  onSubmit: PropTypes.func.isRequired,
+selectedClass: PropTypes.shape({
+  id: PropTypes.number.isRequired,
+  anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  sezione: PropTypes.string.isRequired
+}).isRequired,
 };
 
 export default Registro;
