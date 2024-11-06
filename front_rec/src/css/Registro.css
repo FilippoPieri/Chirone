@@ -44,12 +44,12 @@ class-details {
   color: #2e7d32;
 }
 
-.riga-verde {
-  background-color: #89f0a1; /* Verde chiaro */
+.row-presente {
+  background-color: #8dfa92;
 }
 
-.riga-rossa {
-  background-color: #f3838d; /* Rosso chiaro */
+.row-assente {
+  background-color: #f87e7e;
 }  
 
 /* Stili per il pulsante di presenza/assenza di default */

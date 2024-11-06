@@ -126,6 +126,7 @@ def get_students_by_class(request, class_id):
     # Supponendo che tu abbia una relazione ManyToMany tra classe e studenti
     studenti = classe.studenti.all()
     student_list = [{
+        'id': studente.id,
         'nome': studente.user.first_name,
         'cognome': studente.user.last_name,
         'username': studente.user.username
@@ -133,3 +134,4 @@ def get_students_by_class(request, class_id):
 
     logger.info("Elenco studenti preparato per la classe ID %s: %s", class_id, student_list)
     return Response({'students': student_list})
+
