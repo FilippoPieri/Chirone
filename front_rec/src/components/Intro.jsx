@@ -8,50 +8,46 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   const [error, setError] = useState(''); // Stato per memorizzare l'errore
 
    // Funzione per gestire il login
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const loginUrl = 'http://localhost:8000/api/login/';
-
-  //console.log("Username:", username);  // Debug: verifica username
-  //console.log("Password:", password);  // Debug: verifica password
-
-  try {
-    const response = await fetch(loginUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username, password: password })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      //console.log("Dati di login ricevuti:", data);  // Debug: visualizza i dati JSON di login
-      
-      // Controlla che i dati necessari siano presenti nella risposta
-      if (data.token && data.id && data.nome && data.cognome && data.role) {
-        localStorage.setItem('token', data.token); // Salva il token nel localStorage
-        setLoggedIn(true); // Aggiorna lo stato di loggedIn
-        setUtenteLoggato({ 
-          username: username, 
-          id: data.id,  
-          nome: data.nome,  // Nome dell'utente dal backend
-          cognome: data.cognome, // Cognome dell'utente dal backend
-          ruolo: data.role  // Ruolo dell'utente dal backend
-        });
-        setError('');  // Resetta eventuali errori
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    const loginUrl = 'http://localhost:8000/api/login/';
+  
+    try {
+      const response = await fetch(loginUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+  
+        // Verifica che i dati minimi necessari siano presenti
+        if (data.token && data.id) {
+          localStorage.setItem('token', data.token);
+          setLoggedIn(true);
+          setUtenteLoggato({
+            username: username,
+            id: data.id,
+            nome: data.nome || '',  // Nome opzionale
+            cognome: data.cognome || '',  // Cognome opzionale
+            ruolo: data.role || 'utente'  // Ruolo opzionale con valore predefinito
+          });
+          setError('');  // Resetta eventuali errori
+        } else {
+          console.error('Risposta incompleta dal server:', data);
+          setError('Risposta incompleta dal server. Riprova più tardi.');
+        }
       } else {
-        console.error('Risposta incompleta dal server:', data);  // Debug: risposta mancante o incompleta
-        setError('Risposta incompleta dal server. Riprova più tardi.');
+        // Gestione di errori di credenziali o altri errori specifici
+        const errData = await response.json();
+        setError(errData.error || 'Credenziali non valide');
       }
-    } else {
-      // Gestione di errori di credenziali o altri errori specifici
-      const errData = await response.json();  
-      setError(errData.error || 'Credenziali non valide'); // Mostra il messaggio di errore del backend o generico
+    } catch (error) {
+      console.error('Errore di connessione o nel server:', error);
+      setError('Errore di connessione al server');
     }
-  } catch (error) {
-    console.error('Errore di connessione o nel server:', error);  // Debug: problema di connessione
-    setError('Errore di connessione al server');  // Mostra errore di connessione
-  }
-};
+  };
   
 
   // Funzione per gestire il logout

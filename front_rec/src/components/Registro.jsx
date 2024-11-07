@@ -86,15 +86,39 @@ const handleJustifiedChange = (id, checked) => {
     }));
 };
 
+
+
+
 const handleSubmit = async () => {
+    const token = localStorage.getItem('token'); // Recupera il token salvato
+
+    const presenzeData = Object.keys(presenze).map((studenteId) => {
+        const { presente, entrata, uscita, giustificato } = presenze[studenteId];
+        return {
+            studente: parseInt(studenteId),
+            data: "2024-11-07", // Imposta la data o usa una variabile per la data dinamica
+            stato: presente ? "presente" : "assente",
+            entrata_ritardo: entrata || null,
+            uscita_anticipata: uscita || null,
+            giustificazione: giustificato
+        };
+    });
+
     try {
-        await fetch('http://localhost:8000/api/presenze/', {
+        const response = await fetch('http://localhost:8000/api/presenze/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
             },
-            body: JSON.stringify({ presenze })
+            body: JSON.stringify({ presenze: presenzeData })
         });
+
+        if (!response.ok) {
+            throw new Error('Errore nella risposta del server');
+        }
+        const data = await response.json();
+        console.log("Risposta del server:", data);
     } catch (error) {
         console.error("Errore nell'invio delle presenze:", error);
     }

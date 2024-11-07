@@ -1,107 +1,66 @@
-from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from rest_framework.views import exception_handler
+
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView, exception_handler
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authtoken.models import Token
-from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
+from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from .models import Insegnante, Classe
-import logging  # Importa logging
 from django.shortcuts import get_object_or_404
-
-
-
+from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
+import logging  # Importa logging
+from .models import Insegnante, Classe, Studente
+from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer
 
 # Configura il logger
 logger = logging.getLogger(__name__)
 
-class CustomLoginView(APIView):
-    def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = AuthTokenSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)  # Genera o recupera un token per l'utente
+
+            # Aggiungi tutti i campi richiesti dal frontend
+            return Response({
+                'token': token.key,
+                'id': user.id,
+                'nome': user.first_name,  # Assicurati che il campo 'first_name' sia compilato per l'utente
+                'cognome': user.last_name,  # Assicurati che il campo 'last_name' sia compilato per l'utente
+                'role': 'insegnante' if user.groups.filter(name='Insegnante').exists() else 'studente'  # o altro ruolo
+            }, status=status.HTTP_200_OK)
         
-        # Recupera l'utente ignorando il case dell'username
-        user = User.objects.filter(username__iexact=username).first()
-        if user:
-            # Recupera l'hash della password dal database
-            db_password_hash = user.password
-            
-            # Usa il custom hasher per generare l'hash della password inviata
-            hasher = SHA3512PasswordHasher()
-            salt = db_password_hash.split('$')[1]  # Estrai il salt dall'hash salvato
-            generated_hash = hasher.encode(password, salt)
-
-            print("Generated Hash:", generated_hash)  # Debug
-            print("DB Password Hash:", db_password_hash)  # Debug
-            
-            # Confronto tra l'hash generato e quello nel database
-            if generated_hash == db_password_hash:
-                print("Autenticazione riuscita per:", username)  # Debug
-                # Se l'autenticazione è riuscita, genera o recupera il token dell'utente
-                token, created = Token.objects.get_or_create(user=user)
-
-                # Determina il ruolo dell'utente
-                # Determina il ruolo dall'appartenenza ai gruppi
-                if user.groups.filter(name='Insegnante').exists():
-                    role = 'insegnante'
-                elif user.groups.filter(name='Studente').exists():
-                    role = 'studente'
-                else:
-                    role = 'nessun ruolo definito'  # o gestisci come preferisci
-                
-                return Response({
-                    "token": token.key, 
-                    "id": user.id, 
-                    "role": role, 
-                    "nome": user.first_name,  # Aggiungi il nome
-                    "cognome": user.last_name  # Aggiungi il cognome
-                }, status=status.HTTP_200_OK)
-            else:
-                print("Autenticazione fallita, hash non corrispondente")  # Debug
-
-        # Risposta di errore per credenziali non valide
-        return Response({"error": "Credenziali non valide"}, status=status.HTTP_400_BAD_REQUEST)
-
+        # Risposta in caso di errore di autenticazione
+        return Response({'error': 'Credenziali non valide'}, status=status.HTTP_400_BAD_REQUEST)
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_insegnante_classes(request):
     user = request.user
     print("Utente autenticato:", user.username)
 
-    # Controlla se l'utente fa parte del gruppo "Insegnante"
+    # Verifica se l'utente appartiene al gruppo "Insegnante"
     if not user.groups.filter(name='Insegnante').exists():
         return Response({'error': 'Permesso negato'}, status=403)
 
     try:
         insegnante = Insegnante.objects.get(user=user)
         print("Insegnante trovato:", insegnante.user.username)
-        
-        # Recupera le classi specifiche insegnate dall'insegnante
+
+        # Recupera le classi insegnate dall'insegnante
         classi = insegnante.classi_insegnate.all()
-        
-        # Crea la lista di classi
-        class_list = [
-            {
-                'id': cls.id,
-                'anno': cls.anno,  # Accesso diretto all'attributo
-                'sezione': cls.sezione,  # Accesso diretto all'attributo
-                'scuola_id': cls.scuola.id,  # Accesso diretto all'attributo tramite relazione ForeignKey
-                'scuola_nome': cls.scuola.nome  # Accesso diretto all'attributo tramite relazione ForeignKey
-            }
-            for cls in classi
-        ]
-        
-        return Response({'classes': class_list})
-    
+
+        # Usa il serializer per serializzare le classi
+        serializer = ClasseSerializer(classi, many=True)
+        return Response({'classes': serializer.data})
+
     except Insegnante.DoesNotExist:
         print("Insegnante non trovato per l'utente:", user.username)
         return Response({'error': 'Insegnante non trovato'}, status=404)
-    
+
     except Exception as e:
         print("Errore interno:", str(e))
-        # Usa sempre JSON per errori
         return Response({'error': 'Errore interno del server'}, status=500)
 
 @api_view(['GET'])
@@ -116,22 +75,45 @@ def get_students_by_class(request, class_id):
     # Verifica se l'utente è autorizzato a insegnare in quella classe
     if not request.user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
         logger.error("Accesso negato: l'utente %s non insegna alla classe ID %s", request.user.username, class_id)
-        return Response({'error': 'Non autorizzato'}, status=403)
+        return Response({'error': 'Non autorizzato'}, status=HTTP_403_FORBIDDEN)
 
-    # Controlla se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
+    # Verifica se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
     if not request.user.groups.filter(name='Insegnante').exists():
         logger.error("Permesso negato: l'utente %s non appartiene al gruppo 'Insegnante'", request.user.username)
-        return Response({'error': 'Permesso negato'}, status=403)
+        return Response({'error': 'Permesso negato'}, status=HTTP_403_FORBIDDEN)
 
-    # Supponendo che tu abbia una relazione ManyToMany tra classe e studenti
+    # Recupera tutti gli studenti della classe
     studenti = classe.studenti.all()
-    student_list = [{
-        'id': studente.id,
-        'nome': studente.user.first_name,
-        'cognome': studente.user.last_name,
-        'username': studente.user.username
-    } for studente in studenti]
 
-    logger.info("Elenco studenti preparato per la classe ID %s: %s", class_id, student_list)
-    return Response({'students': student_list})
+    # Usa il serializer per serializzare i dati degli studenti
+    serializer = StudenteSerializer(studenti, many=True)
+    logger.info("Elenco studenti preparato per la classe ID %s: %s", class_id, serializer.data)
+    
+    return Response({'students': serializer.data})
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_presenza(request):
+    presenze_data = request.data.get('presenze', [])  # Ottieni la lista di presenze dal payload
+
+    # Controlla che il payload sia una lista
+    if not isinstance(presenze_data, list):
+        return Response({"error": "Il formato dei dati di presenza è invalido. Deve essere una lista."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Cicla attraverso le presenze e serializzale una ad una
+    created_presenze = []
+    errors = []
+
+    for presenza_data in presenze_data:
+        serializer = PresenzaSerializer(data=presenza_data)
+        if serializer.is_valid():
+            serializer.save()
+            created_presenze.append(serializer.data)  # Aggiungi la presenza valida alla lista
+        else:
+            errors.append(serializer.errors)  # Aggiungi errori se la presenza non è valida
+
+    # Verifica se ci sono errori
+    if errors:
+        return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({"created_presenze": created_presenze}, status=status.HTTP_201_CREATED)
