@@ -40,10 +40,11 @@ class Materia(models.Model):
         return self.nome
 
 class Voto(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name="voti")
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name="voti")
+    studente = models.ForeignKey('Studente', on_delete=models.CASCADE, related_name='voti')
+    materia = models.ForeignKey('Materia', on_delete=models.CASCADE, related_name='voti')
     scritto = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     orale = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    appunti = models.TextField(null=True, blank=True)  # Campo aggiuntivo per appunti dell'insegnante
     data = models.DateField(auto_now_add=True)
 
     def __str__(self):

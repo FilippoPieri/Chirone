@@ -51,10 +51,10 @@ class MateriaSerializer(serializers.HyperlinkedModelSerializer):
         model = Materia
         fields = ['id', 'nome', 'classi']
 
-class VotoSerializer(serializers.HyperlinkedModelSerializer):
+class VotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Voto
-        fields = ['id', 'studente', 'materia', 'scritto', 'orale', 'data']
+        fields = ['studente', 'materia', 'scritto', 'orale', 'appunti', 'data']
 
 class PresenzaSerializer(serializers.ModelSerializer):
     class Meta:

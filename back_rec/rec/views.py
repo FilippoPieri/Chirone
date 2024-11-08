@@ -7,10 +7,11 @@ from rest_framework import status
 from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 import logging  # Importa logging
-from .models import Insegnante, Classe, Studente
-from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer
+from .models import Insegnante, Classe, Presenza, Voto
+from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -117,3 +118,40 @@ def create_presenza(request):
         return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"created_presenze": created_presenze}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_presenze_oggi(request):
+    # Ottieni la data corrente
+    oggi = timezone.now().date()
+    
+    # Filtra le presenze per il giorno corrente
+    presenze_oggi = Presenza.objects.filter(data=oggi)
+    
+    # Serializza i dati
+    serializer = PresenzaSerializer(presenze_oggi, many=True)
+    
+    # Restituisci la risposta
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_voti(request):
+    # Controlla se i dati inviati sono una lista
+    if isinstance(request.data, list):
+        # Crea una lista per tenere traccia dei dati dei voti salvati
+        saved_voti = []
+        errors = []
+        for voto_data in request.data:
+            serializer = VotoSerializer(data=voto_data)
+            if serializer.is_valid():
+                voto = serializer.save()
+                saved_voti.append(serializer.data)
+            else:
+                errors.append(serializer.errors)
+        
+        if errors:
+            return Response({'success': saved_voti, 'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(saved_voti, status=status.HTTP_201_CREATED)
+    else:
+        return Response({"error": "Mi aspettavo una lista di voti ma ho ricevuto un singolo oggetto"}, status=status.HTTP_400_BAD_REQUEST)
