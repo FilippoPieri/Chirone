@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import LoginAPIView
-from .views import get_insegnante_classes, get_students_by_class, create_presenza, get_presenze_oggi, create_voti
+from .views import get_insegnante_classes, get_students_by_class, create_presenza, get_presenze_oggi, create_voti, get_insegnante_materie
 
 urlpatterns = [
     path('api/login/', LoginAPIView.as_view(), name='api_login'),
@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/presenze/', create_presenza, name='create_presenza'),  # Modificato con 'presenze'
     path('api/presenze/oggi/', get_presenze_oggi, name='get_presenze_oggi'),
     path('api/voto/', create_voti, name='create_voto'),
+    path('api/insegnante/materie/', get_insegnante_materie, name='get_insegnante_materie'),  # Nuova rotta per le materie dell'insegnante
 ]

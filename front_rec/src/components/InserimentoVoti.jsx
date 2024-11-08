@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../css/Registro.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
 
 function InserimentoVoti({ selectedClass }) {
@@ -7,15 +7,17 @@ function InserimentoVoti({ selectedClass }) {
   const [voti, setVoti] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedMateriaId, setSelectedMateriaId] = useState(null); // Aggiungi lo stato per la materia
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchStudentsAndMateria = async () => {
       if (!selectedClass.id) return;
 
       setLoading(true);
-      const token = localStorage.getItem('token'); // Assicurati che il token sia memorizzato correttamente
+      const token = localStorage.getItem('token');
       try {
-        const response = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
+        // Fetch degli studenti della classe
+        const responseStudents = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
           method: 'GET',
           headers: {
             'Authorization': `Token ${token}`,
@@ -23,27 +25,48 @@ function InserimentoVoti({ selectedClass }) {
           }
         });
 
-        if (!response.ok) {
-          throw new Error(`Errore nel recupero degli studenti: ${response.status}`);
+        if (!responseStudents.ok) {
+          throw new Error(`Errore nel recupero degli studenti: ${responseStudents.status}`);
         }
 
-        const data = await response.json();
-        setStudentiClasse(data.students);
-        // Initialize voti state
-        const initialVoti = data.students.reduce((acc, studente) => ({
+        const dataStudents = await responseStudents.json();
+        setStudentiClasse(dataStudents.students);
+
+        // Inizializza lo stato dei voti per ogni studente
+        const initialVoti = dataStudents.students.reduce((acc, studente) => ({
           ...acc,
           [studente.id]: { scritto: '', orale: '', appunti: '' }
         }), {});
         setVoti(initialVoti);
+
+        // Fetch della materia associata all'insegnante loggato
+        const responseMateria = await fetch('http://localhost:8000/api/insegnante/materie/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!responseMateria.ok) {
+          throw new Error(`Errore nel recupero della materia: ${responseMateria.status}`);
+        }
+
+        const dataMateria = await responseMateria.json();
+        if (dataMateria.materie && dataMateria.materie.length > 0) {
+          setSelectedMateriaId(dataMateria.materie[0].id); // Prendi l'ID della prima materia
+        } else {
+          setError('Nessuna materia associata trovata.');
+        }
       } catch (err) {
-        console.error("Errore durante il fetch degli studenti:", err);
+        console.error("Errore durante il fetch:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStudents();
+    fetchStudentsAndMateria();
   }, [selectedClass]);
 
   const handleInputChange = (studenteId, field, value) => {
@@ -63,7 +86,8 @@ function InserimentoVoti({ selectedClass }) {
         studente: studenteId,
         scritto: voti[studenteId].scritto,
         orale: voti[studenteId].orale,
-        appunti: voti[studenteId].appunti
+        appunti: voti[studenteId].appunti,
+        materia: selectedMateriaId // Aggiungi qui l'ID della materia corretta
       }));
 
       console.log("Payload inviato:", JSON.stringify(votiData)); // Visualizza il payload per debug

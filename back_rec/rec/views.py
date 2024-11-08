@@ -11,7 +11,7 @@ from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 import logging  # Importa logging
 from .models import Insegnante, Classe, Presenza, Voto
-from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer
+from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -155,3 +155,24 @@ def create_voti(request):
         return Response(saved_voti, status=status.HTTP_201_CREATED)
     else:
         return Response({"error": "Mi aspettavo una lista di voti ma ho ricevuto un singolo oggetto"}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_insegnante_materie(request):
+    user = request.user
+    try:
+        print("Utente autenticato:", user.username)  # Debug
+        insegnante = Insegnante.objects.get(user=user)
+        print("Insegnante trovato:", insegnante)  # Debug
+
+        materie = insegnante.materie.all()
+        print("Materie recuperate:", materie)  # Debug
+
+        # Passa il contesto della richiesta al serializer
+        serializer = MateriaSerializer(materie, many=True, context={'request': request})
+        return Response({'materie': serializer.data})
+    except Insegnante.DoesNotExist:
+        return Response({'error': 'Insegnante non trovato'}, status=404)
+    except Exception as e:
+        print("Errore interno:", str(e))  # Debug per altri errori
+        return Response({'error': 'Errore interno del server'}, status=500)

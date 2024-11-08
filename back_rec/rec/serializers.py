@@ -46,10 +46,10 @@ class InsegnanteSerializer(serializers.HyperlinkedModelSerializer):
         model = Insegnante
         fields = ['id', 'user', 'materie']
 
-class MateriaSerializer(serializers.HyperlinkedModelSerializer):
+class MateriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Materia
-        fields = ['id', 'nome', 'classi']
+        fields = ['id', 'nome' ]
 
 class VotoSerializer(serializers.ModelSerializer):
     class Meta:
