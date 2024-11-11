@@ -11,7 +11,7 @@ from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 import logging  # Importa logging
 from .models import Insegnante, Classe, Presenza, Voto
-from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer
+from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -176,3 +176,30 @@ def get_insegnante_materie(request):
     except Exception as e:
         print("Errore interno:", str(e))  # Debug per altri errori
         return Response({'error': 'Errore interno del server'}, status=500)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_voti_classe_materia_insegnante(request, classe_id):
+    user = request.user
+    
+    try:
+        # Recupera l'insegnante loggato
+        insegnante = Insegnante.objects.get(user=user)
+
+        # Ottieni tutte le materie insegnate dall'insegnante
+        materie_insegnate = insegnante.materie.all()
+
+        # Recupera la classe specifica
+        classe = get_object_or_404(Classe, id=classe_id)
+
+        # Filtra i voti degli studenti di quella classe e delle materie insegnate
+        voti = Voto.objects.filter(studente__classe=classe, materia__in=materie_insegnate)
+
+        # Serializza i voti
+        serializer = VotoSerializer(voti, many=True)
+        return Response(serializer.data, status=200)
+
+    except Insegnante.DoesNotExist:
+        return Response({'error': 'Insegnante non trovato'}, status=404)
+    except Exception as e:
+        return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)

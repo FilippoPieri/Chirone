@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import VisualizzaVoti from './VisualizzaVoti'; // Assicurati di importare il componente VisualizzaVoti
 import '../css/Registro.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
 
 function InserimentoVoti({ selectedClass }) {
@@ -8,6 +9,12 @@ function InserimentoVoti({ selectedClass }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedMateriaId, setSelectedMateriaId] = useState(null); // Aggiungi lo stato per la materia
+  const [showVisualizzaVoti, setShowVisualizzaVoti] = useState(false); // Aggiunto stato per mostrare/nascondere VisualizzaVoti
+
+  // Recupera l'utente loggato (simulazione con localStorage per esempio)
+  const utenteLoggato = {
+    id: localStorage.getItem('userId'), // Assicurati che `userId` sia presente nel localStorage
+  };
 
   useEffect(() => {
     const fetchStudentsAndMateria = async () => {
@@ -111,13 +118,24 @@ function InserimentoVoti({ selectedClass }) {
     }
   };
 
+  const toggleVisualizzaVoti = () => {
+    setShowVisualizzaVoti(!showVisualizzaVoti); // Toggle della visualizzazione di VisualizzaVoti
+  };
+
+  console.log("selectedClass in InserimentoVoti:", selectedClass);
+  console.log("utenteLoggato in InserimentoVoti:", utenteLoggato);
+
   if (loading) return <p>Caricamento...</p>;
   if (error) return <p>Errore: {error}</p>;
 
   return (
     <div className="inserimento-voti">
       <h3>Gestione voti per la classe {selectedClass.anno}{selectedClass.sezione}</h3>
+      <button onClick={toggleVisualizzaVoti}>Mostra/Nascondi Voti</button> {/* Pulsante posizionato subito dopo il titolo */}
+      {showVisualizzaVoti && <VisualizzaVoti selectedClass={selectedClass} utenteLoggato={utenteLoggato} />}
+
       <table className="registro-table">
+
         <thead>
           <tr>
             <th>Studente</th>
@@ -136,6 +154,8 @@ function InserimentoVoti({ selectedClass }) {
                   min="0"
                   max="10"
                   placeholder="Inserisci voto"
+                  name={`scritto-${studente.id}`}
+                  id={`scritto-${studente.id}`}
                   value={voti[studente.id].scritto}
                   onChange={(e) => handleInputChange(studente.id, 'scritto', e.target.value)}
                 />
@@ -146,6 +166,8 @@ function InserimentoVoti({ selectedClass }) {
                   min="0"
                   max="10"
                   placeholder="Inserisci voto"
+                  name={`orale-${studente.id}`}
+                  id={`orale-${studente.id}`}
                   value={voti[studente.id].orale}
                   onChange={(e) => handleInputChange(studente.id, 'orale', e.target.value)}
                 />
@@ -154,6 +176,8 @@ function InserimentoVoti({ selectedClass }) {
                 <input
                   type="text"
                   placeholder="Aggiungi appunti"
+                  name={`appunti-${studente.id}`}
+                  id={`appunti-${studente.id}`}
                   value={voti[studente.id].appunti}
                   onChange={(e) => handleInputChange(studente.id, 'appunti', e.target.value)}
                 />
