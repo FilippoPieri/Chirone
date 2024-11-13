@@ -11,7 +11,7 @@ from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 import logging  # Importa logging
 from .models import Insegnante, Classe, Presenza, Voto
-from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer
+from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -203,3 +203,12 @@ def get_voti_classe_materia_insegnante(request, classe_id):
         return Response({'error': 'Insegnante non trovato'}, status=404)
     except Exception as e:
         return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_orario(request):
+    serializer = OrarioSerializer(data=request.data,  many=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

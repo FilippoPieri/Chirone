@@ -65,7 +65,10 @@ class PresenzaSerializer(serializers.ModelSerializer):
         # Logica personalizzata, se necessaria
         return Presenza.objects.create(**validated_data)
 
-class OrarioSerializer(serializers.HyperlinkedModelSerializer):
+class OrarioSerializer(serializers.ModelSerializer):
+    classe = serializers.PrimaryKeyRelatedField(queryset=Classe.objects.all())
+    materia = serializers.PrimaryKeyRelatedField(queryset=Materia.objects.all())
+
     class Meta:
         model = Orario
-        fields = ['id', 'classe', 'materia', 'giornoSettimana', 'ora_inizio', 'ora_fine']
+        fields = ('classe', 'materia', 'giornoSettimana', 'ora_inizio', 'ora_fine')

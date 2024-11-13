@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { materie } from './mockdb'; 
+import React, { useState, useEffect } from 'react';
 import '../css/OrarioLezioni.css'; // Importa il file CSS
 import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo componente
 
@@ -8,8 +7,6 @@ const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Vener
 const oreGiornaliere = [8, 9, 10, 11, 12, 13, 14 , 15, 16, 17, 18];
 
 function OrarioLezioni({ selectedClass, utenteLoggato }) {
-    console.log("OrarioLezioni renderizzato per la classe:", selectedClass); // Debug
-
     // Inizializza lo stato per memorizzare l'orario settimanale per ogni giorno e ora
     const [orario, setOrario] = useState(
       giorniSettimana.reduce((acc, giorno) => {
@@ -21,45 +18,98 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
       }, {})
     );
   
-    const [mostraOrarioSettimanale, setMostraOrarioSettimanale] = useState(false); // Stato per visualizzare l'orario settimanale
-    const [inserisciOrarioVisible, setInserisciOrarioVisible] = useState(true); // Stato per mostrare/nascondere il form di inserimento orario
-    // Filtra le materie dell'insegnante loggato
-    const materieInsegnante = utenteLoggato && utenteLoggato.id
-    ? materie.filter(materia => materia.insegnanteId === utenteLoggato.id)
-    : [];
+    const [materie, setMaterie] = useState([]);
+    const [mostraOrarioSettimanale, setMostraOrarioSettimanale] = useState(false);
+    const [inserisciOrarioVisible, setInserisciOrarioVisible] = useState(true);
 
-    // Gestisce il cambiamento di una materia per un giorno e una certa ora
-    const handleOrarioChange = (giorno, ora, materia) => {
-      setOrario(prevOrario => ({
-        ...prevOrario,
-        [giorno]: {
-          ...prevOrario[giorno],
-          [ora]: materia
-        }
-      }));
+     // Fetch materie dall'API quando il componente viene montato
+     useEffect(() => {
+      async function fetchMaterie() {
 
-        // Aggiungi una classe per cambiare il colore
-      const selectElement = document.getElementById(`orario-${giorno}-${ora}`);
-      if (materia) {
-          selectElement.classList.add('filled');
-      } else {
-          selectElement.classList.remove('filled');
+        const token = localStorage.getItem('token');  // Assicurati che questo sia il nome corretto per la chiave del token
+        console.log('Token inviato con la richiesta:', localStorage.getItem('token'));
+
+          try {
+              const response = await fetch(`http://localhost:8000/api/insegnante/materie/`, {
+                  headers: {
+                      'Authorization': `Token ${token}`,
+                      'Content-Type': 'application/json'
+                  }
+              });
+              if (response.ok) {
+                  const data = await response.json();
+                  setMaterie(data.materie);
+              } else {
+                  throw new Error('Failed to fetch materie');
+              }
+          } catch (error) {
+              console.error('Error fetching materie:', error);
+          }
       }
-    };
 
-    const handleSalvaOrario = () => {
-      console.log("Orario salvato per la classe:", selectedClass, "Orario:", orario);
-    };
+      fetchMaterie();
+  }, [utenteLoggato.id]);
 
-    const handleMostraOrarioSettimanale = () => {
+  const handleOrarioChange = (giorno, ora, materia) => {
+      setOrario(prevOrario => ({
+          ...prevOrario,
+          [giorno]: {
+              ...prevOrario[giorno],
+              [ora]: materia
+          }
+      }));
+  };
+
+  const handleSalvaOrario = async () => {
+    console.log("Salvataggio dell'orario:", orario);
+    const token = localStorage.getItem('token');
+    const orarioDaInviare = Object.keys(orario).flatMap(giorno => {
+      return Object.keys(orario[giorno]).map(ora => {
+          const materia = orario[giorno][ora];
+            return materia ? {
+                classe: selectedClass.id,
+                materia: materia,
+                giornoSettimana: giorno,
+                ora_inizio: `${ora}:00`,
+                ora_fine: `${parseInt(ora) + 1}:00`
+            } : null;
+        }).filter(item => item !== null);
+    });
+
+    console.log("Orario da inviare:", orarioDaInviare);
+
+    try {
+        const response = await fetch('http://localhost:8000/api/orario/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
+            },
+            body: JSON.stringify(orarioDaInviare)  // Invia l'intero array
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Orario salvato con successo:', data);
+        } else {
+            const errorData = await response.json();
+            console.error('Errore nel salvataggio dell\'orario:', errorData);
+        }
+    } catch (error) {
+        console.error('Errore di rete nel salvataggio dell\'orario:', error);
+    }
+};
+
+  const handleMostraOrarioSettimanale = () => {
       setMostraOrarioSettimanale(true);
-      setInserisciOrarioVisible(false); // Nascondi il form di inserimento orario
-    };
+      setInserisciOrarioVisible(false);
+  };
 
-    const handleInserisciOrario = () => {
+  const handleInserisciOrario = () => {
       setMostraOrarioSettimanale(false);
-      setInserisciOrarioVisible(true); // Mostra il form di inserimento orario
-    };
+      setInserisciOrarioVisible(true);
+  };
+
 
     return (
       <div className="orario-details">
@@ -79,61 +129,57 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
         {mostraOrarioSettimanale && <VisualizzaOrario selectedClass={selectedClass} orario={orario} />}
     
         {inserisciOrarioVisible && (
-          <table className="orario-table">
-            <thead>
-              <tr>
-                <th>Ora</th>
-                {giorniSettimana.map(giorno => (
-                  <th key={giorno}>{giorno}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {oreGiornaliere.map(ora => (
-                <tr key={ora}>
-                  <td>{ora}:00 - {ora + 1}:00</td>
-                  {giorniSettimana.map(giorno => (
-                    <td key={giorno}>
-                      <select
-                        id={`orario-${giorno}-${ora}`} // Aggiungi id univoco
-                        name={`orario-${giorno}-${ora}`} // Aggiungi name univoco
-                        value={orario[giorno][ora]}
-                        onChange={(e) => handleOrarioChange(giorno, ora, e.target.value)}
-                      >
-                         <option value="">Seleziona materia</option>
-                          {/* Mostra solo le materie dell'insegnante loggato */}
-                          {materieInsegnante.map(materia => (
-                            <option key={materia.id} value={materia.nomeMateria}>
-                              {materia.nomeMateria}
-                            </option>
-                          ))}
-                      </select>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {inserisciOrarioVisible && (
-          <button onClick={handleSalvaOrario}>Salva Orario</button>
-        )}
-      </div>
+                <table className="orario-table">
+                    <thead>
+                        <tr>
+                            <th>Ora</th>
+                            {giorniSettimana.map(giorno => (
+                                <th key={giorno}>{giorno}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {oreGiornaliere.map(ora => (
+                            <tr key={ora}>
+                                <td>{ora}:00 - {ora + 1}:00</td>
+                                {giorniSettimana.map(giorno => (
+                                    <td key={giorno}>
+                                        <select
+                                            id={`orario-${giorno}-${ora}`}
+                                            name={`orario-${giorno}-${ora}`}
+                                            value={orario[giorno][ora]}
+                                            onChange={(e) => handleOrarioChange(giorno, ora, e.target.value)}
+                                        >
+                                            <option value="">Seleziona materia</option>
+                                            {materie.map(materia => (
+                                                <option key={materia.id} value={materia.id}>
+                                                    {materia.nome}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+            {inserisciOrarioVisible && (
+                <button onClick={handleSalvaOrario}>Salva Orario</button>
+            )}
+        </div>
     );
 }
 
-// Definizione delle PropTypes
 OrarioLezioni.propTypes = {
-  selectedClass: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // Accetta sia stringa che numero
-    sezione: PropTypes.string.isRequired
-  }).isRequired,
+    selectedClass: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        sezione: PropTypes.string.isRequired
+    }).isRequired,
     utenteLoggato: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-  }).isRequired
+        id: PropTypes.number.isRequired
+    }).isRequired
 };
-
 
 export default OrarioLezioni;

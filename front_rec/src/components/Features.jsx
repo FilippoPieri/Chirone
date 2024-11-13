@@ -36,7 +36,7 @@ function Features({ utenteLoggato }) {
             <h3>Inserimento Voti</h3>
             <p>Inserisci i voti degli studenti.</p>
           </div>
-          <div className="feature" onClick={() => handleFeatureClick('voti')}>
+          <div className="feature" onClick={() => handleFeatureClick('orario')}>
             <h3>Orario Lezioni</h3>
             <p>Gestisci l&#39;orario delle lezioni.</p>
           </div>
