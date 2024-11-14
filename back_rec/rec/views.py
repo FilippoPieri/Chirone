@@ -10,8 +10,10 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
 import logging  # Importa logging
-from .models import Insegnante, Classe, Presenza, Voto
+from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia
 from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
+from .serializers import MateriaSerializer
+
 
 # Configura il logger
 logger = logging.getLogger(__name__)
@@ -203,12 +205,33 @@ def get_voti_classe_materia_insegnante(request, classe_id):
         return Response({'error': 'Insegnante non trovato'}, status=404)
     except Exception as e:
         return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orario_by_classe(request, classe_id):
+    classe = get_object_or_404(Classe, id=classe_id)
+    orari = Orario.objects.filter(classe=classe)
+    serializer = OrarioSerializer(orari, many=True)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_orario(request):
-    serializer = OrarioSerializer(data=request.data,  many=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        serializer = OrarioSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Materia.DoesNotExist as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        # Log error here if needed
+        return Response({'error': 'Server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])  # Facoltativo: se vuoi richiedere l'autenticazione
+def get_all_materie(request):
+    materie = Materia.objects.all()
+    serializer = MateriaSerializer(materie, many=True)
+    return Response(serializer.data)

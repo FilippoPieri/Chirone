@@ -67,7 +67,7 @@ class PresenzaSerializer(serializers.ModelSerializer):
 
 class OrarioSerializer(serializers.ModelSerializer):
     classe = serializers.PrimaryKeyRelatedField(queryset=Classe.objects.all())
-    materia = serializers.PrimaryKeyRelatedField(queryset=Materia.objects.all())
+    materia = serializers.PrimaryKeyRelatedField(queryset=Materia.objects.all())  # Assicurati che 'materia' sia incluso
 
     class Meta:
         model = Orario

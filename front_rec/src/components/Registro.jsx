@@ -86,9 +86,6 @@ const handleJustifiedChange = (id, checked) => {
     }));
 };
 
-
-
-
 const handleSubmit = async () => {
     const token = localStorage.getItem('token'); // Recupera il token salvato
 

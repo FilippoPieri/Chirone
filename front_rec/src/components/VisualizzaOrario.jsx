@@ -1,85 +1,117 @@
-import PropTypes from "prop-types";
-import { orariLezione, materie} from './mockdb'; // Assicurati di importare i dati corretti
-import '../css/VisualizzaOrario.css'; // Aggiungi un file CSS se necessario
+import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import '../css/OrarioLezioni.css';
+
+const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 
 function VisualizzaOrario({ selectedClass }) {
-  const getOrarioSettimana = (classeId) => {
-    return orariLezione
-      .filter(orario => orario.classeId === classeId)
-      .map(orario => ({
-        ...orario,
-        materia: materie.find(materia => materia.id === orario.materiaId)?.nomeMateria,
-      }));
-  };
+    const [orariClasse, setOrariClasse] = useState([]);
+    const [materie, setMaterie] = useState({}); // Mappa degli ID materie a nomi delle materie
 
-  const orariClasse = getOrarioSettimana(selectedClass.id);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
 
-  // Raggruppiamo l'orario per ora e giorno
-  const orarioMatrice = {};
-  const giorniSettimana = new Set(); // Per raccogliere i giorni unic
+        async function fetchMaterie() {
+            try {
+                const response = await fetch('http://localhost:8000/api/materie/', {
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Risposta completa delle materie:", data);
+        
+                    // Creazione della mappa degli ID delle materie ai nomi senza usare `data.materie`
+                    const materieMap = {};
+                    data.forEach((materia) => {
+                        materieMap[materia.id] = materia.nome;
+                    });
+                    setMaterie(materieMap);
+                    console.log("Mappa delle materie dopo il fetch:", materieMap);
+                } else {
+                    throw new Error('Errore nel fetch delle materie');
+                }
+            } catch (error) {
+                console.error('Errore durante il fetch delle materie:', error);
+            }
+        }
 
-   // Popoliamo la matrice con le ore e le materie
-   orariClasse.forEach((orario) => {
-    const { oraInizio, giorno, materia } = orario;
+        async function fetchOrarioClasse() {
+            try {
+                const response = await fetch(`http://localhost:8000/api/orario/${selectedClass.id}/`, {
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setOrariClasse(data);
+                    console.log("Dati orario ricevuti:", data);
+                } else {
+                    throw new Error('Errore nel fetch dell\'orario');
+                }
+            } catch (error) {
+                console.error('Errore durante il fetch dell\'orario:', error);
+            }
+        }
 
-    // Aggiungi il giorno all'insieme di giorni
-    giorniSettimana.add(giorno);
+        fetchMaterie();
+        fetchOrarioClasse();
+    }, [selectedClass.id]);
 
-    // Aggiungi l'ora all'oggetto se non esiste
-    if (!orarioMatrice[oraInizio]) {
-      orarioMatrice[oraInizio] = {
-        ora: oraInizio,
-        ...Object.fromEntries([...giorniSettimana].map(g => [g.toLowerCase(), ''])), // Inizializza tutti i giorni
-      };
-    }
+    // Costruisci la matrice dell'orario settimanale
+    const orarioMatrice = giorniSettimana.reduce((acc, giorno) => {
+        acc[giorno] = Array(10).fill(""); // 10 ore giornaliere (es. 8:00 - 18:00)
+        return acc;
+    }, {});
 
-    // Aggiungi la materia corrispondente al giorno corretto
-    orarioMatrice[oraInizio][giorno.toLowerCase()] = materia;
-  });
+    orariClasse.forEach((orario) => {
+        const { giornoSettimana, ora_inizio, materia } = orario;
+        const oraIndex = parseInt(ora_inizio.split(":")[0]) - 8; // Calcola l'indice dell'ora
 
-  // Convertiamo l'oggetto in un array per l'iterazione e ordiniamo le ore
-  const orarioArray = Object.values(orarioMatrice).sort((a, b) => a.ora.localeCompare(b.ora));
+        // Usa la mappa delle materie per visualizzare il nome invece dell'ID
+        orarioMatrice[giornoSettimana][oraIndex] = materie[materia] || ""; // Lascia vuoto se non trovato
+    });
 
-  return (
-    <div className="orario-settimanale">
-      <h4>Orario Settimanale per la classe {selectedClass.anno}{selectedClass.sezione}</h4>
-      <table className="orario-table">
-        <thead>
-          <tr>
-            <th>Ora</th>
-            {[...giorniSettimana].map(giorno => (
-              <th key={giorno}>{giorno.charAt(0).toUpperCase() + giorno.slice(1)}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {orarioArray.length === 0 ? (
-            <tr>
-              <td colSpan={giorniSettimana.size + 1}>Nessuna lezione programmata per questa classe.</td>
-            </tr>
-          ) : (
-            orarioArray.map((orario, index) => (
-              <tr key={index}>
-                <td>{orario.ora}</td>
-                {[...giorniSettimana].map(giorno => (
-                  <td key={giorno}>{orario[giorno.toLowerCase()]}</td>
-                ))}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
+    console.log("Matrice orario popolata:", orarioMatrice);
+
+    return (
+        <div className="orario-settimanale">
+            <h4>Orario Settimanale per la classe {selectedClass.anno}{selectedClass.sezione}</h4>
+            <table className="orario-table">
+                <thead>
+                    <tr>
+                        <th>Ora</th>
+                        {giorniSettimana.map((giorno) => (
+                            <th key={giorno}>{giorno}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <tr key={index}>
+                            <td>{8 + index}:00 - {9 + index}:00</td>
+                            {giorniSettimana.map((giorno) => (
+                                <td key={giorno}>{orarioMatrice[giorno][index]}</td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 }
 
-// Validazione delle proprietà
 VisualizzaOrario.propTypes = {
-  selectedClass: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,  // Accetta sia stringa che numero
-    sezione: PropTypes.string.isRequired,
-  }).isRequired,
+    selectedClass: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        anno: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        sezione: PropTypes.string.isRequired
+    }).isRequired
 };
 
 export default VisualizzaOrario;

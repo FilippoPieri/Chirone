@@ -62,20 +62,13 @@ class Presenza(models.Model):
         return f"Presenza di {self.studente} il {self.data}"
 
 class Orario(models.Model):
-    '''GIORNI_SETTIMANA = [
-        ('lunedì', 'Lunedì'),
-        ('martedì', 'Martedì'),
-        ('mercoledì', 'Mercoledì'),
-        ('giovedì', 'Giovedì'),
-        ('venerdì', 'Venerdì'),
-        ('sabato', 'Sabato'),
-    ]'''
-
+    
     classe = models.ForeignKey(Classe, on_delete=models.CASCADE, related_name="orari")
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name="orari")
     giornoSettimana = models.CharField(max_length=10) #, choices=GIORNI_SETTIMANA
     ora_inizio = models.TimeField()
     ora_fine = models.TimeField()
+    ultimo_aggiornamento = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.classe} - {self.materia} ({self.giornoSettimana} {self.ora_inizio} - {self.ora_fine})"

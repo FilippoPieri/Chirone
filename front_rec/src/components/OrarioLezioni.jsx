@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import '../css/OrarioLezioni.css'; // Importa il file CSS
 import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo componente
 
@@ -68,7 +68,7 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
           const materia = orario[giorno][ora];
             return materia ? {
                 classe: selectedClass.id,
-                materia: materia,
+                materia: parseInt(materia),  // Include l'ID della materia
                 giornoSettimana: giorno,
                 ora_inizio: `${ora}:00`,
                 ora_fine: `${parseInt(ora) + 1}:00`
