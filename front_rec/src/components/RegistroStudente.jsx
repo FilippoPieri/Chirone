@@ -1,9 +1,45 @@
 import PropTypes from 'prop-types';
-import { presenze } from './mockdb'; // Assicurati di avere accesso ai dati delle presenze
+import { useState, useEffect } from 'react';
 import '../css/RegistroStudente.css'; // Crea un file CSS per gli stili personalizzati
 
 function RegistroStudente({ utenteLoggato }) {
-  const presenzeStudente = presenze.filter(presenza => presenza.studenteId === utenteLoggato.id);
+  const [presenze, setPresenze] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPresenze = async () => {
+      setLoading(true);
+      const token = localStorage.getItem('token'); // Recupera il token dal localStorage
+
+      try {
+        const response = await fetch('http://localhost:8000/api/presenze-studente/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Errore nel recupero delle presenze');
+        }
+
+        const data = await response.json();
+        setPresenze(data);
+      } catch (err) {
+        setError(err.message || 'Errore sconosciuto');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPresenze();
+  }, []);
+
+  if (loading) return <p>Caricamento in corso...</p>;
+  if (error) return <p>Errore: {error}</p>;
+
 
   return (
     <div className="registro-studente">
@@ -11,20 +47,23 @@ function RegistroStudente({ utenteLoggato }) {
       <table className="registro-table">
         <thead>
           <tr>
-            <th>Data</th><th>Presenza</th><th>Entrata in Ritardo</th><th>Uscita Anticipata</th><th>Giustificazione</th>
+            <th>Data</th>
+            <th>Presenza</th>
+            <th>Entrata in Ritardo</th>
+            <th>Uscita Anticipata</th>
+            <th>Giustificazione</th>
           </tr>
         </thead>
         <tbody>
-          {presenzeStudente.length > 0 ? (
-            presenzeStudente.map((presenza, index) => (
+          {presenze.length > 0 ? (
+            presenze.map((presenza, index) => (
               <tr key={index}>
                 <td>{presenza.data}</td>
                 <td>{presenza.stato}</td>
-                <td>{presenza.orarioEntrata || 'Nessuna'}</td>
-                <td>{presenza.orarioUscita || 'Nessuna'}</td>
+                <td>{presenza.entrata_ritardo || 'Nessuna'}</td>
+                <td>{presenza.uscita_anticipata || 'Nessuna'}</td>
                 <td>
-                  {/* Verifica se lo studente è giustificato */}
-                  {presenza.giustificazioneConfermata ? 'Giustificato' : 'Non giustificato'}
+                  {presenza.giustificazione ? 'Giustificato' : 'Non giustificato'}
                 </td>
               </tr>
             ))

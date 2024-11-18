@@ -1,19 +1,83 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { voti, materie } from './mockdb'; // Assicurati di importare voti e materie
+import { useState, useEffect } from 'react';
 import '../css/VotiStudente.css'; // Usa lo stesso CSS di VisualizzaVoti
 
 function VotiStudente({ utenteLoggato }) {
+  const [votiPerMateria, setVotiPerMateria] = useState({});
+  const [materie, setMaterie] = useState({});
   const [popup, setPopup] = useState(null); // Stato per gestire il popup
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 }); // Posizione del popup
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Filtra i voti dello studente loggato
-  const votiStudente = voti.filter(voto => voto.studenteId === utenteLoggato.id);
+  useEffect(() => {
+    const fetchVoti = async () => {
+      setLoading(true);
+      const token = localStorage.getItem('token'); // Recupera il token dal localStorage
+
+      try {
+        // Fetch dei voti dello studente loggato
+        const responseVoti = await fetch('http://localhost:8000/api/voti-studente/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!responseVoti.ok) {
+          throw new Error('Errore nel recupero dei voti');
+        }
+
+        const votiData = await responseVoti.json();
+
+        // Fetch delle materie
+        const responseMaterie = await fetch('http://localhost:8000/api/materie/', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!responseMaterie.ok) {
+          throw new Error('Errore nel recupero delle materie');
+        }
+
+        const materieData = await responseMaterie.json();
+        const materieMap = materieData.reduce((acc, materia) => {
+          acc[materia.id] = materia.nome;
+          return acc;
+        }, {});
+
+        setMaterie(materieMap);
+
+        // Raggruppa i voti per materia
+        const raggruppati = votiData.reduce((acc, voto) => {
+          const materiaId = voto.materia;
+          if (!acc[materiaId]) {
+            acc[materiaId] = { scritto: [], orale: [], materiaId };
+          }
+          if (voto.scritto) acc[materiaId].scritto.push({ value: voto.scritto, data: voto.data, appunti: voto.appunti });
+          if (voto.orale) acc[materiaId].orale.push({ value: voto.orale, data: voto.data, appunti: voto.appunti });
+          return acc;
+        }, {});
+
+        setVotiPerMateria(raggruppati);
+      } catch (err) {
+        setError(err.message || 'Errore sconosciuto');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVoti();
+  }, []);
 
   // Funzione per aprire il popup
   const openPopup = (voto, event) => {
-    const rect = event.target.getBoundingClientRect(); // Ottieni la posizione del voto
-    setPopupPosition({ top: rect.top + window.scrollY - 50, left: rect.left + window.scrollX }); // Imposta la posizione del popup
+    const rect = event.target.getBoundingClientRect();
+    setPopupPosition({ top: rect.top + window.scrollY - 50, left: rect.left + window.scrollX });
     setPopup(voto);
   };
 
@@ -21,6 +85,9 @@ function VotiStudente({ utenteLoggato }) {
   const closePopup = () => {
     setPopup(null);
   };
+
+  if (loading) return <p>Caricamento in corso...</p>;
+  if (error) return <p>Errore: {error}</p>;
 
   return (
     <div className="voti-salvati">
@@ -34,27 +101,36 @@ function VotiStudente({ utenteLoggato }) {
           </tr>
         </thead>
         <tbody>
-          {votiStudente.length > 0 ? (
-            votiStudente.map((voto, index) => {
-              const materia = materie.find(materia => materia.id === voto.materiaId)?.nomeMateria || 'N/A';
-              return (
-                <tr key={index}>
-                  <td>{materia}</td>
-                  <td>
-                    {voto.scritto || 'N/A'}
-                    {voto.scritto && (
-                      <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (i)</span>
-                    )}
-                  </td>
-                  <td>
-                    {voto.orale || 'N/A'}
-                    {voto.orale && (
-                      <span onClick={(event) => openPopup(voto, event)} className="voto-link"> (i)</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })
+          {Object.keys(votiPerMateria).length > 0 ? (
+            Object.entries(votiPerMateria).map(([materiaId, voti]) => (
+              <tr key={materiaId}>
+                <td>{materie[materiaId] || 'N/A'}</td>
+                <td>
+                  {voti.scritto.map((voto, index) => (
+                    <span
+                      key={index}
+                      className="voto-link"
+                      onClick={(event) => openPopup(voto, event)}
+                      title={`Data: ${voto.data}`}
+                    >
+                      {voto.value}
+                    </span>
+                  )).reduce((prev, curr) => [prev, ', ', curr])}
+                </td>
+                <td>
+                  {voti.orale.map((voto, index) => (
+                    <span
+                      key={index}
+                      className="voto-link"
+                      onClick={(event) => openPopup(voto, event)}
+                      title={`Data: ${voto.data}`}
+                    >
+                      {voto.value}
+                    </span>
+                  )).reduce((prev, curr) => [prev, ', ', curr])}
+                </td>
+              </tr>
+            ))
           ) : (
             <tr>
               <td colSpan="3">Nessun voto disponibile</td>
@@ -68,9 +144,8 @@ function VotiStudente({ utenteLoggato }) {
         <div className="popup" style={{ top: popupPosition.top, left: popupPosition.left }}>
           <div className="popup-content">
             <h4>Dettagli Voto</h4>
+            <p><strong>Valore:</strong> {popup.value}</p>
             <p><strong>Data:</strong> {popup.data}</p>
-            {popup.scritto && <p><strong>Voto Scritto:</strong> {popup.scritto}</p>}
-            {popup.orale && <p><strong>Voto Orale:</strong> {popup.orale}</p>}
             <p><strong>Appunti:</strong> {popup.appunti || 'Nessun appunto'}</p>
             <button onClick={closePopup}>Chiudi</button>
           </div>

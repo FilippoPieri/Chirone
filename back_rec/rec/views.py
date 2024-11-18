@@ -235,3 +235,30 @@ def get_all_materie(request):
     materie = Materia.objects.all()
     serializer = MateriaSerializer(materie, many=True)
     return Response(serializer.data)
+
+#-----------------------------------------------------------------------------------------------------------
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_voti_studente(request):
+    studente = request.user.studente_profile  # Ottieni il profilo studente associato all'utente loggato
+    voti = studente.voti.all()  # Recupera tutti i voti dello studente
+    serializer = VotoSerializer(voti, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_presenze_studente(request):
+    studente = request.user.studente_profile  # Associa l'utente loggato al profilo studente
+    presenze = studente.presenze.all()  # Recupera tutte le presenze dello studente
+    serializer = PresenzaSerializer(presenze, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orario_studente(request):
+    studente = request.user.studente_profile  # Ottieni il profilo dello studente loggato
+    classe = studente.classe  # Ottieni la classe dello studente
+    orari = classe.orari.all()  # Recupera tutti gli orari della classe
+    serializer = OrarioSerializer(orari, many=True)
+    return Response(serializer.data)
