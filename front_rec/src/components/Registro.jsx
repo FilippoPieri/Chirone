@@ -124,17 +124,10 @@ const handleSubmit = async () => {
 if (loading) return <p>Caricamento in corso...</p>;
 if (error) return <p>Errore: {error}</p>;
 
-  return (
+return (
     <div className="class-details">
         <h3>Registro della classe {selectedClass.anno}{selectedClass.sezione}</h3>
-
-        {/* Pulsante per visualizzare il registro dettagliato */}
-        <button onClick={() => setShowDettagli(!showDettagli)} className="dettagli-btn">
-          {showDettagli ? "Nascondi Registro Dettagliato" : "Visualizza Registro Dettagliato"}
-        </button>
-        
-        {showDettagli && <VisualizzaRegistro studenti={studentiClasse} />} {/* Mostra il componente VisualizzaRegistro se showDettagli è true */}
-
+  
         <table className="registro-table">
             <thead>
                 <tr>
@@ -187,10 +180,20 @@ if (error) return <p>Errore: {error}</p>;
                 ))}
             </tbody>
         </table>
-        <button onClick={handleSubmit}>Invia Presenze</button>
+        <div className="button-container">
+            <div className="left-button">
+                <button onClick={handleSubmit}>Invia Presenze</button>
+            </div>
+            <div className="right-button">
+                <button onClick={() => setShowDettagli(!showDettagli)} className="dettagli-btn">
+                    {showDettagli ? "Nascondi Registro Dettagliato" : "Visualizza Registro Dettagliato"}
+                </button>
+            </div>
+        </div>
+        {showDettagli && <VisualizzaRegistro studenti={studentiClasse} />}
     </div>
   );
-}
+} 
 
 Registro.propTypes = {
   selectedClass: PropTypes.shape({

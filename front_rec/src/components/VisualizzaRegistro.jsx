@@ -58,10 +58,10 @@ function VisualizzaRegistro() {
           </tr>
         </thead>
         <tbody>
-          {presenze.length > 0 ? (
+        {presenze.length > 0 ? (
             presenze.map((presenza, index) => (
               <tr key={index}>
-                <td>{presenza.studente}</td>
+                <td>{presenza.studente ? `${presenza.studente.nome} ${presenza.studente.cognome}` : 'Studente non trovato'}</td>
                 <td>{presenza.data}</td>
                 <td className={presenza.stato === 'presente' ? 'presente' : 'assente'}>
                   {presenza.stato === 'presente' ? 'Presente' : 'Assente'}
@@ -87,7 +87,10 @@ function VisualizzaRegistro() {
 VisualizzaRegistro.propTypes = {
   presenze: PropTypes.arrayOf(
     PropTypes.shape({
-      studente: PropTypes.string.isRequired,
+      studente: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+        cognome: PropTypes.string.isRequired
+      }),
       data: PropTypes.string.isRequired,
       stato: PropTypes.string.isRequired,
       entrata_ritardo: PropTypes.string,

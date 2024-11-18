@@ -57,6 +57,7 @@ class VotoSerializer(serializers.ModelSerializer):
         fields = ['studente', 'materia', 'scritto', 'orale', 'appunti', 'data']
 
 class PresenzaSerializer(serializers.ModelSerializer):
+    studente = StudenteSerializer(read_only=True)  # Utilizza la serializzazione nidificata qui
     class Meta:
         model = Presenza
         fields = ['id', 'studente', 'data', 'stato', 'entrata_ritardo', 'uscita_anticipata', 'giustificazione']

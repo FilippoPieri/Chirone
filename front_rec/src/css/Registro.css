@@ -72,3 +72,17 @@ class-details {
 .assente-btn:hover {
   background-color: #89f0a1; /* Cambia a verde quando ci si passa sopra */
 }
+
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Distribuisce gli spazi ugualmente tra gli elementi all'interno del container */
+  margin-top: 20px; /* Distanza dal contenuto sopra */
+}
+
+.left-button {
+  text-align: left; /* Allinea il pulsante Invia Presenze a sinistra */
+}
+
+.right-button {
+  text-align: right; /* Allinea il pulsante Visualizza Registro Dettagliato a destra */
+}
