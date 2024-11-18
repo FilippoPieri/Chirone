@@ -73,7 +73,7 @@ function VisualizzaOrarioStudente({ utenteLoggato }) {
     return (
         <div className="orario-studente">
             <h4>Orario Settimanale di {utenteLoggato.nome} {utenteLoggato.cognome}</h4>
-            <table className="orario-table">
+            <table className="uniform-table">
                 <thead>
                     <tr>
                         <th>Ora</th>

@@ -1,56 +1,68 @@
 .voti-salvati {
-    margin: 20px;
-  }
+  margin: 20px auto; /* Margine automatico per centrare */
   
-  .registro-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .registro-table th,
-  .registro-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  .registro-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-  }
-  
-  /* Stile per il link che apre il popup */
-  .voto-link {
-    color: #007bff;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-  
-  /* Stile per il popup a forma di balloon */
-  .popup {
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    max-width: 300px; /* Limita la larghezza del popup */
-  }
-  
-  .popup-content {
-    position: relative;
-  }
-  
-  .popup::after {
-    content: '';
-    position: absolute;
-    top: 100%; /* Posiziona la punta del balloon sotto il pop-up */
-    left: 50%;
-    margin-left: -5px; /* Centrato */
-    border-width: 5px;
-    border-style: solid;
-    border-color: #fff transparent transparent transparent; /* Punta bianca */
-  }
+}
+
+/* Titoli sopra le tabelle */
+.table-title {
+  text-align: center;
+  margin-bottom: 20px; /* Spazio tra il titolo e la tabella */
+  font-size: 1.2em; /* Dimensione leggermente più grande */
+  color: #333; /* Colore del testo */
+}
+
+/* Tabelle uniformi */
+.uniform-table {
+  width: 100%; /* Occupa tutta la larghezza disponibile */
+  max-width: 800px; /* Larghezza massima per uniformare le tabelle */
+  margin: 0 auto; /* Centra la tabella all'interno del contenitore */
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Effetto ombra */
+}
+
+.uniform-table th,
+.uniform-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0; /* Separatore tra righe */
+}
+
+.uniform-table th {
+  background-color: #f5f5f5; /* Sfondo per l'intestazione */
+  font-weight: bold; /* Testo in grassetto */
+}
+
+/* Link per i voti cliccabili */
+.voto-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Popup per i dettagli dei voti */
+.popup {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 300px; /* Limita la larghezza del popup */
+}
+
+.popup-content {
+  position: relative;
+}
+
+.popup::after {
+  content: '';
+  position: absolute;
+  top: 100%; /* Posiziona la punta del balloon sotto il popup */
+  left: 50%;
+  margin-left: -5px; /* Centra la punta */
+  border-width: 5px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent; /* Punta bianca */
+}

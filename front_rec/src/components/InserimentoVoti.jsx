@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import VisualizzaVoti from './VisualizzaVoti'; // Assicurati di importare il componente VisualizzaVoti
-import '../css/Registro.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
+import '../css/InserimentoVoti.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
 
 function InserimentoVoti({ selectedClass }) {
   const [studentiClasse, setStudentiClasse] = useState([]);
@@ -131,11 +131,8 @@ function InserimentoVoti({ selectedClass }) {
   return (
     <div className="inserimento-voti">
       <h3>Gestione voti per la classe {selectedClass.anno}{selectedClass.sezione}</h3>
-      <button onClick={toggleVisualizzaVoti}>Mostra/Nascondi Voti</button> {/* Pulsante posizionato subito dopo il titolo */}
-      {showVisualizzaVoti && <VisualizzaVoti selectedClass={selectedClass} utenteLoggato={utenteLoggato} />}
-
+      
       <table className="registro-table">
-
         <thead>
           <tr>
             <th>Studente</th>
@@ -186,7 +183,13 @@ function InserimentoVoti({ selectedClass }) {
           ))}
         </tbody>
       </table>
-      <button onClick={handleSubmit}>Invia Tutti i Voti</button>
+      
+      <div className="actions">
+        <button onClick={handleSubmit} className="submit-btn">Invia Tutti i Voti</button>
+        <button onClick={toggleVisualizzaVoti} className="toggle-btn">Mostra/Nascondi Voti</button>
+      </div>
+      
+      {showVisualizzaVoti && <VisualizzaVoti selectedClass={selectedClass} />}
     </div>
   );
 }

@@ -74,7 +74,7 @@ function VisualizzaVoti({ selectedClass }) {
   return (
     <div className="voti-salvati">
       <h4>Voti degli studenti della classe {selectedClass.anno} {selectedClass.sezione}</h4>
-      <table className="registro-table">
+      <table className="uniform-table">
         <thead>
           <tr>
             <th>Nome Studente</th>
@@ -89,18 +89,19 @@ function VisualizzaVoti({ selectedClass }) {
             const votiPerMateria = {};
 
             // Raggruppa i voti per materia
-            votiStudente.forEach((voto) => {
+            votiStudente.forEach((voto, index) => {
               const materiaNome = getMateriaNome(voto.materia);
               if (!votiPerMateria[materiaNome]) {
                 votiPerMateria[materiaNome] = { scritti: [], orali: [] };
               }
+              const keyBase = `-${index}-${Date.now()}`; // Aggiungi un indice e un timestamp per unicità
               if (voto.scritto) votiPerMateria[materiaNome].scritti.push(
-                <span key={`scritto-${voto.id}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
+                <span key={`scritto-${voto.id || keyBase}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
                   {voto.scritto}
                 </span>
               );
               if (voto.orale) votiPerMateria[materiaNome].orali.push(
-                <span key={`orale-${voto.id}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
+                <span key={`orale-${voto.id || keyBase}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
                   {voto.orale}
                 </span>
               );
