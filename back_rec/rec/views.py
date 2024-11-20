@@ -97,6 +97,9 @@ def get_students_by_class(request, class_id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_presenza(request):
+
+    print("Dati ricevuti dal frontend:", request.data)  # Logga i dati ricevuti
+
     presenze_data = request.data.get('presenze', [])  # Ottieni la lista di presenze dal payload
 
     # Controlla che il payload sia una lista
@@ -113,6 +116,7 @@ def create_presenza(request):
             serializer.save()
             created_presenze.append(serializer.data)  # Aggiungi la presenza valida alla lista
         else:
+            print("Errori nel serializer:", serializer.errors)  # Log degli errori
             errors.append(serializer.errors)  # Aggiungi errori se la presenza non è valida
 
     # Verifica se ci sono errori

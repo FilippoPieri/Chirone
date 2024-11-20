@@ -92,8 +92,8 @@ const handleSubmit = async () => {
     const presenzeData = Object.keys(presenze).map((studenteId) => {
         const { presente, entrata, uscita, giustificato } = presenze[studenteId];
         return {
-            studente: parseInt(studenteId),
-            data: "2024-11-07", // Imposta la data o usa una variabile per la data dinamica
+            studente_id: parseInt(studenteId), // Cambia "studente" in "studente_id"
+            data: "2024-11-07", // Modifica questa parte se la data è dinamica
             stato: presente ? "presente" : "assente",
             entrata_ritardo: entrata || null,
             uscita_anticipata: uscita || null,
