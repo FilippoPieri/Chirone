@@ -15,7 +15,7 @@ function VisualizzaOrario({ selectedClass }) {
             try {
                 const response = await fetch('http://localhost:8000/api/materie/', {
                     headers: {
-                        'Authorization': `Token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -43,7 +43,7 @@ function VisualizzaOrario({ selectedClass }) {
             try {
                 const response = await fetch(`http://localhost:8000/api/orario/${selectedClass.id}/`, {
                     headers: {
-                        'Authorization': `Token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });

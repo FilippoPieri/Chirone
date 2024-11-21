@@ -27,7 +27,7 @@ function InserimentoVoti({ selectedClass }) {
         const responseStudents = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
@@ -50,7 +50,7 @@ function InserimentoVoti({ selectedClass }) {
         const responseMateria = await fetch('http://localhost:8000/api/insegnante/materie/', {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
@@ -103,7 +103,7 @@ function InserimentoVoti({ selectedClass }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Token ${token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(votiData) // Assicurati che votiData sia un array
       });

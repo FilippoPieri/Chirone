@@ -20,7 +20,7 @@ function VotiStudente({ utenteLoggato }) {
         const responseVoti = await fetch('http://localhost:8000/api/voti-studente/', {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -35,7 +35,7 @@ function VotiStudente({ utenteLoggato }) {
         const responseMaterie = await fetch('http://localhost:8000/api/materie/', {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

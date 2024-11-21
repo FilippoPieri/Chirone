@@ -32,7 +32,7 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
           try {
               const response = await fetch(`http://localhost:8000/api/insegnante/materie/`, {
                   headers: {
-                      'Authorization': `Token ${token}`,
+                      'Authorization': `Bearer ${token}`,
                       'Content-Type': 'application/json'
                   }
               });
@@ -83,7 +83,7 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(orarioDaInviare)  // Invia l'intero array
         });

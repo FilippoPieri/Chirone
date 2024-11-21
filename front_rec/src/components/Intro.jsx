@@ -21,10 +21,9 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
   
       if (response.ok) {
         const data = await response.json();
-  
-        // Verifica che i dati minimi necessari siano presenti
-        if (data.token && data.id) {
-          localStorage.setItem('token', data.token);
+        console.log(data);
+          localStorage.setItem('token', data.access);
+          localStorage.setItem('refresh', data.refresh);
           setLoggedIn(true);
           setUtenteLoggato({
             username: username,
@@ -33,24 +32,19 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
             cognome: data.cognome || '',  // Cognome opzionale
             ruolo: data.role || 'utente'  // Ruolo opzionale con valore predefinito
           });
+          
           setError('');  // Resetta eventuali errori
         } else {
-          console.error('Risposta incompleta dal server:', data);
-          setError('Risposta incompleta dal server. Riprova più tardi.');
+          const errData = await response.json();
+          setError(errData.error || 'Credenziali non valide');
         }
-      } else {
-        // Gestione di errori di credenziali o altri errori specifici
-        const errData = await response.json();
-        setError(errData.error || 'Credenziali non valide');
+      } catch (error) {
+        setError('Errore di connessione al server');
       }
-    } catch (error) {
-      console.error('Errore di connessione o nel server:', error);
-      setError('Errore di connessione al server');
-    }
-  };
+    };
   
-
-  // Funzione per gestire il logout
+    console.log('Utente loggato:', utenteLoggato);
+  // Gestisce il logout all'interno di Intro per coerenza con la nuova logica di autenticazione
   const handleLogout = () => {
     localStorage.removeItem('token'); // Rimuove il token dal localStorage
     setLoggedIn(false); // Reset dello stato di login
@@ -66,7 +60,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
       {/* Se l'utente è loggato, mostra il messaggio di benvenuto e il pulsante per uscire */}
       {loggedIn ? (
         <div>
-          <p>Benvenut* {utenteLoggato?.nome}{utenteLoggato?.cognome}!</p>
+          <p>Benvenut* {utenteLoggato?.nome} {utenteLoggato?.cognome}!</p>
           <button onClick={handleLogout} className="cta-button">Esci</button>
         </div>
       ) : (
@@ -78,7 +72,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               type="text"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               required
               placeholder="Inserisci la tua username"
               autoComplete="username"
@@ -90,7 +84,7 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
               type="password"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               required
               placeholder="Inserisci la tua password"
               autoComplete="current-password"

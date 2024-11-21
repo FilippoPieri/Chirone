@@ -19,7 +19,7 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
         const response = await fetch(`http://localhost:8000/api/insegnante/classes/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json'  // Forza la risposta in JSON
           }

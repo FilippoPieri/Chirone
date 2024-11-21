@@ -16,7 +16,7 @@ function RegistroStudente({ utenteLoggato }) {
         const response = await fetch('http://localhost:8000/api/presenze-studente/', {
           method: 'GET',
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

@@ -19,7 +19,7 @@ function Registro({ selectedClass }) {
       console.log('Token inviato con la richiesta:', localStorage.getItem('token'));
       
       const headers = new Headers({
-          'Authorization': `Token ${token}`,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
       });
   
@@ -106,7 +106,7 @@ const handleSubmit = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ presenze: presenzeData })
         });

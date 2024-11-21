@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
@@ -15,27 +17,26 @@ from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializ
 from .serializers import MateriaSerializer
 
 
-# Configura il logger
-logger = logging.getLogger(__name__)
-
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
-        serializer = AuthTokenSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)  # Genera o recupera un token per l'utente
+        # Usa `authenticate` per verificare le credenziali dell'utente
+        user = authenticate(username=request.data.get('username'), password=request.data.get('password'))
+        if user is not None:
+            # Crea un token JWT per l'utente
+            refresh = RefreshToken.for_user(user)
 
             # Aggiungi tutti i campi richiesti dal frontend
             return Response({
-                'token': token.key,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
                 'id': user.id,
                 'nome': user.first_name,  # Assicurati che il campo 'first_name' sia compilato per l'utente
                 'cognome': user.last_name,  # Assicurati che il campo 'last_name' sia compilato per l'utente
                 'role': 'insegnante' if user.groups.filter(name='Insegnante').exists() else 'studente'  # o altro ruolo
             }, status=status.HTTP_200_OK)
-        
-        # Risposta in caso di errore di autenticazione
-        return Response({'error': 'Credenziali non valide'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Risposta in caso di errore di autenticazione
+            return Response({'error': 'Credenziali non valide'}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -69,20 +70,15 @@ def get_insegnante_classes(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_students_by_class(request, class_id):
-    logger.debug("Inizio elaborazione richiesta per la classe ID: %s", class_id)
-
     # Recupera la classe usando il class_id e gestisce il caso in cui l'oggetto non esista
     classe = get_object_or_404(Classe, id=class_id)
-    logger.debug("Classe recuperata: %s, ID: %s", classe, class_id)
-
+    
     # Verifica se l'utente è autorizzato a insegnare in quella classe
     if not request.user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
-        logger.error("Accesso negato: l'utente %s non insegna alla classe ID %s", request.user.username, class_id)
         return Response({'error': 'Non autorizzato'}, status=HTTP_403_FORBIDDEN)
 
     # Verifica se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
     if not request.user.groups.filter(name='Insegnante').exists():
-        logger.error("Permesso negato: l'utente %s non appartiene al gruppo 'Insegnante'", request.user.username)
         return Response({'error': 'Permesso negato'}, status=HTTP_403_FORBIDDEN)
 
     # Recupera tutti gli studenti della classe
@@ -90,7 +86,6 @@ def get_students_by_class(request, class_id):
 
     # Usa il serializer per serializzare i dati degli studenti
     serializer = StudenteSerializer(studenti, many=True)
-    logger.info("Elenco studenti preparato per la classe ID %s: %s", class_id, serializer.data)
     
     return Response({'students': serializer.data})
 

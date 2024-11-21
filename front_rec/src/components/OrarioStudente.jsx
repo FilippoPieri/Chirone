@@ -15,7 +15,7 @@ function VisualizzaOrarioStudente({ utenteLoggato }) {
             try {
                 const response = await fetch('http://localhost:8000/api/materie/', {
                     headers: {
-                        'Authorization': `Token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -39,7 +39,7 @@ function VisualizzaOrarioStudente({ utenteLoggato }) {
             try {
                 const response = await fetch(`http://localhost:8000/api/orario-studente/`, {
                     headers: {
-                        'Authorization': `Token ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });

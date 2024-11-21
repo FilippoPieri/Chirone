@@ -21,19 +21,19 @@ function VisualizzaVoti({ selectedClass }) {
           fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Token ${token}` 
+              'Authorization': `Bearer ${token}` 
             },
           }),
           fetch(`http://localhost:8000/api/insegnante/classe/${selectedClass.id}/voti/`, {
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Token ${token}` 
+              'Authorization': `Bearer ${token}` 
             },
           }),
           fetch(`http://localhost:8000/api/insegnante/materie/`, {
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Token ${token}` 
+              'Authorization': `Bearer ${token}` 
             },
           }),
         ]);
