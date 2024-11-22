@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from 'react';
+import { authFetch } from './authUtils'; // Modifica il percorso se necessario
 import '../css/Registro.css';
 import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
 
@@ -14,115 +15,117 @@ function Registro({ selectedClass }) {
     const fetchStudenti = async () => {
       setLoading(true);
       setError(null);
-  
-      const token = localStorage.getItem('token');  // Assicurati che questo sia il nome corretto per la chiave del token
-      console.log('Token inviato con la richiesta:', localStorage.getItem('token'));
-      
-      const headers = new Headers({
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-      });
-  
+
       try {
-            const response = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, { headers });
-            if (!response.ok) {
-                throw new Error(`HTTP status ${response.status}`);
-            }
-            const data = await response.json();
-            console.log("Risposta completa:", data); // Aggiungi questa riga per vedere l'output di 'data'
-            // Verifica che `data.studenti` esista e sia un array
-                if (Array.isArray(data.students)) {
-                    setStudentiClasse(data.students);
-        
-                    // Inizializzazione dei dati di presenza per ciascuno studente
-                    const initialPresenze = data.students.reduce((acc, studente) => {
-                    acc[studente.id] = { presente: true, entrata: '', uscita: '', giustificato: false };
-                    return acc;
-                }, {});
-                setPresenze(initialPresenze);
-            } else {
-                setError("La risposta del server non contiene una lista di studenti valida.");
-            }
+        const response = await authFetch(
+          `http://localhost:8000/api/classes/${selectedClass.id}/students/`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP status ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Risposta completa:", data);
+
+        if (Array.isArray(data.students)) {
+          setStudentiClasse(data.students);
+
+          // Inizializzazione dei dati di presenza per ciascuno studente
+          const initialPresenze = data.students.reduce((acc, studente) => {
+            acc[studente.id] = {
+              presente: true,
+              entrata: '',
+              uscita: '',
+              giustificato: false,
+            };
+            return acc;
+          }, {});
+          setPresenze(initialPresenze);
+        } else {
+          setError("La risposta del server non contiene una lista di studenti valida.");
+        }
       } catch (err) {
-          console.error("Failed to fetch students:", err);
-          setError(err.message || 'Errore nel caricamento dei dati');
+        console.error("Errore durante il fetch degli studenti:", err);
+        setError(err.message || 'Errore nel caricamento dei dati');
       } finally {
-          setLoading(false);
+        setLoading(false);
       }
-  };
+    };
 
     if (selectedClass && selectedClass.id) {
-        fetchStudenti();
+      fetchStudenti();
     }
-}, [selectedClass]);
+  }, [selectedClass]);
 
-const handlePresenceChange = (id) => {
-    setPresenze(prev => ({
-        ...prev,
-        [id]: {
-            ...prev[id],
-            presente: !prev[id].presente
-        }
+  const handlePresenceChange = (id) => {
+    setPresenze((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        presente: !prev[id].presente,
+      },
     }));
-};
+  };
 
-const handleTimeChange = (id, time, type) => {
-    setPresenze(prev => ({
-        ...prev,
-        [id]: {
-            ...prev[id],
-            [type]: time
-        }
+  const handleTimeChange = (id, time, type) => {
+    setPresenze((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [type]: time,
+      },
     }));
-};
+  };
 
-const handleJustifiedChange = (id, checked) => {
-    setPresenze(prev => ({
-        ...prev,
-        [id]: {
-            ...prev[id],
-            giustificato: checked
-        }
+  const handleJustifiedChange = (id, checked) => {
+    setPresenze((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        giustificato: checked,
+      },
     }));
-};
+  };
 
-const handleSubmit = async () => {
-    const token = localStorage.getItem('token'); // Recupera il token salvato
-
+  const handleSubmit = async () => {
     const presenzeData = Object.keys(presenze).map((studenteId) => {
-        const { presente, entrata, uscita, giustificato } = presenze[studenteId];
-        return {
-            studente_id: parseInt(studenteId), // Cambia "studente" in "studente_id"
-            data: "2024-11-07", // Modifica questa parte se la data è dinamica
-            stato: presente ? "presente" : "assente",
-            entrata_ritardo: entrata || null,
-            uscita_anticipata: uscita || null,
-            giustificazione: giustificato
-        };
+      const { presente, entrata, uscita, giustificato } = presenze[studenteId];
+      return {
+        studente_id: parseInt(studenteId), // Cambia "studente" in "studente_id"
+        data: new Date().toISOString().split('T')[0], // Usa la data attuale
+        stato: presente ? "presente" : "assente",
+        entrata_ritardo: entrata || null,
+        uscita_anticipata: uscita || null,
+        giustificazione: giustificato,
+      };
     });
 
     try {
-        const response = await fetch('http://localhost:8000/api/presenze/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ presenze: presenzeData })
-        });
+      const response = await authFetch('http://localhost:8000/api/presenze/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ presenze: presenzeData }),
+      });
 
-        if (!response.ok) {
-            throw new Error('Errore nella risposta del server');
-        }
-        const data = await response.json();
-        console.log("Risposta del server:", data);
+      if (!response.ok) {
+        throw new Error('Errore nella risposta del server');
+      }
+
+      const data = await response.json();
+      console.log("Risposta del server:", data);
     } catch (error) {
-        console.error("Errore nell'invio delle presenze:", error);
+      console.error("Errore nell'invio delle presenze:", error);
     }
-};
+  };
 
-if (loading) return <p>Caricamento in corso...</p>;
-if (error) return <p>Errore: {error}</p>;
+  if (loading) return <p>Caricamento in corso...</p>;
+  if (error) return <p>Errore: {error}</p>;
+
 
 return (
     <div className="class-details">

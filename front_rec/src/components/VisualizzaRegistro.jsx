@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from 'react';
+import { authFetch } from "./authUtils";
 import '../css/VisualizzaRegistro.css';
 
 function VisualizzaRegistro() {
@@ -11,13 +12,11 @@ function VisualizzaRegistro() {
   useEffect(() => {
     const fetchPresenzeOggi = async () => {
       setLoading(true);
-      const token = localStorage.getItem('token'); // Assicurati che il token sia salvato nel localStorage
 
       try {
-        const response = await fetch('http://localhost:8000/api/presenze/oggi/', {
+        const response = await  authFetch('http://localhost:8000/api/presenze/oggi/', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

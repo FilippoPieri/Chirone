@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { authFetch } from './authUtils'; // Modifica il percorso se necessario
 import '../css/OrarioStudente.css';
 
 const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
@@ -9,13 +10,11 @@ function VisualizzaOrarioStudente({ utenteLoggato }) {
     const [materie, setMaterie] = useState({});
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
 
         async function fetchMaterie() {
             try {
-                const response = await fetch('http://localhost:8000/api/materie/', {
+                const response = await authFetch('http://localhost:8000/api/materie/', {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -37,9 +36,8 @@ function VisualizzaOrarioStudente({ utenteLoggato }) {
 
         async function fetchOrarioStudente() {
             try {
-                const response = await fetch(`http://localhost:8000/api/orario-studente/`, {
+                const response = await authFetch(`http://localhost:8000/api/orario-studente/`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import '../css/OrarioLezioni.css'; // Importa il file CSS
 import VisualizzaOrario from './VisualizzaOrario'; // Importa il nuovo componente
+import { authFetch } from './authUtils'; // Modifica il percorso se necessario
 
 const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 const oreGiornaliere = [8, 9, 10, 11, 12, 13, 14 , 15, 16, 17, 18];
@@ -26,13 +27,9 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
      useEffect(() => {
       async function fetchMaterie() {
 
-        const token = localStorage.getItem('token');  // Assicurati che questo sia il nome corretto per la chiave del token
-        console.log('Token inviato con la richiesta:', localStorage.getItem('token'));
-
           try {
-              const response = await fetch(`http://localhost:8000/api/insegnante/materie/`, {
+              const response = await authFetch(`http://localhost:8000/api/insegnante/materie/`, {
                   headers: {
-                      'Authorization': `Bearer ${token}`,
                       'Content-Type': 'application/json'
                   }
               });
@@ -62,7 +59,6 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
 
   const handleSalvaOrario = async () => {
     console.log("Salvataggio dell'orario:", orario);
-    const token = localStorage.getItem('token');
     const orarioDaInviare = Object.keys(orario).flatMap(giorno => {
       return Object.keys(orario[giorno]).map(ora => {
           const materia = orario[giorno][ora];
@@ -79,11 +75,10 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
     console.log("Orario da inviare:", orarioDaInviare);
 
     try {
-        const response = await fetch('http://localhost:8000/api/orario/', {
+        const response = await authFetch('http://localhost:8000/api/orario/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(orarioDaInviare)  // Invia l'intero array
         });

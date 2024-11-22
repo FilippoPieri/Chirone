@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import  { useState, useEffect } from 'react';
+import { authFetch } from './authUtils'; // Importa la funzione dal file utility
 import '../css/ClassSelector.css';
 
 function ClassSelector({ onClassSelect, insegnanteLoggato }) {
@@ -11,44 +12,30 @@ function ClassSelector({ onClassSelect, insegnanteLoggato }) {
   useEffect(() => {
     if (!insegnanteLoggato.id) return;
 
-    const fetchClasses = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem('token');
-        console.log('Token storage:', token);
-        const response = await fetch(`http://localhost:8000/api/insegnante/classes/`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'  // Forza la risposta in JSON
-          }
-        });
-        //deb
-        console.log('Status:', response.status);
-        console.log('Content-Type:', response.headers.get('Content-Type'));
-        const text = await response.text(); // Ottiene la risposta come stringa
-        console.log("Risposta completa:", text);
-        //fin
+      const fetchClasses = async () => {
+        setLoading(true);
+        try {
+            const response = await authFetch(`http://localhost:8000/api/insegnante/classes/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch classes');
+            if (!response.ok) {
+                throw new Error('Failed to fetch classes');
+            }
+
+            const data = await response.json();
+            setClassi(data.classes || []); // Fallback a un array vuoto
+            setError('');
+        } catch (err) {
+            console.error("Errore durante il fetch:", err);
+            setError(`Errore nel recupero delle classi: ${err.message}`);
+            setClassi([]);
+        } finally {
+            setLoading(false);
         }
-
-        //const data = await response.json();
-        const data = JSON.parse(text); // Converte la stringa in un oggetto JavaScript
-        //deb
-        console.log("Classi ricevute dal backend:", data.classes);  // Debug: visualizza le classi
-        //fin
-        setClassi(data.classes || []); // Aggiunta di un fallback a array vuoto
-        setError('');
-      } catch (err) {
-        console.log("Errore durante il fetch:", err);
-        setError(`Errore nel recupero delle classi: ${err.statusText || err.message}`);
-        setClassi([]);
-      } finally {
-        setLoading(false);
-      }
     };
 
     fetchClasses();

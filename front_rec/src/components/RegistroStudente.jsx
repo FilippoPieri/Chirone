@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import { authFetch } from './authUtils';
 import '../css/RegistroStudente.css'; // Crea un file CSS per gli stili personalizzati
 
 function RegistroStudente({ utenteLoggato }) {
@@ -10,13 +11,11 @@ function RegistroStudente({ utenteLoggato }) {
   useEffect(() => {
     const fetchPresenze = async () => {
       setLoading(true);
-      const token = localStorage.getItem('token'); // Recupera il token dal localStorage
 
       try {
-        const response = await fetch('http://localhost:8000/api/presenze-studente/', {
+        const response = await  authFetch('http://localhost:8000/api/presenze-studente/', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

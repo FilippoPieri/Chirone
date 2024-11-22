@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import { authFetch } from './authUtils';
 import '../css/VotiStudente.css'; // Usa lo stesso CSS di VisualizzaVoti
 
 function VotiStudente({ utenteLoggato }) {
@@ -13,14 +14,12 @@ function VotiStudente({ utenteLoggato }) {
   useEffect(() => {
     const fetchVoti = async () => {
       setLoading(true);
-      const token = localStorage.getItem('token'); // Recupera il token dal localStorage
 
       try {
         // Fetch dei voti dello studente loggato
-        const responseVoti = await fetch('http://localhost:8000/api/voti-studente/', {
+        const responseVoti = await  authFetch('http://localhost:8000/api/voti-studente/', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -32,10 +31,9 @@ function VotiStudente({ utenteLoggato }) {
         const votiData = await responseVoti.json();
 
         // Fetch delle materie
-        const responseMaterie = await fetch('http://localhost:8000/api/materie/', {
+        const responseMaterie = await  authFetch('http://localhost:8000/api/materie/', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });

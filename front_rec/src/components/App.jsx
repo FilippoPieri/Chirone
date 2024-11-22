@@ -15,46 +15,63 @@ function App() {
   const [utenteLoggato, setUtenteLoggato] = useState(null); // Stato dell'utente loggato
 
   useEffect(() => {
-    // Aggiungi un listener per il logout automatico alla chiusura della scheda
-    window.addEventListener('beforeunload', handleLogout);
+      // Recupera token e dati dell'utente dal localStorage all'avvio
+      const token = localStorage.getItem('token');
+      const utente = JSON.parse(localStorage.getItem('utenteLoggato'));
 
-    return () => {
-      window.removeEventListener('beforeunload', handleLogout);
-    };
+      if (token && utente) {
+          setLoggedIn(true);
+          setUtenteLoggato(utente);
+      }
+
+      // Listener per il logout automatico alla chiusura della scheda
+      window.addEventListener('beforeunload', handleLogout);
+
+      return () => {
+          window.removeEventListener('beforeunload', handleLogout);
+      };
   }, []);
 
   const handleLogout = () => {
-    console.log('Session ended');
-    // Rimuove il token di accesso e refresh dal localStorage
-    localStorage.removeItem('token');
-    setLoggedIn(false);
-    setUtenteLoggato(null);
+      console.log('Session ended');
+      // Rimuove il token di accesso e refresh dal localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh');
+      localStorage.removeItem('utenteLoggato');
+      setLoggedIn(false);
+      setUtenteLoggato(null);
   };
-  console.log('Utente loggato:', utenteLoggato, 'puppu');
+
+  console.log('Utente loggato:', utenteLoggato);
+
 
   return (
     <div className="App">
-      <Header />
-      <main>
-        <Intro
-          setLoggedIn={setLoggedIn}
-          loggedIn={loggedIn}
-          setUtenteLoggato={setUtenteLoggato}
-          utenteLoggato={utenteLoggato}
-        />
-        {loggedIn && utenteLoggato ? (
-          utenteLoggato.ruolo === 'insegnante' ? (
-            <Features utenteLoggato={utenteLoggato} />
-          ) : (
-            <FeaturesStudenti utenteLoggato={utenteLoggato} />
-          )
-        ) : (
-          <p>Effettua il login per accedere alle funzionalità.</p>
-        )}
-      </main>
-      <Footer />
+        <Header />
+        <main>
+            <Intro
+                setLoggedIn={setLoggedIn}
+                loggedIn={loggedIn}
+                setUtenteLoggato={(utente) => {
+                    setUtenteLoggato(utente);
+                    localStorage.setItem('utenteLoggato', JSON.stringify(utente));
+                }}
+                utenteLoggato={utenteLoggato}
+                handleLogout={handleLogout} // Passa il logout ad Intro
+            />
+            {loggedIn && utenteLoggato ? (
+                utenteLoggato.ruolo === 'insegnante' ? (
+                    <Features utenteLoggato={utenteLoggato} />
+                ) : (
+                    <FeaturesStudenti utenteLoggato={utenteLoggato} />
+                )
+            ) : (
+                <p>Effettua il login per accedere alle funzionalità.</p>
+            )}
+        </main>
+        <Footer />
     </div>
-  );
+);
 }
 
 export default App;

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import VisualizzaVoti from './VisualizzaVoti'; // Assicurati di importare il componente VisualizzaVoti
+import { authFetch } from './authUtils'; // Modifica il percorso se necessario
 import '../css/InserimentoVoti.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
 
 function InserimentoVoti({ selectedClass }) {
@@ -21,13 +22,11 @@ function InserimentoVoti({ selectedClass }) {
       if (!selectedClass.id) return;
 
       setLoading(true);
-      const token = localStorage.getItem('token');
       try {
         // Fetch degli studenti della classe
-        const responseStudents = await fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
+        const responseStudents = await authFetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
@@ -47,10 +46,9 @@ function InserimentoVoti({ selectedClass }) {
         setVoti(initialVoti);
 
         // Fetch della materia associata all'insegnante loggato
-        const responseMateria = await fetch('http://localhost:8000/api/insegnante/materie/', {
+        const responseMateria = await authFetch('http://localhost:8000/api/insegnante/materie/', {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
+          headers: {  
             'Content-Type': 'application/json'
           }
         });
@@ -87,7 +85,6 @@ function InserimentoVoti({ selectedClass }) {
   };
 
   const handleSubmit = async () => {
-    const token = localStorage.getItem('token');
     try {
       const votiData = Object.keys(voti).map(studenteId => ({
         studente: studenteId,
@@ -99,11 +96,10 @@ function InserimentoVoti({ selectedClass }) {
 
       console.log("Payload inviato:", JSON.stringify(votiData)); // Visualizza il payload per debug
 
-      const response = await fetch('http://localhost:8000/api/voto/', {
+      const response = await authFetch('http://localhost:8000/api/voto/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(votiData) // Assicurati che votiData sia un array
       });

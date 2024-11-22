@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import { authFetch } from './authUtils'; // Modifica il percorso se necessario
 import '../css/VisualizzaVoti.css';
 
 function VisualizzaVoti({ selectedClass }) {
@@ -10,30 +11,25 @@ function VisualizzaVoti({ selectedClass }) {
   const [error, setError] = useState(null);
   const [popup, setPopup] = useState(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-
+  console.log('danni agio');
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const token = localStorage.getItem('token');
-
         const [studentsRes, votiRes, materieRes] = await Promise.all([
-          fetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
+          authFetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` 
             },
           }),
-          fetch(`http://localhost:8000/api/insegnante/classe/${selectedClass.id}/voti/`, {
+          authFetch(`http://localhost:8000/api/insegnante/classe/${selectedClass.id}/voti/`, {
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` 
             },
           }),
-          fetch(`http://localhost:8000/api/insegnante/materie/`, {
+          authFetch(`http://localhost:8000/api/insegnante/materie/`, {
             headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}` 
+              'Content-Type': 'application/json', 
             },
           }),
         ]);
