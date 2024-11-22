@@ -86,6 +86,16 @@ function OrarioLezioni({ selectedClass, utenteLoggato }) {
         if (response.ok) {
             const data = await response.json();
             console.log('Orario salvato con successo:', data);
+
+            // Resetta lo stato dell'orario
+            const resetOrario = giorniSettimana.reduce((acc, giorno) => {
+                acc[giorno] = oreGiornaliere.reduce((oreAcc, ora) => {
+                    oreAcc[ora] = '';
+                    return oreAcc;
+                }, {});
+                return acc;
+            }, {});
+            setOrario(resetOrario);
         } else {
             const errorData = await response.json();
             console.error('Errore nel salvataggio dell\'orario:', errorData);

@@ -109,6 +109,13 @@ function InserimentoVoti({ selectedClass }) {
       }
 
       console.log('Voti inviati con successo!');
+      // Resetta lo stato dei voti
+      const resetVoti = studentiClasse.reduce((acc, studente) => ({
+          ...acc,
+          [studente.id]: { scritto: '', orale: '', appunti: '' }
+      }), {});
+      setVoti(resetVoti);
+
     } catch (error) {
       console.error('Errore durante l\'invio dei voti:', error);
     }
