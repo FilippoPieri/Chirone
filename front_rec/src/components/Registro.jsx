@@ -134,6 +134,7 @@ return (
         <table className="registro-table">
             <thead>
                 <tr>
+                    <th>Stato</th> {/* Nuova colonna per il pallino */}
                     <th>Studente</th>
                     <th>ID</th>
                     <th>Presenza</th>
@@ -144,10 +145,12 @@ return (
             </thead>
             <tbody>
                 {studentiClasse.map(studente => (
-                    <tr
-                        key={studente.id}
-                        className={presenze[studente.id]?.presente ? 'row-presente' : 'row-assente'}
-                    >
+                    <tr key={studente.id}>
+                        <td>
+                            <span
+                                className={`stato-indicatore ${presenze[studente.id]?.presente ? 'stato-presente' : 'stato-assente'}`}
+                            />
+                        </td>
                         <td>{studente.nome} {studente.cognome}</td>
                         <td>{studente.username}</td>
                         <td>

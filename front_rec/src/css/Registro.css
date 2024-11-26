@@ -1,4 +1,5 @@
-class-details {
+/* Stile generale del container */
+.class-details {
   padding: 20px;
 }
 
@@ -6,83 +7,178 @@ class-details {
   margin-bottom: 20px;
 }
 
+/* Stile della tabella */
 .registro-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Larghezza delle colonne uniforme */
+  text-align: center; /* Centra il contenuto orizzontalmente */
 }
 
-.registro-table th,
-.registro-table td {
+/* Header della tabella */
+.registro-table > thead > tr > th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
   padding: 12px;
-  text-align: left;
+  white-space: nowrap; /* Impedisce la rottura del testo */
+}
+
+/* Celle della tabella */
+.registro-table > tbody > tr > td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 12px;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.registro-table th {
-  background-color: #f5f5f5;
-  font-weight: bold;
+/* Gestione della larghezza delle colonne */
+.registro-table th:nth-child(1),
+.registro-table td:nth-child(1) {
+  width: 5%; /* Stato (pallino) */
 }
 
-.voto-span,
-.presenza-span {
+.registro-table th:nth-child(2),
+.registro-table td:nth-child(2) {
+  width: 20%; /* Nome studente */
+}
+
+.registro-table th:nth-child(3),
+.registro-table td:nth-child(3) {
+  width: 20%; /* ID */
+}
+
+.registro-table th:nth-child(4),
+.registro-table td:nth-child(4) {
+  width: 15%; /* Presenza */
+}
+
+.registro-table th:nth-child(5),
+.registro-table td:nth-child(5) {
+  width: 15%; /* Entrata in ritardo */
+}
+
+.registro-table th:nth-child(6),
+.registro-table td:nth-child(6) {
+  width: 15%; /* Uscita anticipata */
+}
+
+.registro-table th:nth-child(7),
+.registro-table td:nth-child(7) {
+  width: 10%; /* Giustificazione */
+}
+
+/* Pallino dello stato */
+.stato-indicatore {
   display: inline-block;
-  margin-right: 10px;
-  padding: 2px 5px;
-  border-radius: 3px;
-  font-size: 0.9em;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: red; /* Default */
+  transition: background-color 0.3s ease;
 }
 
-.voto-span {
-  background-color: #e3f2fd;
-  color: #1565c0;
-}
-
-.presenza-span {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.row-presente {
+/* Colore verde per i presenti */
+.stato-presente {
   background-color: #8dfa92;
 }
 
-.row-assente {
+/* Colore rosso per gli assenti */
+.stato-assente {
   background-color: #f87e7e;
-}  
+}
 
-/* Stili per il pulsante di presenza/assenza di default */
-.presente-btn, .assente-btn {
-  background-color: #d3d3d3; /* Grigio chiaro di default */
-  color: rgb(0, 0, 0);
+/* Pulsanti di presenza (Presente/Assente) */
+.presente-btn,
+.assente-btn {
+  background-color: #007bff; /* Colore di default: Blu */
+  color: #fff; /* Colore del testo */
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Aggiunge una transizione fluida */
+  transition: background-color 0.3s ease; /* Transizione fluida per hover */
+  width: 90%; /* Uniforma la larghezza del pulsante */
+  text-align: center;
 }
 
-/* Hover: lo studente è presente, cambia colore a rosso */
-.presente-btn:hover {
-  background-color: #f3838d; /* Cambia a rosso quando ci si passa sopra */
-}
-
-/* Hover: lo studente è assente, cambia colore a verde */
+/* Hover per entrambi i pulsanti */
+.presente-btn:hover,
 .assente-btn:hover {
-  background-color: #89f0a1; /* Cambia a verde quando ci si passa sopra */
+  background-color: #0056b3; /* Colore blu scuro al passaggio del mouse */
 }
 
+/* Pulsante attivo: Nessuna differenza basata sullo stato */
+.presente-btn:active,
+.assente-btn:active {
+  background-color: #0056b3; /* Resta blu scuro quando cliccato */
+}
+
+/* Input di tipo "time" */
+.registro-table tbody tr td input[type="time"] {
+  width: 90%; /* Uniforma la larghezza dell'input */
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+/* Checkbox */
+.registro-table tbody tr td input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: auto; /* Centra l'elemento nella colonna */
+}
+
+/* Altezza uniforme per ogni riga */
+.registro-table > tbody > tr {
+  height: 60px;
+}
+
+/* Contenitore dei pulsanti */
 .button-container {
   display: flex;
-  justify-content: space-between; /* Distribuisce gli spazi ugualmente tra gli elementi all'interno del container */
-  margin-top: 20px; /* Distanza dal contenuto sopra */
+  justify-content: space-between; /* Sposta i pulsanti alle estremità */
+  margin-top: 20px;
 }
 
-.left-button {
-  text-align: left; /* Allinea il pulsante Invia Presenze a sinistra */
-}
-
+/* Pulsante "Visualizza Registro Dettagliato" */
 .right-button {
-  text-align: right; /* Allinea il pulsante Visualizza Registro Dettagliato a destra */
+  text-align: right;
+  margin-left: auto; /* Spinge il pulsante verso il lato destro */
+}
+
+.right-button .dettagli-btn {
+  background-color: #007bff; /* Colore blu */
+  color: #fff; /* Colore del testo */
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease; /* Transizione per hover */
+}
+
+/* Hover per "Visualizza Registro Dettagliato" */
+.right-button .dettagli-btn:hover {
+  background-color: #0056b3; /* Colore blu scuro al passaggio del mouse */
+}
+
+/* Pulsante "Invia Presenze" */
+.left-button button {
+  background-color: #007bff; /* Colore verde */
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease; /* Transizione per hover */
+}
+
+/* Hover per "Invia Presenze" */
+.left-button button:hover {
+  background-color: #0056b3; /* Verde scuro al passaggio del mouse */
 }
