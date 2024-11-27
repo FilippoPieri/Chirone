@@ -29,8 +29,8 @@ function Features({ utenteLoggato }) {
     <section className="features-container">
       <div className="features-list">
           <div className="feature" onClick={() => handleFeatureClick('registro')}>
-            <h3>Registro i</h3>
-            <p>Gestisci il registro della classe.</p>
+            <h3>Appello i</h3>
+            <p>Gestisci l'appello della classe.</p>
           </div>
           <div className="feature" onClick={() => handleFeatureClick('voti')}>
             <h3>Inserimento Voti</h3>

@@ -1,50 +1,85 @@
+/* Stile generale */
 .visualizza-registro {
-    padding: 20px;
-    
-  }
-  
-  .visualizza-registro h3 {
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    color: #333;
-  }
-  
-  .visualizza-registro-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-  }
-  
+  padding: 20px;
+}
+
+.visualizza-registro h3 {
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: #333;
+}
+
+/* Tabella */
+.visualizza-registro-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.visualizza-registro-table th,
+.visualizza-registro-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #cfcfcf;
+}
+
+.visualizza-registro-table th {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.visualizza-registro-table td {
+  color: #555;
+  vertical-align: middle; /* Centra verticalmente il contenuto */
+}
+
+/* Pallini di stato (presente/assente) */
+.stato-indicatore {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 5px; /* Spaziatura tra i pallini */
+  background-color: rgb(107, 107, 107); /* Default */
+}
+
+.stato-presente {
+  background-color: #8dfa92; /* Verde */
+}
+
+.stato-assente {
+  background-color: #f87e7e; /* Rosso */
+}
+
+/* Giustificazione */
+.visualizza-registro .giustificato {
+  color: #1565c0;
+}
+
+.visualizza-registro .non-giustificato {
+  color: #757575;
+}
+
+/* Layout delle righe */
+.visualizza-registro-table tr {
+  height: 60px; /* Altezza uniforme per le righe */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .visualizza-registro-table th,
   .visualizza-registro-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 8px; /* Riduce il padding su schermi piccoli */
+    font-size: 14px; /* Riduce la dimensione del testo */
   }
-  
-  .visualizza-registro-table th {
-    background-color: #f5f5f5;
-    font-weight: bold;
+
+  .visualizza-registro-table {
+    overflow-x: auto; /* Permette lo scorrimento orizzontale su schermi stretti */
   }
-  
-  .visualizza-registro-table td {
-    color: #555;
-  }
-  
-  .visualizza-registro .presente {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-  }
-  
-  .visualizza-registro .assente {
-    background-color: #ffebee;
-    color: #c62828;
-  }
-  
-  .visualizza-registro .giustificato {
-    color: #1565c0;
-  }
-  
-  .visualizza-registro .non-giustificato {
-    color: #757575;
-  }
+}
+
+/* Prevenzione overflow dei pallini */
+td {
+  white-space: nowrap; /* Mantiene i pallini su una riga */
+}

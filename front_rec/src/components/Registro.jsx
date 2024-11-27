@@ -129,7 +129,7 @@ function Registro({ selectedClass }) {
 
 return (
     <div className="class-details">
-        <h3>Registro della classe {selectedClass.anno}{selectedClass.sezione}</h3>
+        <h3>Appello della classe {selectedClass.anno}{selectedClass.sezione}</h3>
   
         <table className="registro-table">
             <thead>
@@ -192,7 +192,7 @@ return (
             </div>
             <div className="right-button">
                 <button onClick={() => setShowDettagli(!showDettagli)} className="dettagli-btn">
-                    {showDettagli ? "Nascondi Registro Dettagliato" : "Visualizza Registro Dettagliato"}
+                    {showDettagli ? "Nascondi Appello Dettagliato" : "Visualizza Appello Dettagliato"}
                 </button>
             </div>
         </div>

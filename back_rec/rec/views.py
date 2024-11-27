@@ -1,5 +1,4 @@
 
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, exception_handler
 from rest_framework.response import Response
@@ -10,10 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rec.hashers import SHA3512PasswordHasher  # Importa il custom hasher
-import logging  # Importa logging
 from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia
-from .serializers import AuthTokenSerializer, ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
+from .serializers import ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
 from .serializers import MateriaSerializer
 
 
@@ -249,8 +246,9 @@ def get_voti_studente(request):
 @permission_classes([IsAuthenticated])
 def get_presenze_studente(request):
     studente = request.user.studente_profile  # Associa l'utente loggato al profilo studente
-    presenze = studente.presenze.all()  # Recupera tutte le presenze dello studente
-    serializer = PresenzaSerializer(presenze, many=True)
+    # Filtra solo le assenze dello studente loggato
+    assenze = studente.presenze.filter(stato='assente')  # Supponendo che "stato" indichi presenza/assenza
+    serializer = PresenzaSerializer(assenze, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

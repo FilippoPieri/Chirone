@@ -1,48 +1,51 @@
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import { authFetch } from './authUtils';
-import '../css/RegistroStudente.css'; // Crea un file CSS per gli stili personalizzati
+import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
+import { authFetch } from "./authUtils";
+import "../css/RegistroStudente.css";
 
 function RegistroStudente({ utenteLoggato }) {
-  const [presenze, setPresenze] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [assenze, setAssenze] = useState([]); // Stato per le assenze
+  const [loading, setLoading] = useState(true); // Stato per il caricamento
+  const [error, setError] = useState(null); // Stato per eventuali errori
 
+  // Fetch per ottenere solo le assenze dello studente loggato
   useEffect(() => {
-    const fetchPresenze = async () => {
-      setLoading(true);
-
+    const fetchAssenze = async () => {
+      setLoading(true); // Imposta lo stato di caricamento
       try {
-        const response = await  authFetch('http://localhost:8000/api/presenze-studente/', {
-          method: 'GET',
+        const response = await authFetch("http://localhost:8000/api/presenze-studente/", {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error('Errore nel recupero delle presenze');
+          throw new Error("Errore nel recupero delle assenze");
         }
 
         const data = await response.json();
-        setPresenze(data);
+        setAssenze(data); // Imposta le assenze ottenute dal backend
       } catch (err) {
-        setError(err.message || 'Errore sconosciuto');
+        setError(err.message || "Errore sconosciuto");
       } finally {
-        setLoading(false);
+        setLoading(false); // Disabilita lo stato di caricamento
       }
     };
 
-    fetchPresenze();
+    fetchAssenze();
   }, []);
 
+  // Gestione del caricamento
   if (loading) return <p>Caricamento in corso...</p>;
+
+  // Gestione degli errori
   if (error) return <p>Errore: {error}</p>;
 
-
+  // Render della tabella delle assenze
   return (
     <div className="registro-studente">
-      <h3>Registro di {utenteLoggato.nome} {utenteLoggato.cognome}</h3>
+      <h3>Assenze di {utenteLoggato.nome} {utenteLoggato.cognome}</h3>
       <table className="registro-table">
         <thead>
           <tr>
@@ -54,21 +57,19 @@ function RegistroStudente({ utenteLoggato }) {
           </tr>
         </thead>
         <tbody>
-          {presenze.length > 0 ? (
-            presenze.map((presenza, index) => (
+          {assenze.length > 0 ? (
+            assenze.map((assenza, index) => (
               <tr key={index}>
-                <td>{presenza.data}</td>
-                <td>{presenza.stato}</td>
-                <td>{presenza.entrata_ritardo || 'Nessuna'}</td>
-                <td>{presenza.uscita_anticipata || 'Nessuna'}</td>
-                <td>
-                  {presenza.giustificazione ? 'Giustificato' : 'Non giustificato'}
-                </td>
+                <td>{assenza.data}</td>
+                <td>Assente</td> {/* Mostra "Assente" perché il backend filtra solo le assenze */}
+                <td>{assenza.entrata_ritardo || "Nessuna"}</td>
+                <td>{assenza.uscita_anticipata || "Nessuna"}</td>
+                <td>{assenza.giustificazione ? "Giustificato" : "Non giustificato"}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5">Nessuna presenza registrata</td>
+              <td colSpan="5">Nessuna assenza registrata</td>
             </tr>
           )}
         </tbody>
@@ -77,6 +78,7 @@ function RegistroStudente({ utenteLoggato }) {
   );
 }
 
+// PropTypes per validare le props
 RegistroStudente.propTypes = {
   utenteLoggato: PropTypes.shape({
     id: PropTypes.number.isRequired,
