@@ -96,13 +96,15 @@
 .assente-btn {
   background-color: #007bff; /* Colore di default: Blu */
   color: #fff; /* Colore del testo */
-  padding: 5px 10px;
+  padding: 9px 10px 8px 6px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease; /* Transizione fluida per hover */
   width: 90%; /* Uniforma la larghezza del pulsante */
   text-align: center;
+  margin-top: -3px; /* Sposta leggermente il pulsante verso l'alto */
+  font-size: 14px;
 }
 
 /* Hover per entrambi i pulsanti */
@@ -121,15 +123,18 @@
 .registro-table tbody tr td input[type="time"] {
   width: 90%; /* Uniforma la larghezza dell'input */
   text-align: center;
-  padding: 5px;
+  padding: 4px;
   box-sizing: border-box;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 /* Checkbox */
 .registro-table tbody tr td input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   margin: auto; /* Centra l'elemento nella colonna */
+  cursor: pointer;
 }
 
 /* Altezza uniforme per ogni riga */
