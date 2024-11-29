@@ -1,0 +1,187 @@
+/* Contenitore Generale per Entrambe le Tabelle */
+.table-container {
+    display: flex;
+    flex-direction: column; /* Dispone le tabelle in verticale */
+    align-items: center; /* Centra le tabelle */
+    width: 100%; /* Occupa l'intera larghezza disponibile */
+  }
+  
+  /* Stili Condivisi per le Tabelle */
+  .tabelle-uniformi {
+    width: 90%; /* Stessa larghezza per tutte le tabelle */
+    max-width: 90%; /* Evita di superare la larghezza del contenitore */
+    border-collapse: collapse; /* Unifica i bordi delle celle */
+    background-color: #fff; /* Sfondo bianco */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombra per le tabelle */
+    text-align: center; /* Centra il testo */
+    table-layout: fixed; /* Colonne con larghezza uniforme */
+  }
+  
+  /* Header delle Tabelle */
+  .tabelle-uniformi th {
+    background-color: #e0e0e0; /* Sfondo grigio chiaro */
+    font-weight: bold; /* Testo in grassetto */
+    padding: 15px; /* Spaziatura interna */
+    text-align: center; /* Centra il testo */
+    white-space: nowrap; /* Mantiene il testo su una sola riga */
+    min-width: 100px; /* Larghezza minima per colonne uniformi */
+  }
+  
+  /* Celle delle Tabelle */
+  .tabelle-uniformi td {
+    padding: 12px; /* Spaziatura interna */
+    border-bottom: 1px solid #cfcfcf; /* Bordo inferiore */
+    word-wrap: break-word; /* Permette di spezzare il testo lungo */
+    text-align: center; /* Centra il testo */
+  }
+  
+  /* Larghezza Uniforme delle Colonne */
+  .tabelle-uniformi th:nth-child(1),
+  .tabelle-uniformi td:nth-child(1) {
+    width: 5%; /* Colonna Stato */
+  }
+  
+  .tabelle-uniformi th:nth-child(2),
+  .tabelle-uniformi td:nth-child(2) {
+    width: 10%; /* Colonna Nome Studente */
+  }
+  
+  .tabelle-uniformi th:nth-child(3),
+  .tabelle-uniformi td:nth-child(3) {
+    width: 10%; /* Colonna ID o Stato */
+  }
+  
+  .tabelle-uniformi th:nth-child(4),
+  .tabelle-uniformi td:nth-child(4) {
+    width: 10%; /* Colonna Presenza */
+  }
+  
+  .tabelle-uniformi th:nth-child(5),
+  .tabelle-uniformi td:nth-child(5) {
+    width: 10%; /* Colonna Entrata in Ritardo */
+  }
+  
+  .tabelle-uniformi th:nth-child(6),
+  .tabelle-uniformi td:nth-child(6) {
+    width: 10%; /* Colonna Uscita Anticipata */
+  }
+  
+  .tabelle-uniformi th:nth-child(7),
+  .tabelle-uniformi td:nth-child(7) {
+    width: 10%; /* Colonna Giustificazione */
+  }
+  
+  /* Stato (Pallino) */
+  .stato-indicatore {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%; /* Forma circolare */
+    background-color: red; /* Default */
+    transition: background-color 0.3s ease; /* Transizione fluida */
+  }
+  
+  .stato-presente {
+    background-color: #8dfa92; /* Verde */
+  }
+  
+  .stato-assente {
+    background-color: #f87e7e; /* Rosso */
+  }
+  
+  /* Pulsanti di Presenza */
+  .presente-btn,
+  .assente-btn {
+    background-color: #007bff; /* Blu di default */
+    color: #fff; /* Testo bianco */
+    padding: 9px 10px; /* Spaziatura interna */
+    border: none; /* Rimuove il bordo */
+    border-radius: 5px; /* Angoli arrotondati */
+    cursor: pointer; /* Mostra il puntatore */
+    transition: background-color 0.3s ease; /* Transizione fluida */
+    width: 90%; /* Uniforma la larghezza */
+    text-align: center; /* Centra il testo */
+    font-size: 14px; /* Dimensione del testo */
+  }
+  
+  .presente-btn:hover,
+  .assente-btn:hover {
+    background-color: #0056b3; /* Blu più scuro al passaggio del mouse */
+  }
+  
+  /* Input di Tipo "Time" */
+  .tabelle-uniformi tbody tr td input[type="time"] {
+    width: 90%; /* Uniforma la larghezza */
+    text-align: center; /* Centra il testo */
+    padding: 4px; /* Spaziatura interna */
+    box-sizing: border-box; /* Include il padding nella dimensione */
+    border-radius: 5px; /* Angoli arrotondati */
+    cursor: pointer; /* Mostra il puntatore */
+  }
+  
+  /* Checkbox */
+  .tabelle-uniformi tbody tr td input[type="checkbox"] {
+    width: 30px;
+    height: 30px;
+    margin: auto; /* Centra il checkbox */
+    cursor: pointer; /* Mostra il puntatore */
+  }
+  
+  /* Altezza Uniforme per Ogni Riga */
+  .tabelle-uniformi > tbody > tr {
+    height: 60px; /* Altezza uniforme per le righe */
+  }
+  
+  /* Layout dei Pulsanti */
+  .button-container {
+    display: flex;
+    justify-content: space-between; /* Distribuisce i pulsanti */
+    margin-top: 20px;
+  }
+  
+  .right-button {
+    text-align: right;
+    margin-left: auto;
+  }
+  
+  .right-button .dettagli-btn,
+  .left-button button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .right-button .dettagli-btn:hover,
+  .left-button button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .tabelle-uniformi {
+      display: block;
+      overflow-x: auto; /* Permette lo scroll orizzontale */
+    }
+  
+    .tabelle-uniformi th, .tabelle-uniformi td {
+      padding: 8px; /* Riduce il padding */
+      font-size: 14px; /* Riduce la dimensione del testo */
+    }
+  
+    .tabelle-uniformi {
+      font-size: 12px; /* Riduce il font complessivo della tabella */
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .tabelle-uniformi th, .tabelle-uniformi td {
+      padding: 6px; /* Ulteriore riduzione del padding */
+      font-size: 12px; /* Testo ancora più piccolo */
+    }
+  }
+  

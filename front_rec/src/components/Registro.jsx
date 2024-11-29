@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState, useEffect } from 'react';
 import { authFetch } from './authUtils'; // Modifica il percorso se necessario
-import '../css/Registro.css';
+import '../css/Tabelle.css';
 import VisualizzaRegistro from './VisualizzaRegistro'; // Importa il nuovo componente
 
 function Registro({ selectedClass }) {
@@ -130,8 +130,8 @@ function Registro({ selectedClass }) {
 return (
     <div className="class-details">
         <h3>Appello della classe {selectedClass.anno}{selectedClass.sezione}</h3>
-  
-        <table className="registro-table">
+      <div className="table-container">
+        <table className="tabelle-uniformi registro-table">
             <thead>
                 <tr>
                     <th>Stato</th> {/* Nuova colonna per il pallino */}
@@ -186,6 +186,7 @@ return (
                 ))}
             </tbody>
         </table>
+      </div>
         <div className="button-container">
             <div className="left-button">
                 <button onClick={handleSubmit}>Invia Presenze</button>

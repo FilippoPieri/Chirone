@@ -1,6 +1,6 @@
 /* Stile generale del container */
 .class-details {
-  padding: 20px;
+  padding: 2px;
   overflow-x: auto; /* Permette lo scorrimento orizzontale per contenuti troppo larghi */
   white-space: nowrap; /* Impedisce la rottura del testo per un migliore scorrimento */
 }
