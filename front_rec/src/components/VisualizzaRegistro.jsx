@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { authFetch } from "./authUtils";
-import "../css/Tabelle.css";
+import "../css/VisualizzaRegistro.css";
 
 function VisualizzaRegistro() {
   const [presenze, setPresenze] = useState([]);
@@ -72,57 +72,55 @@ function VisualizzaRegistro() {
   return (
     <div className="visualizza-registro">
       <h3>Appello di Oggi</h3>
-      <div className="table-container">
-        <table className="tabelle-uniformi visualizza-registro-table">
-          <thead>
-            <tr>
-              <th>Studente</th>
-              <th>Stato</th>
-              <th>Entrata in Ritardo</th>
-              <th>Uscita Anticipata</th>
-              <th>Giustificazione</th>
-            </tr>
-          </thead>
-          <tbody>
-            {presenzeRaggruppate.length > 0 ? (
-              presenzeRaggruppate.map((presenza, index) => (
-                <tr key={index}>
-                  <td>{`${presenza.studente.nome} ${presenza.studente.cognome}`}</td>
-                  <td>
-                    {presenza.stati.map((stato, i) => (
-                      <span
-                        key={i}
-                        className={`stato-indicatore ${
-                          stato === "presente" ? "stato-presente" : "stato-assente"
-                        }`}
-                      ></span>
-                    ))}
-                  </td>
-                  <td>
-                    {presenza.entrateRitardo.length > 0
-                      ? presenza.entrateRitardo.join(", ")
-                      : "N/A"}
-                  </td>
-                  <td>
-                    {presenza.usciteAnticipate.length > 0
-                      ? presenza.usciteAnticipate.join(", ")
-                      : "N/A"}
-                  </td>
-                  <td>
-                    {presenza.giustificazioni.length > 0
-                      ? "Giustificato"
-                      : "Non giustificato"}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5">Nessuna presenza registrata per oggi.</td>
+      <table className="visualizza-registro-table">
+        <thead>
+          <tr>
+            <th>Studente</th>
+            <th>Stato</th>
+            <th>Entrata in Ritardo</th>
+            <th>Uscita Anticipata</th>
+            <th>Giustificazione</th>
+          </tr>
+        </thead>
+        <tbody>
+          {presenzeRaggruppate.length > 0 ? (
+            presenzeRaggruppate.map((presenza, index) => (
+              <tr key={index}>
+                <td>{`${presenza.studente.nome} ${presenza.studente.cognome}`}</td>
+                <td>
+                  {presenza.stati.map((stato, i) => (
+                    <span
+                      key={i}
+                      className={`stato-indicatore ${
+                        stato === "presente" ? "stato-presente" : "stato-assente"
+                      }`}
+                    ></span>
+                  ))}
+                </td>
+                <td>
+                  {presenza.entrateRitardo.length > 0
+                    ? presenza.entrateRitardo.join(", ")
+                    : "N/A"}
+                </td>
+                <td>
+                  {presenza.usciteAnticipate.length > 0
+                    ? presenza.usciteAnticipate.join(", ")
+                    : "N/A"}
+                </td>
+                <td>
+                  {presenza.giustificazioni.length > 0
+                    ? "Giustificato"
+                    : "Non giustificato"}
+                </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div> 
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">Nessuna presenza registrata per oggi.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
