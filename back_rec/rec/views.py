@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.db.models import Max
 from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia
 from .serializers import ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
 from .serializers import MateriaSerializer
@@ -123,14 +124,24 @@ def get_presenze_oggi(request):
     # Ottieni la data corrente
     oggi = timezone.now().date()
     
-    # Filtra le presenze per il giorno corrente
-    presenze_oggi = Presenza.objects.filter(data=oggi)
-    
+    # Trova l'ID dell'ultima presenza per ogni studente nella data corrente
+    ultime_presenze_ids = (
+        Presenza.objects.filter(data=oggi)
+        .values('studente')
+        .annotate(max_id=Max('id'))
+        .values_list('max_id', flat=True)
+    )
+
+    # Recupera i record con gli ID trovati
+    ultime_presenze = Presenza.objects.filter(id__in=ultime_presenze_ids)
+
     # Serializza i dati
-    serializer = PresenzaSerializer(presenze_oggi, many=True)
+    serializer = PresenzaSerializer(ultime_presenze, many=True)
     
     # Restituisci la risposta
     return Response(serializer.data)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

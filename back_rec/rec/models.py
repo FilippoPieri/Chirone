@@ -58,6 +58,18 @@ class Presenza(models.Model):
     uscita_anticipata = models.TimeField(null=True, blank=True)
     giustificazione = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        # Recupera l'ultima presenza registrata in ordine di inserimento
+        ultima_presenza = Presenza.objects.filter(studente=self.studente).order_by('-id').first()
+        
+        # Confronta lo stato del nuovo record con l'ultimo stato registrato
+        if ultima_presenza is None or ultima_presenza.stato != self.stato:
+            # Se non c'è un record precedente o lo stato è cambiato, salva il nuovo record
+            super().save(*args, **kwargs)
+        else:
+            # Se lo stato è lo stesso, ignora il salvataggio
+            print(f"Lo stato non è cambiato per {self.studente}. Nessun nuovo record salvato.")
+
     def __str__(self):
         return f"Presenza di {self.studente} il {self.data}"
 
