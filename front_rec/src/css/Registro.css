@@ -147,6 +147,7 @@
   display: flex;
   justify-content: space-between; /* Sposta i pulsanti alle estremità */
   margin-top: 20px;
+  padding : 1vh 1.5vh 
 }
 
 /* Pulsante "Visualizza Registro Dettagliato" */
