@@ -1,39 +1,65 @@
-/* Stile generale */
-.visualizza-registro {
-  padding: 20px;
-}
-
-.visualizza-registro h3 {
-  margin-bottom: 20px;
-  font-size: 1.5em;
-  color: #333;
+/* Stile generale del container */
+.registro-details {
+  padding: 2px;
+  overflow-x: auto; /* Permette lo scorrimento orizzontale per contenuti troppo larghi */
+  white-space: nowrap; /* Impedisce la rottura del testo per un migliore scorrimento */
 }
 
 /* Tabella */
 .visualizza-registro-table {
   width: 100%;
+  max-width: 100%; /* Limita la larghezza della tabella al contenitore */
   border-collapse: collapse;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  table-layout: auto; /* Colonne adattabili */
+  text-align: center;
 }
 
-.visualizza-registro-table th,
-.visualizza-registro-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #cfcfcf;
-}
-
-.visualizza-registro-table th {
+/* Header della tabella */
+.visualizza-registro-table > thead > tr > th {
   background-color: #e0e0e0;
   font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5vh;
+  white-space: nowrap; /* Impedisce la rottura del testo */
 }
 
-.visualizza-registro-table td {
-  color: #555;
-  vertical-align: middle; /* Centra verticalmente il contenuto */
+/* Celle della tabella */
+.visualizza-registro-table > tbody > tr > td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 12px;
+  border-bottom: 1px solid #cfcfcf;
+  word-wrap: break-word; /* Permette di spezzare il testo se troppo lungo */
 }
 
+/* Gestione della larghezza delle colonne */
+.visualizza-registro-table th:nth-child(1),
+.visualizza-registro-table td:nth-child(1) {
+  width: 5%; /* Stato (pallino) */
+}
+
+.visualizza-registro-table th:nth-child(2),
+.visualizza-registro-table td:nth-child(2) {
+  width: 20%; /* Nome studente */
+}
+
+.visualizza-registro-table th:nth-child(3),
+.visualizza-registro-table td:nth-child(3) {
+  width: 20%; /* ID */
+}
+
+.visualizza-registro-table th:nth-child(4),
+.visualizza-registro-table td:nth-child(4) {
+  width: 15%; /* Presenza */
+}
+
+.visualizza-registro-table th:nth-child(5),
+.visualizza-registro-table td:nth-child(5) {
+  width: 15%; /* Entrata in ritardo */
+}
 /* Pallini di stato (presente/assente) */
 .stato-indicatore {
   display: inline-block;
@@ -50,15 +76,6 @@
 
 .stato-assente {
   background-color: #f87e7e; /* Rosso */
-}
-
-/* Giustificazione */
-.visualizza-registro .giustificato {
-  color: #1565c0;
-}
-
-.visualizza-registro .non-giustificato {
-  color: #757575;
 }
 
 /* Layout delle righe */

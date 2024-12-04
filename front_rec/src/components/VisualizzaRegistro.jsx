@@ -70,8 +70,9 @@ function VisualizzaRegistro() {
   if (error) return <p>Errore: {error}</p>;
 
   return (
-    <div className="visualizza-registro">
+    <div className="registro-details">
       <h3>Appello di Oggi</h3>
+      
       <table className="visualizza-registro-table">
         <thead>
           <tr>

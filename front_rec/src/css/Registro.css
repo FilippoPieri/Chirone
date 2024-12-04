@@ -22,7 +22,7 @@
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
-  padding: 15px;
+  padding: 5vh;
   white-space: nowrap; /* Impedisce la rottura del testo */
 }
 
@@ -153,12 +153,13 @@
 .right-button {
   text-align: right;
   margin-left: auto; /* Spinge il pulsante verso il lato destro */
+  padding: 0vh 1.2vh;
 }
 
 .right-button .dettagli-btn {
   background-color: #007bff; /* Colore blu */
   color: #fff; /* Colore del testo */
-  padding: 8px 16px;
+  padding: 9px 16px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -175,12 +176,13 @@
 .left-button button {
   background-color: #007bff; /* Colore blu */
   color: #fff;
-  padding: 8px 16px;
+  padding: 8px 30px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease; /* Transizione per hover */
+  margin-left: 1vh; /*sposta il pulsante verso destra o sinistra */
 }
 
 /* Hover per "Invia Presenze" */
