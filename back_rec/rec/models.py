@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Scuola(models.Model):
     nome = models.CharField(max_length=100)
@@ -50,10 +51,8 @@ class Voto(models.Model):
     def __str__(self):
         return f"Voto di {self.studente} in {self.materia}"
 
-from django.utils import timezone
-
 class Presenza(models.Model):
-    studente = models.ForeignKey(Studente, on_delete=models.CASCADE, related_name="presenze")
+    studente = models.ForeignKey('Studente', on_delete=models.CASCADE, related_name="presenze")
     data = models.DateField(auto_now_add=True)
     stato = models.CharField(max_length=10, choices=[('presente', 'Presente'), ('assente', 'Assente')])
     entrata_ritardo = models.TimeField(null=True, blank=True)
@@ -61,25 +60,45 @@ class Presenza(models.Model):
     giustificazione = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Controlla se ci sono già record per lo studente nella data odierna
+        # Ottieni la data corrente
         oggi = timezone.now().date()
-        esiste_gia_presenza_oggi = Presenza.objects.filter(studente=self.studente, data=oggi).exists()
 
-        if not esiste_gia_presenza_oggi:
-            # Se non ci sono record per oggi, salva il nuovo record
-            super().save(*args, **kwargs)
+        # Cerca una presenza esistente per lo studente nella data corrente
+        presenza_esistente = Presenza.objects.filter(studente=self.studente, data=oggi).first()
+
+        if presenza_esistente:
+            # Dizionario per tenere traccia dei campi aggiornati
+            updated_fields = {}
+
+            # Verifica e aggiorna lo stato se necessario
+            if presenza_esistente.stato != self.stato:
+                updated_fields['stato'] = self.stato
+
+            # Controlla e aggiorna l'entrata ritardo se necessario
+            if self.entrata_ritardo is not None and presenza_esistente.entrata_ritardo != self.entrata_ritardo:
+                updated_fields['entrata_ritardo'] = self.entrata_ritardo
+
+            # Controlla e aggiorna l'uscita anticipata se necessario
+            if self.uscita_anticipata is not None and presenza_esistente.uscita_anticipata != self.uscita_anticipata:
+                updated_fields['uscita_anticipata'] = self.uscita_anticipata
+
+            # Controlla e aggiorna la giustificazione se necessario
+            if presenza_esistente.giustificazione != self.giustificazione:
+                updated_fields['giustificazione'] = self.giustificazione
+
+            # Aggiorna il record esistente solo se ci sono campi modificati
+            if updated_fields:
+                Presenza.objects.filter(id=presenza_esistente.id).update(**updated_fields)
         else:
-            # Se esistono già record per oggi, recupera l'ultima presenza registrata in ordine di inserimento
-            ultima_presenza = Presenza.objects.filter(studente=self.studente, data=oggi).order_by('-id').first()
-            
-            # Confronta lo stato del nuovo record con l'ultimo stato registrato
-            if ultima_presenza is None or ultima_presenza.stato != self.stato:
-                # Se non c'è un record precedente o lo stato è cambiato, salva il nuovo record
-                super().save(*args, **kwargs)
-            else:
-                # Se lo stato è lo stesso, ignora il salvataggio
-                print(f"Lo stato non è cambiato per {self.studente}. Nessun nuovo record salvato.")
+            # Se non esiste un record per oggi, crea un nuovo record
+            super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.studente.user.get_full_name()} - {self.data} - {self.stato}"
+
+    class Meta:
+        ordering = ['-data', 'studente']
+        verbose_name_plural = "Presenze"
 
 class Orario(models.Model):
     
