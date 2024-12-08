@@ -1,6 +1,6 @@
 
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView, exception_handler
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.status import HTTP_403_FORBIDDEN
@@ -120,14 +120,20 @@ def create_presenza(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_presenze_oggi(request):
+def get_presenze_oggi(request, classe_id=None):
     # Ottieni la data corrente
     oggi = timezone.now().date()
     
+    # Inizia con una query base che filtra le presenze per la data corrente
+    query = Presenza.objects.filter(data=oggi)
+
+    # Se un classe_id è fornito, aggiungi un filtro per classe
+    if classe_id:
+        query = query.filter(classe_id=classe_id)
+
     # Trova l'ID dell'ultima presenza per ogni studente nella data corrente
     ultime_presenze_ids = (
-        Presenza.objects.filter(data=oggi)
-        .values('studente')
+        query.values('studente')
         .annotate(max_id=Max('id'))
         .values_list('max_id', flat=True)
     )
@@ -140,7 +146,6 @@ def get_presenze_oggi(request):
     
     # Restituisci la risposta
     return Response(serializer.data)
-
 
 
 @api_view(['POST'])

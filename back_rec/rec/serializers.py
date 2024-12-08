@@ -57,15 +57,18 @@ class VotoSerializer(serializers.ModelSerializer):
         fields = ['studente', 'materia', 'scritto', 'orale', 'appunti', 'data']
 
 class PresenzaSerializer(serializers.ModelSerializer):
-    # Usa la serializzazione annidata solo per lettura (es. quando restituisci i dati)
-    studente = StudenteSerializer(read_only=True) # Solo lettura per risposta annidata
+    studente = StudenteSerializer(read_only=True)  # Solo lettura per risposta annidata
     studente_id = serializers.PrimaryKeyRelatedField(
         queryset=Studente.objects.all(), write_only=True, source='studente'
     )
+    classe = ClasseSerializer(read_only=True)  # Aggiungi anche per la classe, solo lettura
+    classe_id = serializers.PrimaryKeyRelatedField(
+        queryset=Classe.objects.all(), write_only=True, source='classe'
+    )  # Questo permette di scrivere l'ID della classe quando si crea/aggiorna una presenza
 
     class Meta:
         model = Presenza
-        fields = ['id', 'studente', 'studente_id', 'data', 'stato', 'entrata_ritardo', 'uscita_anticipata', 'giustificazione']
+        fields = ['id', 'studente', 'studente_id', 'classe', 'classe_id', 'data', 'stato', 'entrata_ritardo', 'uscita_anticipata', 'giustificazione']
 
     def create(self, validated_data):
         # Logica personalizzata, se necessaria

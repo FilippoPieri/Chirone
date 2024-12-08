@@ -17,13 +17,11 @@ function Registro({ selectedClass }) {
       setError(null);
 
       try {
-        const response = await authFetch(
-          `http://localhost:8000/api/classes/${selectedClass.id}/students/`,
+        const response = await authFetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
-          }
-        );
+          });
 
         if (!response.ok) {
           throw new Error(`HTTP status ${response.status}`);
@@ -97,6 +95,7 @@ function Registro({ selectedClass }) {
       const { presente, entrata, uscita, giustificato } = presenze[studenteId];
       return {
         studente_id: parseInt(studenteId), // Cambia "studente" in "studente_id"
+        classe_id: selectedClass.id,  // Include l'ID della classe qui
         data: new Date().toISOString().split('T')[0], // Usa la data attuale
         stato: presente ? "presente" : "assente",
         entrata_ritardo: entrata || null,
@@ -196,7 +195,7 @@ return (
                 </button>
             </div>
         </div>
-        {showDettagli && <VisualizzaRegistro studenti={studentiClasse} />}
+        {showDettagli && <VisualizzaRegistro selectedClass={selectedClass} />}
     </div>
   );
 } 

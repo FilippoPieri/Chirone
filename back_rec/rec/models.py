@@ -53,6 +53,7 @@ class Voto(models.Model):
 
 class Presenza(models.Model):
     studente = models.ForeignKey('Studente', on_delete=models.CASCADE, related_name="presenze")
+    classe = models.ForeignKey('Classe', on_delete=models.CASCADE, related_name="presenze_classe", null=True)
     data = models.DateField(auto_now_add=True)
     stato = models.CharField(max_length=10, choices=[('presente', 'Presente'), ('assente', 'Assente')])
     entrata_ritardo = models.TimeField(null=True, blank=True)
