@@ -75,12 +75,12 @@ class Presenza(models.Model):
             if presenza_esistente.stato != self.stato:
                 updated_fields['stato'] = self.stato
 
-            # Controlla e aggiorna l'entrata ritardo se necessario
-            if self.entrata_ritardo is not None and presenza_esistente.entrata_ritardo != self.entrata_ritardo:
+            # Aggiunge controllo per assicurarsi che l'orario di entrata ritardata sia maggiore di quello già registrato
+            if self.entrata_ritardo is not None and (presenza_esistente.entrata_ritardo is None or self.entrata_ritardo > presenza_esistente.entrata_ritardo):
                 updated_fields['entrata_ritardo'] = self.entrata_ritardo
 
-            # Controlla e aggiorna l'uscita anticipata se necessario
-            if self.uscita_anticipata is not None and presenza_esistente.uscita_anticipata != self.uscita_anticipata:
+            # Aggiunge controllo per assicurarsi che l'orario di uscita anticipata sia maggiore di quello già registrato
+            if self.uscita_anticipata is not None and (presenza_esistente.uscita_anticipata is None or self.uscita_anticipata > presenza_esistente.uscita_anticipata):
                 updated_fields['uscita_anticipata'] = self.uscita_anticipata
 
             # Controlla e aggiorna la giustificazione se necessario
