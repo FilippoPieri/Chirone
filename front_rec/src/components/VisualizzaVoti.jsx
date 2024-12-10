@@ -11,26 +11,20 @@ function VisualizzaVoti({ selectedClass }) {
   const [error, setError] = useState(null);
   const [popup, setPopup] = useState(null);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  console.log('danni agio');
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const [studentsRes, votiRes, materieRes] = await Promise.all([
           authFetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
-            headers: { 
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
           }),
           authFetch(`http://localhost:8000/api/insegnante/classe/${selectedClass.id}/voti/`, {
-            headers: { 
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
           }),
           authFetch(`http://localhost:8000/api/insegnante/materie/`, {
-            headers: { 
-              'Content-Type': 'application/json', 
-            },
+            headers: { 'Content-Type': 'application/json' },
           }),
         ]);
 
@@ -50,6 +44,8 @@ function VisualizzaVoti({ selectedClass }) {
 
     fetchData();
   }, [selectedClass]);
+
+  const formatVoto = (voto) => voto % 1 === 0 ? Math.floor(voto).toString() : voto.toString();
 
   const getMateriaNome = (materiaId) => {
     const materia = materie.find((m) => m.id === materiaId);
@@ -93,12 +89,12 @@ function VisualizzaVoti({ selectedClass }) {
               const keyBase = `-${index}-${Date.now()}`; // Aggiungi un indice e un timestamp per unicità
               if (voto.scritto) votiPerMateria[materiaNome].scritti.push(
                 <span key={`scritto-${voto.id || keyBase}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
-                  {voto.scritto}
+                  {formatVoto(voto.scritto)}
                 </span>
               );
               if (voto.orale) votiPerMateria[materiaNome].orali.push(
                 <span key={`orale-${voto.id || keyBase}`} onClick={(event) => openPopup(voto, event)} className="voto-link">
-                  {voto.orale}
+                  {formatVoto(voto.orale)}
                 </span>
               );
             });
@@ -122,8 +118,8 @@ function VisualizzaVoti({ selectedClass }) {
           <div className="popup-content">
             <h4>Dettagli Voto</h4>
             <p><strong>Data:</strong> {popup.data}</p>
-            {popup.scritto && <p><strong>Voto Scritto:</strong> {popup.scritto}</p>}
-            {popup.orale && <p><strong>Voto Orale:</strong> {popup.orale}</p>}
+            {popup.scritto && <p><strong>Voto Scritto:</strong> {formatVoto(popup.scritto)}</p>}
+            {popup.orale && <p><strong>Voto Orale:</strong> {formatVoto(popup.orale)}</p>}
             <p><strong>Appunti:</strong> {popup.appunti || 'Nessun appunto'}</p>
             <button onClick={closePopup}>Chiudi</button>
           </div>
