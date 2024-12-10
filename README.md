@@ -2,24 +2,22 @@
 
 Dipendenze Django:
 
-asgiref==3.8.1
-Django==5.1.2
-django-cors-headers==4.6.0
-django-filter==24.3
-djangorestframework==3.15.2
-djangorestframework-simplejwt==5.3.1
-PyJWT==2.10.0
-sqlparse==0.5.1
-tzdata==2024.2
-
+    asgiref==3.8.1
+    Django==5.1.2
+    django-cors-headers==4.6.0
+    django-filter==24.3
+    djangorestframework==3.15.2
+    djangorestframework-simplejwt==5.3.1
+    PyJWT==2.10.0
+    sqlparse==0.5.1
+    tzdata==2024.2
 
 Dipendenze react:
 
-"dependencies": {
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-}
+
 
 
 TUTORIAL:
