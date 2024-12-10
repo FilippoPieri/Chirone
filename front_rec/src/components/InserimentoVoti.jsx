@@ -1,29 +1,41 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
-import VisualizzaVoti from './VisualizzaVoti'; // Assicurati di importare il componente VisualizzaVoti
-import { authFetch } from './authUtils'; // Modifica il percorso se necessario
-import '../css/InserimentoVoti.css'; // Assicurati che il percorso sia corretto per i tuoi CSS
+import React, { useState, useEffect } from 'react';
+import VisualizzaVoti from './VisualizzaVoti';
+import { authFetch } from './authUtils';
+import '../css/InserimentoVoti.css';
 
 function InserimentoVoti({ selectedClass }) {
   const [studentiClasse, setStudentiClasse] = useState([]);
   const [voti, setVoti] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedMateriaId, setSelectedMateriaId] = useState(null); // Aggiungi lo stato per la materia
-  const [showVisualizzaVoti, setShowVisualizzaVoti] = useState(false); // Aggiunto stato per mostrare/nascondere VisualizzaVoti
+  const [selectedMateriaId, setSelectedMateriaId] = useState(null);
+  const [showVisualizzaVoti, setShowVisualizzaVoti] = useState(false);
 
-  // Recupera l'utente loggato (simulazione con localStorage per esempio)
-  const utenteLoggato = {
-    id: localStorage.getItem('userId'), // Assicurati che `userId` sia presente nel localStorage
-  };
+  const votoOptions = [];
+  for (let i = 0; i <= 10; i += 0.25) {
+    let label = '';
+    if (Number.isInteger(i)) {
+      label = i.toString(); // per numeri interi, usa il numero (es. "0", "1", "2", ...)
+    } else {
+      const base = Math.floor(i);
+      const decimal = i % 1;
+      if (decimal === 0.25) {
+        label = base.toString() + '+'; // per un quarto sopra il numero intero (es. "0+")
+      } else if (decimal === 0.5) {
+        label = base.toString() + '.5'; // per la metà (es. "0.5")
+      } else if (decimal === 0.75) {
+        label = (base + 1).toString() + '-'; // per un quarto sotto il successivo intero (es. "1-")
+      }
+    }
+    votoOptions.push(<option key={i} value={i}>{label}</option>);
+  }
 
   useEffect(() => {
     const fetchStudentsAndMateria = async () => {
       if (!selectedClass.id) return;
-
       setLoading(true);
       try {
-        // Fetch degli studenti della classe
         const responseStudents = await authFetch(`http://localhost:8000/api/classes/${selectedClass.id}/students/`, {
           method: 'GET',
           headers: {
@@ -38,17 +50,15 @@ function InserimentoVoti({ selectedClass }) {
         const dataStudents = await responseStudents.json();
         setStudentiClasse(dataStudents.students);
 
-        // Inizializza lo stato dei voti per ogni studente
         const initialVoti = dataStudents.students.reduce((acc, studente) => ({
           ...acc,
           [studente.id]: { scritto: '', orale: '', appunti: '' }
         }), {});
         setVoti(initialVoti);
 
-        // Fetch della materia associata all'insegnante loggato
         const responseMateria = await authFetch('http://localhost:8000/api/insegnante/materie/', {
           method: 'GET',
-          headers: {  
+          headers: {
             'Content-Type': 'application/json'
           }
         });
@@ -59,7 +69,7 @@ function InserimentoVoti({ selectedClass }) {
 
         const dataMateria = await responseMateria.json();
         if (dataMateria.materie && dataMateria.materie.length > 0) {
-          setSelectedMateriaId(dataMateria.materie[0].id); // Prendi l'ID della prima materia
+          setSelectedMateriaId(dataMateria.materie[0].id);
         } else {
           setError('Nessuna materia associata trovata.');
         }
@@ -91,17 +101,17 @@ function InserimentoVoti({ selectedClass }) {
         scritto: voti[studenteId].scritto,
         orale: voti[studenteId].orale,
         appunti: voti[studenteId].appunti,
-        materia: selectedMateriaId // Aggiungi qui l'ID della materia corretta
+        materia: selectedMateriaId
       }));
 
-      console.log("Payload inviato:", JSON.stringify(votiData)); // Visualizza il payload per debug
+      console.log("Payload inviato:", JSON.stringify(votiData));
 
       const response = await authFetch('http://localhost:8000/api/voto/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(votiData) // Assicurati che votiData sia un array
+        body: JSON.stringify(votiData)
       });
 
       if (!response.ok) {
@@ -109,24 +119,19 @@ function InserimentoVoti({ selectedClass }) {
       }
 
       console.log('Voti inviati con successo!');
-      // Resetta lo stato dei voti
       const resetVoti = studentiClasse.reduce((acc, studente) => ({
           ...acc,
           [studente.id]: { scritto: '', orale: '', appunti: '' }
       }), {});
       setVoti(resetVoti);
-
     } catch (error) {
       console.error('Errore durante l\'invio dei voti:', error);
     }
   };
 
   const toggleVisualizzaVoti = () => {
-    setShowVisualizzaVoti(!showVisualizzaVoti); // Toggle della visualizzazione di VisualizzaVoti
+    setShowVisualizzaVoti(!showVisualizzaVoti);
   };
-
-  console.log("selectedClass in InserimentoVoti:", selectedClass);
-  console.log("utenteLoggato in InserimentoVoti:", utenteLoggato);
 
   if (loading) return <p>Caricamento...</p>;
   if (error) return <p>Errore: {error}</p>;
@@ -149,28 +154,20 @@ function InserimentoVoti({ selectedClass }) {
             <tr key={studente.id}>
               <td>{studente.nome} {studente.cognome}</td>
               <td>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  placeholder="Inserisci voto"
-                  name={`scritto-${studente.id}`}
-                  id={`scritto-${studente.id}`}
+                <select
                   value={voti[studente.id].scritto}
                   onChange={(e) => handleInputChange(studente.id, 'scritto', e.target.value)}
-                />
+                >
+                  {votoOptions}
+                </select>
               </td>
               <td>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  placeholder="Inserisci voto"
-                  name={`orale-${studente.id}`}
-                  id={`orale-${studente.id}`}
+                <select
                   value={voti[studente.id].orale}
                   onChange={(e) => handleInputChange(studente.id, 'orale', e.target.value)}
-                />
+                >
+                  {votoOptions}
+                </select>
               </td>
               <td>
                 <input

@@ -52,9 +52,18 @@ class MateriaSerializer(serializers.ModelSerializer):
         fields = ['id', 'nome' ]
 
 class VotoSerializer(serializers.ModelSerializer):
+    scritto_formattato = serializers.SerializerMethodField()
+    orale_formattato = serializers.SerializerMethodField()
+
     class Meta:
         model = Voto
-        fields = ['studente', 'materia', 'scritto', 'orale', 'appunti', 'data']
+        fields = ['studente', 'materia', 'scritto', 'orale', 'appunti', 'data', 'scritto_formattato', 'orale_formattato']
+
+    def get_scritto_formattato(self, obj):
+        return obj.get_scritto_formattato()
+
+    def get_orale_formattato(self, obj):
+        return obj.get_orale_formattato()
 
 class PresenzaSerializer(serializers.ModelSerializer):
     studente = StudenteSerializer(read_only=True)  # Solo lettura per risposta annidata

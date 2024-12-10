@@ -40,6 +40,8 @@ class Materia(models.Model):
     def __str__(self):
         return self.nome
 
+from django.db import models
+
 class Voto(models.Model):
     studente = models.ForeignKey('Studente', on_delete=models.CASCADE, related_name='voti')
     materia = models.ForeignKey('Materia', on_delete=models.CASCADE, related_name='voti')
@@ -48,8 +50,32 @@ class Voto(models.Model):
     appunti = models.TextField(null=True, blank=True)  # Campo aggiuntivo per appunti dell'insegnante
     data = models.DateField(auto_now_add=True)
 
+    def formatta_voto(self, voto):
+        if voto is None:
+            return None
+        base = int(voto)
+        decimal = voto - base
+        if decimal == 0:
+            return str(base)
+        elif decimal == 0.25:
+            return f"{base}+"
+        elif decimal == 0.5:
+            return f"{base}.5"
+        elif decimal == 0.75:
+            return f"{base + 1}-"
+        return str(voto)
+
+    def get_scritto_formattato(self):
+        return self.formatta_voto(self.scritto)
+
+    def get_orale_formattato(self):
+        return self.formatta_voto(self.orale)
+
     def __str__(self):
-        return f"Voto di {self.studente} in {self.materia}"
+        voto_scritto = self.get_scritto_formattato() if self.scritto is not None else "N/A"
+        voto_orale = self.get_orale_formattato() if self.orale is not None else "N/A"
+        return f"Voto di {self.studente} in {self.materia}: Scritto {voto_scritto}, Orale {voto_orale}"
+
 
 class Presenza(models.Model):
     studente = models.ForeignKey('Studente', on_delete=models.CASCADE, related_name="presenze")
