@@ -1,0 +1,108 @@
+TUTORIAL WINDOWS: 
+
+- BACKEND DJANGO: 
+    1. clonare il repo:  
+        
+        git clone https://github.com/FilippoPieri/rec.git 
+
+
+    2. Crea un ambiente virtuale:  
+
+        python -m venv .venv
+
+
+    3. Attiva l'ambiente virtuale:  
+
+        Windows: source .venv/Scripts/activate
+
+
+   4. Installa Django:  
+
+        pip install Django
+
+
+   5. Creare progetto:  
+
+        django-admin startproject back_rec
+
+
+    6. Spostarsi dentro alla carella del progetto: 
+
+        cd back_rec 
+
+
+    7. Avviare il server Django: 
+
+        run server: python manage.py runserver
+
+  
+    8. Disattivare il server: 
+
+        control+c 
+
+  
+    9. Creare app: 
+
+        python manage.py startapp re
+
+  
+    10. Spostarsi nella cartella dell'app:
+
+        cd rec
+
+    
+    11. modificare file Settings.py 
+
+        in installed_app aggingere:
+
+          'rec',
+
+  
+    12. migrazioni
+
+        cd .. (torna nella directory precedente contentnte mange.py)
+
+        python manage.py makemigrations 
+
+        python manage.py migrate
+
+
+    13. Creare superuser: 
+
+        python manage.py createsuperuser
+
+            inserire nome utente: 
+
+            inserire emile: 
+
+            inserire password: 
+
+
+    14. avviare il server e andare in admin per inserire maualmente dei dati: 
+
+        urls: 127.0.0.1:8000/admin 
+
+  
+  
+- FRONTENDE REACT: 
+    
+    1. Crea la directory del progetto React e configura Vite: 
+
+        npm create vite@latest front_rec -- --template react
+        cd front_rec
+  
+
+    2. Installa le dipendenze: 
+
+        npm install
+
+  
+    3. Avvia il server di sviluppo: 
+
+        npm run dev
+
+  
+    4. Accedi al frontend:  
+
+        URL: http://localhost:5173 
+

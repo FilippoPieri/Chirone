@@ -1,6 +1,31 @@
-# Chirone
+<h1> Chirone </h1>
 
-Dipendenze Django:
+    Chirone è un'applicazione per la gestione di un registro scolastico online che permette di gestire classi, studenti, insegnanti, voti, presenze e orari delle lezioni costruita utilizzando un backend Django e un frontend React Vite.
+
+    La creazione di Classi, Scuole, Materie, Insegnanti, Studenti, Materie, Utenti, Gruppi è gestita dall'amministrazione:
+
+    i gruppi servono per dare i permessi agli utenti:
+
+     Insegnante può leggere e scrivere
+
+     Studente può solo leggere
+
+    mentre le classi Insegnante e Studente sono necessari per collegare gli utenti alle varie classi.
+
+
+
+<h1> Prerequisiti </h1>
+
+    Backend:
+
+        Python 3.12.8 
+        Virtualenv
+    
+    Frontend:
+
+        Node.js v20.17.0
+
+<h1> Dipendenze Django: </h1>
 
     asgiref==3.8.1
     Django==5.1.2
@@ -12,106 +37,116 @@ Dipendenze Django:
     sqlparse==0.5.1
     tzdata==2024.2
 
-Dipendenze react:
+<h1> Dipendenze react: </h1>
 
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
+    
+<br>
+
+
+<h1> Struttura del Progetto </h1>
+
+  <b> BACKEND </B>
+
+    Models: 
+
+          Gestione di entità come classi, studenti, insegnanti, voti, presenze e 
+          orari.
+
+    API REST:
+
+          Endpoint CRUD per le operazioni sulle entità.
+
+    Autenticazione:
+
+          Utilizza JWT per autenticare le richieste.
+
+  <b> FRONTEND </B>
+
+    Componenti principali:
+
+      App.jsx: 
+
+          Punto di ingresso principale.
+
+      Features.jsx: 
+
+          Funzionalità per gli insegnanti.
+
+      FeaturesStudenti.jsx: 
+
+          Funzionalità per gli studenti.
+
+  <b> Autenticazione: </b>
+
+        Login e gestione dei token (JWT).
+        
+        Gestione automatica dei token di accesso e refresh.
+
+<br>
+
+<h1> Funzionalità principali </h1>
+
+
+  <b> 1. Gestione presenze: </b>
+
+        Appello per classe.
+
+        Visualizzazione delle assenze dello studente.
+
+
+  <b> 2. Gestione voti: </b>
+
+        Inserimento voti per gli insegnanti.
+
+        Visualizzazione dei voti per gli studenti.
+
+
+  <b> 3. Gestione orari: </b>
+
+        Inserimento e modifica dell'orario per gli insegnanti. 
+
+        Visualizzazione orario settimanale per studenti.
+
+<br>
+
+<h1> Funzioni da implementare </h1>
+
+    1. Calcolo delle ore basato sull'orario delle lezioni 
+
+    2. Inserimento di avvisi nel frontend in caso di azioni non consentite 
+
+    3. Inserimento di aniazioni per il caricamento dei dati
+
+    4. Media dei voti con possibilità di modifica da parte dell'insegnante
+
+    5. possibilità di modificare i voti e i dati dell'appello da parte dell'insegnante
+
+    6. Creazione funzione "Agenda" dove l'insegnante potrà segnare note, compiti ecc.. 
+       e studente potrà visualizzarli
+
+    7. Creazione funzione "Argomenti trattati" dove l'insegnante potrà scrivere i temi 
+        delle lezioni affrontate durante la lezione e gli studenti potranno consultarla
+
+    8. Creazione di utenti "Coordinatore di classe" e "segreteria" 
+
+    9. Creazione funzione "Ricevimenti" dove sarà possibile prendere appuntamento con        
+       l'insegnante
+
+    10. Implementare possibilità di modificare password   
+          
+
+<h2> Crediti </h2>
+
+    Applicazione sviluppata da Filippo Pieri con l'ausilio di AI
 
 
 
-TUTORIAL:
 
-DJANGO:
 
-in cmd:
- 
-git clone https://github.com/FilippoPieri/rec.git (link repository)
-___________________________________________________________________________________________
 
-comandi git per creare il progetto:
-___________________________________________________________________________________________________________________________________
 
-creare virtual env:
 
-  python -m venv .venv
-___________________________________________________________________________________________________________________________________
-
-attivare virtual env:
-
- source .venv/Scripts/activate
-___________________________________________________________________________________________________________________________________
-
-installare Django:
-
- pip install Django
-___________________________________________________________________________________________________________________________________
-
-creare progetto:
-
- django-admin startproject back_rec
- __________________________________________________________________________________________________________________________________
-
-spostarsi dentro al progetto:
-
- cd back_rec
-___________________________________________________________________________________________________________________________________
-
-run server:
- python manage.py runserver
- control+c (per uscire dal server)
-___________________________________________________________________________________________________________________________________
-
-creare app:
-
- python manage.py startapp rec
-___________________________________________________________________________________________________________________________________
-
-spostarsi nella cartella dell'app:
-
- cd rec
-___________________________________________________________________________________________________________________________________
-
-andare in settings.py e inserire rec in installed_app
-___________________________________________________________________________________________________________________________________
-
-migrazioni:
- cd .. (torna nella directory precedente contentnte mange.py)
- python manage.py makemigrations
- python manage.py migrate
-___________________________________________________________________________________________________________________________________
-
-creare superuser:
-
- python manage.py createsuperuser
- (inserire nome utente, email, password)
-___________________________________________________________________________________________________________________________________
-
-avviare il server e andare in admin per inserire maualmente dei dati
-urls: 127.0.0.1:8000/admin 
-oppure creare uteni e post direttamente dall'app
-___________________________________________________________________________________________________________________________________
------------------------------------------------------------------------------------------------------------------------------------
-
-REACT
-
-crea una cartella chiamata front_rec e configura Vite con un template React
-
-  npm create vite@latest front_rec -- --template react  
-____________________________________________________________________________________________________________________________________
-
-spostati nella cartella creata
-
- cd front_rec
-____________________________________________________________________________________________________________________________________
-
-installa le dipendenze
-
- npm install
-____________________________________________________________________________________________________________________________________
-
-avvia il server di sviluppo (solitamente http://localhost:5173)
-
- npm run dev
-_____________________________________________________________________________________________________________________________________
-
+  
