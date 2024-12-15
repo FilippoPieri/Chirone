@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../css/Intro.css';
 import PropTypes from 'prop-types';
 
-function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
+function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato, handleLogout }) {
     const [username, setUsername] = useState(''); // Stato per lo username
     const [password, setPassword] = useState(''); // Stato per memorizzare la password
     const [error, setError] = useState(''); // Stato per memorizzare l'errore
@@ -32,6 +32,8 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
                 });
 
                 setError('');
+                setUsername(''); // Reset dello username dopo il login
+                setPassword(''); // Reset della password dopo il login
             } else {
                 const errData = await response.json();
                 setError(errData.error || 'Credenziali non valide');
@@ -39,19 +41,6 @@ function Intro({ setLoggedIn, loggedIn, setUtenteLoggato, utenteLoggato }) {
         } catch {
             setError('Errore di connessione al server');
         }
-    };
-
-    const handleLogout = () => {
-        // Rimuove i dati di autenticazione dal localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh');
-        localStorage.removeItem('utenteLoggato');
-    
-        // Reimposta lo stato dell'utente e i campi del form
-        setLoggedIn(false);
-        setUtenteLoggato(null);
-        setUsername(''); // Reimposta lo username
-        setPassword(''); // Reimposta la password
     };
 
     return (

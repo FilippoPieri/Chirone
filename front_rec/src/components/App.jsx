@@ -14,6 +14,14 @@ function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [utenteLoggato, setUtenteLoggato] = useState(null);
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh');
+        localStorage.removeItem('utenteLoggato');
+        setLoggedIn(false);
+        setUtenteLoggato(null);
+    };
+
     useEffect(() => {
         // Recupera token e dati dell'utente dal localStorage all'avvio
         const token = localStorage.getItem('token');
@@ -34,6 +42,7 @@ function App() {
                     loggedIn={loggedIn}
                     setUtenteLoggato={setUtenteLoggato}
                     utenteLoggato={utenteLoggato}
+                    handleLogout={handleLogout}
                 />
                 {loggedIn && utenteLoggato ? (
                     utenteLoggato.ruolo === 'insegnante' ? (
