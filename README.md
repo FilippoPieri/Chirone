@@ -147,6 +147,6 @@
 
 
 
-
+<img src="9621.jpg" alt="Descrizione alternativa" width="300"/>
 
   
