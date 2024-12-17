@@ -17,7 +17,7 @@ function VotiStudente({ utenteLoggato }) {
 
       try {
         // Fetch dei voti dello studente loggato
-        const responseVoti = await  authFetch('http://localhost:8000/api/voti-studente/', {
+        const responseVoti = await authFetch('http://localhost:8000/api/voti-studente/', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ function VotiStudente({ utenteLoggato }) {
         const votiData = await responseVoti.json();
 
         // Fetch delle materie
-        const responseMaterie = await  authFetch('http://localhost:8000/api/materie/', {
+        const responseMaterie = await authFetch('http://localhost:8000/api/materie/', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ function VotiStudente({ utenteLoggato }) {
         setMaterie(materieMap);
 
         // Raggruppa i voti per materia
-        const raggruppati = votiData.reduce((acc, voto) => {
+        const raggruppati = votiData.length > 0 ? votiData.reduce((acc, voto) => {
           const materiaId = voto.materia;
           if (!acc[materiaId]) {
             acc[materiaId] = { scritto: [], orale: [], materiaId };
@@ -59,7 +59,7 @@ function VotiStudente({ utenteLoggato }) {
           if (voto.scritto) acc[materiaId].scritto.push({ value: voto.scritto, data: voto.data, appunti: voto.appunti });
           if (voto.orale) acc[materiaId].orale.push({ value: voto.orale, data: voto.data, appunti: voto.appunti });
           return acc;
-        }, {});
+        }, {}) : {};
 
         setVotiPerMateria(raggruppati);
       } catch (err) {
@@ -113,7 +113,7 @@ function VotiStudente({ utenteLoggato }) {
                     >
                       {voto.value}
                     </span>
-                  )).reduce((prev, curr) => [prev, ', ', curr])}
+                  )).reduce((prev, curr) => [prev, ', ', curr], [])}
                 </td>
                 <td>
                   {voti.orale.map((voto, index) => (
@@ -125,7 +125,7 @@ function VotiStudente({ utenteLoggato }) {
                     >
                       {voto.value}
                     </span>
-                  )).reduce((prev, curr) => [prev, ', ', curr])}
+                  )).reduce((prev, curr) => [prev, ', ', curr], [])}
                 </td>
               </tr>
             ))
