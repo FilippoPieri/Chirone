@@ -13,7 +13,7 @@ from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia
 from .serializers import ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
 from .serializers import MateriaSerializer
 
-
+#sicura
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Usa `authenticate` per verificare le credenziali dell'utente
@@ -34,116 +34,140 @@ class LoginAPIView(APIView):
         else:
             # Risposta in caso di errore di autenticazione
             return Response({'error': 'Credenziali non valide'}, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#sicura
+@api_view(['GET'])  # indicha che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # verifica che l'utente sia autenticato
 def get_insegnante_classes(request):
-    user = request.user
-    print("Utente autenticato:", user.username)
+    user = request.user  # ottiene l'utente autenticato dalla richiesta
+    print("Utente autenticato:", user.username)  # stampa il nome utente per il logging
 
-    # Verifica se l'utente appartiene al gruppo "Insegnante"
+    # verifica se l'utente appartiene al gruppo "Insegnante"
     if not user.groups.filter(name='Insegnante').exists():
+        # se l'utente non è un insegnante, ritorna un errore 403 che nega l'accesso all'utente non associato al gruppo
         return Response({'error': 'Permesso negato'}, status=403)
 
     try:
+        # tenta di ottenere l'oggetto Insegnante associato all'utente
         insegnante = Insegnante.objects.get(user=user)
-        print("Insegnante trovato:", insegnante.user.username)
+        print("Insegnante trovato:", insegnante.user.username)  # log dell'insegnante trovato
 
-        # Recupera le classi insegnate dall'insegnante
+        # recupera le classi insegnate dall'insegnante tramite la relazione classi_insegnate
         classi = insegnante.classi_insegnate.all()
 
-        # Usa il serializer per serializzare le classi
+        # usa il serializzatore delle classi per la risposta formattandoli in un json
         serializer = ClasseSerializer(classi, many=True)
-        return Response({'classes': serializer.data})
+        return Response({'classes': serializer.data})  # Ritorna i dati serializzati delle classi
 
     except Insegnante.DoesNotExist:
+        # cerca l'utente associato all'insegnante e se non esiste un insegnante associato, ritorna un errore 404
         print("Insegnante non trovato per l'utente:", user.username)
         return Response({'error': 'Insegnante non trovato'}, status=404)
 
     except Exception as e:
+        # cattura altre eccezioni generiche e ritorna un errore interno 500
         print("Errore interno:", str(e))
         return Response({'error': 'Errore interno del server'}, status=500)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#sicura
+@api_view(['GET']) # indicha che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated]) # verifica che l'utente sia autenticato 
 def get_students_by_class(request, class_id):
-    # Recupera la classe usando il class_id e gestisce il caso in cui l'oggetto non esista
+    # recupera la classe utilizzando l'ID fornito. Se la classe non esiste, restituisce un errore 404.
     classe = get_object_or_404(Classe, id=class_id)
     
-    # Verifica se l'utente è autorizzato a insegnare in quella classe
+    # verifica se l'insegnante associato alla richiesta è autorizzato a interagire con la classe indicata.
     if not request.user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
+        # se l'insegnante non è autorizzato a insegnare in quella classe, restituisce un errore 403 impedendo l'accesso a classi non associate
         return Response({'error': 'Non autorizzato'}, status=HTTP_403_FORBIDDEN)
 
-    # Verifica se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
+    # verifica se l'utente fa parte del gruppo "Insegnante" e ha accesso alla classe
     if not request.user.groups.filter(name='Insegnante').exists():
+        # se non appartiene al gruppo restituisce un'errore 403
         return Response({'error': 'Permesso negato'}, status=HTTP_403_FORBIDDEN)
 
-    # Recupera tutti gli studenti della classe
+    # recupera tutti gli studenti della classe
     studenti = classe.studenti.all()
 
-    # Usa il serializer per serializzare i dati degli studenti
+    # usa il serializer per serializzare i dati degli studenti formattandoli in un formato adatto alla richiesta
     serializer = StudenteSerializer(studenti, many=True)
     
+    # ritorna la risposta con i dati serializzati in formato json
     return Response({'students': serializer.data})
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+#sicura
+@api_view(['POST']) #indica che si tratta di una richiesta POST (ricezione dati utente --> db)
+@permission_classes([IsAuthenticated]) # verifica che l'utente sia autenticato
 def create_presenza(request):
+    user = request.user # ottiene l'utente corrispondente all'autenticazione dalla richiesta
+    print("Dati ricevuti dal frontend:", request.data) # stampa i dati ricevuti dell'utente, debug
 
-    print("Dati ricevuti dal frontend:", request.data)  # Logga i dati ricevuti
-
-    presenze_data = request.data.get('presenze', [])  # Ottieni la lista di presenze dal payload
-
-    # Controlla che il payload sia una lista
+    presenze_data = request.data.get('presenze', []) # inserisce i dati ricevuti in una lista, se non ci sono dati, ritorna una lista vuota
+    #se non è una lista ritorna un errore 404 indicante un formato non valido per i dati
     if not isinstance(presenze_data, list):
         return Response({"error": "Il formato dei dati di presenza è invalido. Deve essere una lista."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Cicla attraverso le presenze e serializzale una ad una
-    created_presenze = []
-    errors = []
+    created_presenze = [] # lista per tenere traccia dei dati di presenza della classe creati
+    errors = [] # lista per tenere traccia degli errori creatisi durante il percorso
 
+    # Itera su ogni elemento della lista delle presenze.
     for presenza_data in presenze_data:
+        classe_id = presenza_data.get('classe_id') # recupera l'id della classe per acisacun record di presenza
+        # Verifica se l'insegnante è autorizzato a presenza per la classe specificata
+        if not user.insegnante_profile.classi_insegnate.filter(id=classe_id).exists():
+            errors.append({"error": f"Non autorizzato a registrare presenze per la classe {classe_id}"})# errore restituito in caso l'insegnante non sia autorizzato
+            continue
+        
+        #utilizza il serializer per validare i dati della presenza
         serializer = PresenzaSerializer(data=presenza_data)
+        #se i dati sono validi li salva nel db e aggiunge i dati alla lista created_presenze
         if serializer.is_valid():
             serializer.save()
-            created_presenze.append(serializer.data)  # Aggiungi la presenza valida alla lista
+            created_presenze.append(serializer.data)
+        # Se non sono validi, aggiunge gli errori del serializer alla lista errors
         else:
-            print("Errori nel serializer:", serializer.errors)  # Log degli errori
-            errors.append(serializer.errors)  # Aggiungi errori se la presenza non è valida
-
-    # Verifica se ci sono errori
+            print("Errori nel serializer:", serializer.errors)
+            errors.append(serializer.errors)
+    # se nella lista errors ci sono errori, ritorna un errore 400 e i dettagli dell'errore
     if errors:
         return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
-
+    # se non ci sono errori, restituisce una risposta con status 201 Created e i dettagli delle presenze create.
     return Response({"created_presenze": created_presenze}, status=status.HTTP_201_CREATED)
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#sicuro
+@api_view(['GET'])  # indicha che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # verifica che l'utente sia autenticato
 def get_presenze_oggi(request, classe_id=None):
-    # Ottieni la data corrente
-    oggi = timezone.now().date()
+    user = request.user  # ottiene l'utente autenticato.
+    oggi = timezone.now().date()  # Recupera la data corrente.
+
+    if not classe_id:
+        # se non viene fornito un id per la classe, restituisce un errore.
+        return Response({'error': 'È necessario specificare un ID di classe.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    # Inizia con una query base che filtra le presenze per la data corrente
-    query = Presenza.objects.filter(data=oggi)
+    # recupera la classe utilizzando l'ID fornito o restituisce un errore 404 se non trovata.
+    classe = get_object_or_404(Classe, id=classe_id)
+    
+    # verifica che l'insegnante sia autorizzato ad accedere alle presenze di questa classe.
+    if not user.insegnante_profile.classi_insegnate.filter(id=classe.id).exists():
+        return Response({'error': 'Non autorizzato a visualizzare le presenze di questa classe.'}, status=status.HTTP_403_FORBIDDEN)
 
-    # Se un classe_id è fornito, aggiungi un filtro per classe
-    if classe_id:
-        query = query.filter(classe_id=classe_id)
-
-    # Trova l'ID dell'ultima presenza per ogni studente nella data corrente
+    # filtra le presenze per la classe e la data corrente.
+    query = Presenza.objects.filter(data=oggi, classe=classe)
+    
+    # ottiene gli ID delle ultime presenze di ogni studente nella classe per la data corrente.
     ultime_presenze_ids = (
         query.values('studente')
         .annotate(max_id=Max('id'))
         .values_list('max_id', flat=True)
     )
-
-    # Recupera i record con gli ID trovati
+    
+    # recupera i record delle presenze corrispondenti agli ID trovati.
     ultime_presenze = Presenza.objects.filter(id__in=ultime_presenze_ids)
-
-    # Serializza i dati
+    
+    # serializza i dati delle presenze.
     serializer = PresenzaSerializer(ultime_presenze, many=True)
     
-    # Restituisci la risposta
+    # restituisce i dati serializzati.
     return Response(serializer.data)
 
 
