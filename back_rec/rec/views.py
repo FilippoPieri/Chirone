@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Max
-from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia
+from .models import Insegnante, Classe, Presenza, Voto, Orario, Materia, Studente
 from .serializers import ClasseSerializer, StudenteSerializer, PresenzaSerializer, VotoSerializer, MateriaSerializer, VotoSerializer, OrarioSerializer
 from .serializers import MateriaSerializer
 
@@ -170,106 +170,218 @@ def get_presenze_oggi(request, classe_id=None):
     # restituisce i dati serializzati.
     return Response(serializer.data)
 
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+#sicura
+@api_view(['POST']) #indica che si tratta di una richiesta POST (ricezione dati utente --> db)
+@permission_classes([IsAuthenticated]) #verifica che l'utente sia autenticato
 def create_voti(request):
-    # Controlla se i dati inviati sono una lista
+    # controlla se i dati inviati sono una lista
     if isinstance(request.data, list):
-        # Crea una lista per tenere traccia dei dati dei voti salvati
-        saved_voti = []
-        errors = []
-        for voto_data in request.data:
-            serializer = VotoSerializer(data=voto_data)
-            if serializer.is_valid():
+        # crea una lista per tenere traccia dei dati dei voti salvati
+        saved_voti = [] # lista per raccogliere i voti salvati con successo
+        errors = [] # raccoglie eventuali errori durante il percorso
+
+        for voto_data in request.data: #ciclo per ogni voto inserito nella lista
+            studente_id = voto_data.get('studente')  # recupera l'ID dello studente dal payload
+            if not studente_id: #se il voto non ha associato l'id dello studente genera un'errore e passa oltre
+                errors.append({"error": "studente è obbligatorio per ogni voto"})
+                continue
+
+            # recupera lo studente e risali alla classe
+            try:
+                studente = Studente.objects.get(id=studente_id) # trova lo studente con l'id fornito
+                classe_id = studente.classe.id  # risale alla classe dallo studente
+            except Studente.DoesNotExist: # se lo studente non esiste genera un'errore
+                errors.append({"error": f"Studente con ID {studente_id} non trovato"})
+                continue
+            except AttributeError: # se la classe non esiste genera un'errore
+                errors.append({"error": f"Studente con ID {studente_id} non è associato a una classe"})
+                continue
+
+            # verifica l'associazione dell'insegnante con la classe e se non sono associati genera un'errore
+            if not request.user.insegnante_profile.classi_insegnate.filter(id=classe_id).exists():
+                errors.append({"error": f"Non autorizzato a creare voti per la classe con ID {classe_id}"})
+                continue
+
+            # procedi con la serializzazione e il salvataggio
+            serializer = VotoSerializer(data=voto_data) # usa il serializzatore per i voti
+            if serializer.is_valid(): # se il voto e' valido lo aggiunge ai voti salvati 
                 voto = serializer.save()
                 saved_voti.append(serializer.data)
-            else:
+            else: # se i voti non sono validi genera un'errore
                 errors.append(serializer.errors)
-        
+
         if errors:
+            # restituisci sia i voti salvati che gli errori, se presenti
             return Response({'success': saved_voti, 'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        # restituisci solo i voti salvati se tutto è andato a buon fine
         return Response(saved_voti, status=status.HTTP_201_CREATED)
     else:
+        # restituisci un errore se i dati inviati non sono una lista
         return Response({"error": "Mi aspettavo una lista di voti ma ho ricevuto un singolo oggetto"}, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+
+
+#sicura
+@api_view(['GET'])  # indica che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # verifica che l'utente sia autenticato
 def get_insegnante_materie(request):
+    # recupera l'utente autenticato dalla richiesta
     user = request.user
     try:
-        print("Utente autenticato:", user.username)  # Debug
-        insegnante = Insegnante.objects.get(user=user)
-        print("Insegnante trovato:", insegnante)  # Debug
+        print("Utente autenticato:", user.username)  # Debug per verificare l'utente autenticato
 
-        materie = insegnante.materie.all()
-        print("Materie recuperate:", materie)  # Debug
+        # verifica che l'utente abbia un profilo insegnante
+        insegnante = Insegnante.objects.get(user=user) #verifica che l'utente sia un'insegnante
+        print("Insegnante trovato:", insegnante)  # debug per conferma
 
-        # Passa il contesto della richiesta al serializer
-        serializer = MateriaSerializer(materie, many=True, context={'request': request})
+        # recupera le materie associate all'insegnante autenticato
+        materie = insegnante.materie.all() # recupera le materie associate all'utente
+        print("Materie recuperate:", materie)  # debug per conferma
+
+        # serializza le materie per la risposta formattandola in un JSON
+        serializer = MateriaSerializer(materie, many=True, context={'request': request}) # serializza una lista di oggetti --> (mant= ture)
+
+        # restituisce il JSON con le materie dell'insegnante autenticato
         return Response({'materie': serializer.data})
+
     except Insegnante.DoesNotExist:
+        # se l'insegnante non esiste, restituisce un errore
+        print(f"L'utente {user.username} non ha un profilo insegnante.")  # Debug
         return Response({'error': 'Insegnante non trovato'}, status=404)
+
     except Exception as e:
-        print("Errore interno:", str(e))  # Debug per altri errori
+        #gGestisce eventuali errori imprevisti
+        print("Errore interno:", str(e))  # debug per errori generali
         return Response({'error': 'Errore interno del server'}, status=500)
-    
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
+
+#sicuro
+@api_view(['GET'])  # Indica che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # Verifica che l'utente sia autenticato
 def get_voti_classe_materia_insegnante(request, classe_id):
-    user = request.user
-    
+    user = request.user  # Ottiene l'utente autenticato
+
     try:
-        # Recupera l'insegnante loggato
+        # recupera l'insegnante loggato
         insegnante = Insegnante.objects.get(user=user)
 
-        # Ottieni tutte le materie insegnate dall'insegnante
+        # verifica se la classe è associata all'insegnante
+        if not insegnante.classi_insegnate.filter(id=classe_id).exists(): # se l'utente non ha la classe, restituisce un errore
+            return Response({'error': 'Non autorizzato a visualizzare i voti di questa classe'}, status=403)
+
+        # ottieni tutte le materie insegnate dall'insegnante
         materie_insegnate = insegnante.materie.all()
 
-        # Recupera la classe specifica
+        # recupera la classe specifica
         classe = get_object_or_404(Classe, id=classe_id)
 
-        # Filtra i voti degli studenti di quella classe e delle materie insegnate
+        # filtra i voti degli studenti di quella classe e delle materie insegnate
         voti = Voto.objects.filter(studente__classe=classe, materia__in=materie_insegnate)
 
-        # Serializza i voti
-        serializer = VotoSerializer(voti, many=True)
+        # serializza i voti
+        serializer = VotoSerializer(voti, many=True) 
         return Response(serializer.data, status=200)
 
-    except Insegnante.DoesNotExist:
+    except Insegnante.DoesNotExist: # se l'insegnante non esiste, restituisce un errore
         return Response({'error': 'Insegnante non trovato'}, status=404)
-    except Exception as e:
+    except Exception as e: # gestisce eventuali errori imprevisti
         return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)
-    
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_orario_by_classe(request, classe_id):
-    classe = get_object_or_404(Classe, id=classe_id)
-    orari = Orario.objects.filter(classe=classe)
-    serializer = OrarioSerializer(orari, many=True)
-    return Response(serializer.data)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+#sicura  
+@api_view(['GET'])  # indica che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # verifica che l'utente sia autenticato
+def get_orario_by_classe(request, classe_id):
+    try:
+        # recupera l'insegnante loggato
+        user = request.user
+        insegnante = Insegnante.objects.get(user=user)
+
+        # verifica che la classe sia associata all'insegnante
+        if not insegnante.classi_insegnate.filter(id=classe_id).exists(): # se l'utente non ha la classe, restituisce un errore
+            return Response({'error': 'Non autorizzato a visualizzare l\'orario di questa classe'}, status=403)
+
+        # recupera la classe specifica
+        classe = get_object_or_404(Classe, id=classe_id)
+
+        # recupera gli orari della classe
+        orari = Orario.objects.filter(classe=classe)
+
+        # serializza gli orari (JSON)
+        serializer = OrarioSerializer(orari, many=True)
+
+        # restituisce gli orari della classe (JSON)
+        return Response(serializer.data)
+
+    except Insegnante.DoesNotExist: # se l'insegnante non esiste, restituisce un errore
+        return Response({'error': 'Insegnante non trovato'}, status=404)
+    except Exception as e: # gestisce eventuali errori imprevisti
+        return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)
+
+
+@api_view(['POST'])  # Indica che si tratta di una richiesta POST (ricezione dati utente --> db)
+@permission_classes([IsAuthenticated])  # Verifica che l'utente sia autenticato
 def create_orario(request):
     try:
-        serializer = OrarioSerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except Materia.DoesNotExist as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        # Log error here if needed
-        return Response({'error': 'Server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        user = request.user
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])  # Facoltativo: se vuoi richiedere l'autenticazione
+        # recupera il profilo insegnante
+        insegnante = Insegnante.objects.get(user=user)
+
+         # recupera i dati della richiesta
+        data = request.data
+        if isinstance(data, list):  # controlla se la richiesta contiene una lista
+            for orario_data in data: # ciclo per ogni orario nella lista
+                classe_id = orario_data.get('classe') # recupera la classe per ogni orario
+                if not classe_id: # se non viene fornita la classe, restituisce un errore
+                    return Response({'error': 'classe è obbligatorio per ogni orario'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Controlla se la classe è associata all'insegnante
+                if not insegnante.classi_insegnate.filter(id=classe_id).exists(): # se l'utente non è associato all'id della classe restituisce un errore
+                    return Response({'error': f"Non autorizzato a creare orari per la classe con ID {classe_id}"}, status=status.HTTP_403_FORBIDDEN)
+        else: # se la richiesta non contiene una lista, restituisce un errore
+            return Response({'error': 'Mi aspettavo una lista di orari'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # serializza gli orari (JSON)
+        serializer = OrarioSerializer(data=data, many=True)
+        if serializer.is_valid(): # se i dati sono validi
+            serializer.save() # salva i dati
+            return Response(serializer.data, status=status.HTTP_201_CREATED) # restituisce i dati salvati
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) # se i dati non sono validi
+
+    except Insegnante.DoesNotExist: # se l'insegnante non esiste, restituisce un errore
+        return Response({'error': 'Insegnante non trovato'}, status=status.HTTP_404_NOT_FOUND)
+    except Materia.DoesNotExist as e: # se la materia non esiste, restituisce un errore
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e: # gestisce eventuali errori imprevisti
+        return Response({'error': 'Errore interno del server', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])  # Indica che si tratta di una richiesta GET (ricezione dati db --> utente)
+@permission_classes([IsAuthenticated])  # Verifica che l'utente sia autenticato
 def get_all_materie(request):
-    materie = Materia.objects.all()
-    serializer = MateriaSerializer(materie, many=True)
-    return Response(serializer.data)
+    try:
+        # recupera l'utente autenticato
+        user = request.user
+
+        # verifica che l'utente sia un insegnante
+        insegnante = Insegnante.objects.get(user=user)
+
+        # recupera le classi associate all'insegnante
+        classi_collegate = insegnante.classi_insegnate.all()
+
+        # recupera le materie legate alle classi collegate
+        materie = Materia.objects.filter(classi__in=classi_collegate).distinct()
+
+        # serializza le materie
+        serializer = MateriaSerializer(materie, many=True)
+
+        # restituisce le materie filtrate
+        return Response(serializer.data, status=200)
+
+    except Insegnante.DoesNotExist: # se l'insegnante non esiste, restituisce un errore
+        return Response({'error': 'Insegnante non trovato'}, status=404)
+    except Exception as e: # gestisce eventuali errori imprevisti
+        return Response({'error': 'Errore interno del server', 'details': str(e)}, status=500)
+
 
 #-----------------------------------------------------------------------------------------------------------
 
